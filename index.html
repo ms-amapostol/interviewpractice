@@ -1121,7 +1121,7 @@ a:hover { text-decoration: underline; }
   <div id="cheatsheet-header" style="margin-bottom:20px;"></div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
     <div id="cheatsheet-tabs" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;"></div>
-    <button class="btn btn-ghost btn-sm" onclick="exportCheatSheet()" title="Download as text file">⬇ Export Profiles</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCheatSheet()" title="Export as PDF">⬇ Export PDF</button>
     <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);" title="Clear all stored data">🗑 Clear All Data</button>
   </div>
   <div id="cheatsheet-content"></div>
@@ -1137,7 +1137,7 @@ a:hover { text-decoration: underline; }
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">This tab compares your resume against the job description to surface where you're a strong fit, where there are gaps, and which keywords to emphasize in your answers. To generate an analysis, make sure you've added both your resume and the job description in <strong>Interview Setup → My Documents</strong>, then use the button below. If you have an API key, the analysis will be AI-powered and more nuanced. Without one, you'll get a keyword-based comparison.</p>
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
-    <button class="btn btn-ghost btn-sm" onclick="exportFitAnalysis()" title="Download fit analysis as text">⬇ Export Analysis</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportFitAnalysis()" title="Export as PDF">⬇ Export PDF</button>
     <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);" title="Clear all stored data">🗑 Clear All Data</button>
   </div>
   <div id="fit-content">
@@ -1186,7 +1186,7 @@ a:hover { text-decoration: underline; }
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
       <button class="btn btn-ghost btn-sm" onclick="exportFullReport()">📄 Export Full Report</button>
-      <button class="btn btn-ghost btn-sm" id="export-session-btn-top" onclick="exportPracticeFeedback()" style="display:none;">⬇ Export This Session</button>
+      <button class="btn btn-ghost btn-sm" id="export-session-btn-top" onclick="exportPracticeFeedback()" style="display:none;">⬇ Export Session PDF</button>
       <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);">🗑 Clear All Data</button>
     </div>
 
@@ -1238,7 +1238,7 @@ a:hover { text-decoration: underline; }
       <div id="feedback-content"></div>
     </div>
     <div id="export-feedback-row" style="display:none;margin-top:-8px;margin-bottom:16px;">
-      <button class="btn btn-ghost btn-sm" onclick="exportPracticeFeedback()">⬇ Export This Session</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportPracticeFeedback()">⬇ Export Session PDF</button>
       <span style="font-size:0.74rem;color:var(--subtle);margin-left:10px;">Or use <strong>Export Full Report</strong> at the top to download all saved sessions (up to 20).</span>
     </div>
   </div>
@@ -2742,45 +2742,107 @@ function exportCheatSheet() {
   const s = getState();
   const interviewers = s.interviewers || [];
   if (!interviewers.length) { alert('No interviewer profiles to export yet.'); return; }
-  const company = s.company || 'Interview';
-  const role = s.role || '';
-  const date = s.date || '';
-  let out = `INTERVIEWER PROFILES\n`;
-  out += `${company}${role ? ' — ' + role : ''}${date ? ' — ' + date : ''}\n`;
-  out += `${'='.repeat(60)}\n\n`;
-  interviewers.forEach(iv => {
-    out += `${iv.name.toUpperCase()}\n`;
-    if (iv.title) out += `${iv.title}\n`;
-    if (iv.time) out += `${iv.time}\n`;
-    out += `${'-'.repeat(40)}\n`;
-    if (iv.background) out += `BACKGROUND\n${iv.background}\n\n`;
-    if (iv.wants) out += `WHAT THEY WANT TO SEE\n${iv.wants}\n\n`;
-    if (iv.angle) out += `YOUR ANGLE & WATCH-FORS\n${iv.angle}\n\n`;
-    if (iv.questions && iv.questions.length) {
-      out += `QUESTIONS THEY MAY ASK\n`;
-      iv.questions.forEach((q, i) => out += `${i+1}. ${q}\n`);
-      out += '\n';
+  const company = esc(s.company || 'Interview');
+  const role = esc(s.role || '');
+  const dateStr = s.date ? new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }) : '';
+
+  const cards = interviewers.map((iv, idx) => `
+    <div class="iv-card" style="page-break-after:${idx < interviewers.length - 1 ? 'always' : 'avoid'};">
+      <div class="iv-accent" style="background:${iv.color};"></div>
+      <div class="iv-name">${esc(iv.name)}</div>
+      <div class="iv-title" style="color:${iv.color};">${esc(iv.title)}${iv.time ? ' &nbsp;·&nbsp; ' + esc(iv.time) : ''}</div>
+      ${iv.background ? `<div class="iv-section"><div class="iv-label">Background</div><div class="iv-body">${esc(iv.background)}</div></div>` : ''}
+      ${iv.wants ? `<div class="iv-section"><div class="iv-label">What They Want to See</div><div class="iv-body">${esc(iv.wants)}</div></div>` : ''}
+      ${iv.angle ? `<div class="iv-angle"><div class="iv-angle-label">⚡ Your Angle &amp; Watch-Fors</div><div class="iv-body">${esc(iv.angle)}</div></div>` : ''}
+      ${iv.questions && iv.questions.length ? `
+        <div class="iv-section">
+          <div class="iv-label">Questions They May Ask</div>
+          ${iv.questions.map((q, i) => `<div class="iv-q">${i+1}. ${esc(q)}</div>`).join('')}
+        </div>` : ''}
+    </div>
+  `).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>${company} — Interviewer Profiles</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: #1a1a2e; background: #fff; padding: 32px; font-size: 13px; }
+    .header { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #e0e4ea; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 1.7rem; margin-bottom: 4px; }
+    .header .sub { font-size: 0.8rem; color: #888; margin-top: 4px; }
+    .iv-card { position: relative; background: #fff; border: 1px solid #d6dae0; border-radius: 10px; padding: 24px 24px 20px; margin-bottom: 32px; overflow: hidden; }
+    .iv-accent { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .iv-name { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin: 8px 0 2px; }
+    .iv-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 18px; }
+    .iv-section { margin-bottom: 14px; }
+    .iv-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #888; margin-bottom: 5px; }
+    .iv-body { font-size: 0.82rem; line-height: 1.65; color: #2a2a3e; white-space: pre-wrap; }
+    .iv-angle { background: #f0fafa; border: 1px solid #a0cfcf; border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; }
+    .iv-angle-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #1a8585; margin-bottom: 5px; }
+    .iv-q { font-size: 0.82rem; line-height: 1.6; color: #2a2a3e; padding: 5px 0; border-bottom: 1px solid #f0f2f5; }
+    .iv-q:last-child { border-bottom: none; }
+    @media print {
+      body { padding: 0; }
+      .iv-card { border: 1px solid #ccc; box-shadow: none; }
     }
-    out += `${'='.repeat(60)}\n\n`;
-  });
-  const fname = (company.replace(/\s+/g, '_') + '_interviewer_profiles.txt').toLowerCase();
-  downloadText(fname, out);
+  </style>
+  </head><body onload="window.print()">
+  <div class="header">
+    <h1>${company}${role ? ' — ' + role : ''}</h1>
+    ${dateStr ? '<div class="sub">' + dateStr + '</div>' : ''}
+    <div class="sub">Interviewer Profiles &nbsp;·&nbsp; Exported ${new Date().toLocaleDateString()}</div>
+  </div>
+  ${cards}
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
 function exportFitAnalysis() {
   const el = document.getElementById('fit-content');
   if (!el || el.querySelector('.empty-state')) { alert('Run the fit analysis first.'); return; }
   const s = getState();
-  const company = s.company || 'Interview';
-  const role = s.role || '';
-  // Extract text content from the rendered fit analysis
-  let out = `FIT ANALYSIS\n`;
-  out += `${company}${role ? ' — ' + role : ''}\n`;
-  out += `Generated: ${new Date().toLocaleDateString()}\n`;
-  out += `${'='.repeat(60)}\n\n`;
-  out += el.innerText || el.textContent;
-  const fname = (company.replace(/\s+/g, '_') + '_fit_analysis.txt').toLowerCase();
-  downloadText(fname, out.replace(/\n{3,}/g, '\n\n'));
+  const company = esc(s.company || 'Interview');
+  const role = esc(s.role || '');
+  const bodyHTML = el.innerHTML;
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>${company} — Fit Analysis</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: #1a1a2e; background: #fff; padding: 32px; font-size: 13px; }
+    .header { margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid #e0e4ea; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 1.7rem; margin-bottom: 4px; }
+    .header .sub { font-size: 0.8rem; color: #888; margin-top: 4px; }
+    h2, h3 { font-family: 'DM Serif Display', serif; margin: 20px 0 8px; }
+    p { line-height: 1.65; margin-bottom: 10px; font-size: 0.85rem; color: #2a2a3e; }
+    ul, ol { padding-left: 20px; margin-bottom: 12px; }
+    li { line-height: 1.65; font-size: 0.85rem; color: #2a2a3e; margin-bottom: 4px; }
+    .card { border: 1px solid #d6dae0; border-radius: 8px; padding: 18px 20px; margin-bottom: 18px; position: relative; }
+    .card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #1a8585; border-radius: 8px 8px 0 0; }
+    .section-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #1a8585; margin-bottom: 8px; }
+    .badge-green { background: #edf7ed; color: #2a6a2a; border: 1px solid #b8d8b8; border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; font-weight: 600; display: inline-block; margin: 2px; }
+    .badge-gold { background: #f0fafa; color: #0d5050; border: 1px solid #a0cfcf; border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; font-weight: 600; display: inline-block; margin: 2px; }
+    .alert { border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; }
+    .alert-info { background: #eef4fb; border: 1px solid #b8d0e8; color: #1c4a6e; }
+    .alert-success { background: #edf7ed; border: 1px solid #b8d8b8; color: #1a4a1a; }
+    .alert-warn { background: #f0fafa; border: 1px solid #a0cfcf; color: #0a4545; }
+    .alert-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
+    @media print { body { padding: 0; } }
+  </style>
+  </head><body onload="window.print()">
+  <div class="header">
+    <h1>${company}${role ? ' — ' + role : ''}</h1>
+    <div class="sub">Fit Analysis &nbsp;·&nbsp; Generated ${new Date().toLocaleDateString()}</div>
+  </div>
+  ${bodyHTML}
+  </body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
 // Called from renderAIFeedback / renderBuiltInFeedback via show of export row
@@ -2917,19 +2979,56 @@ function exportPracticeFeedback() {
   const el = document.getElementById('feedback-content');
   if (!el) return;
   const s = getState();
-  const company = s.company || 'Interview';
-  const ivName = simIV ? simIV.name : 'Interviewer';
-  const question = (simIV && simIV.questions) ? simIV.questions[simQIdx] : '';
-  let out = `INTERVIEW PRACTICE FEEDBACK\n`;
-  out += `${company} — ${ivName}\n`;
-  out += `Question: ${question}\n`;
-  out += `Recorded: ${new Date().toLocaleString()}\n`;
-  out += `${'='.repeat(60)}\n\n`;
-  out += `YOUR ANSWER\n${simTranscript}\n\n`;
-  out += `${'='.repeat(60)}\n\n`;
-  out += el.innerText || el.textContent;
-  const fname = (ivName.split(' ')[0] + '_feedback_' + Date.now() + '.txt').toLowerCase();
-  downloadText(fname, out.replace(/\n{3,}/g, '\n\n'));
+  const company = esc(s.company || 'Interview');
+  const ivName = esc(simIV ? simIV.name : 'Interviewer');
+  const ivTitle = esc(simIV ? (simIV.title || '') : '');
+  const question = esc((simIV && simIV.questions) ? simIV.questions[simQIdx] : '');
+  const answer = esc(simTranscript || '');
+  const feedbackHTML = el.innerHTML;
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>Practice Feedback — ${ivName}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: #1a1a2e; background: #fff; padding: 32px; font-size: 13px; }
+    .header { margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid #e0e4ea; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 1.7rem; margin-bottom: 4px; }
+    .header .sub { font-size: 0.8rem; color: #888; margin-top: 4px; }
+    .question-block { background: #f7f9fc; border: 1px solid #d6dae0; border-left: 4px solid #1a8585; border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; }
+    .question-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #1a8585; margin-bottom: 6px; }
+    .question-text { font-family: 'DM Serif Display', serif; font-size: 1rem; color: #1a1a2e; }
+    .answer-block { background: #f0f2f5; border: 1px solid #d6dae0; border-radius: 6px; padding: 14px 16px; margin-bottom: 20px; }
+    .answer-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #888; margin-bottom: 6px; }
+    .answer-text { font-size: 0.85rem; line-height: 1.65; color: #2a2a3e; white-space: pre-wrap; }
+    h2, h3 { font-family: 'DM Serif Display', serif; margin: 20px 0 8px; }
+    p { line-height: 1.65; margin-bottom: 10px; font-size: 0.85rem; color: #2a2a3e; }
+    ul, ol { padding-left: 20px; margin-bottom: 12px; }
+    li { line-height: 1.65; font-size: 0.85rem; color: #2a2a3e; margin-bottom: 4px; }
+    .card { border: 1px solid #d6dae0; border-radius: 8px; padding: 18px 20px; margin-bottom: 18px; position: relative; }
+    .card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #1a8585; border-radius: 8px 8px 0 0; }
+    .section-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #1a8585; margin-bottom: 8px; }
+    .alert { border-radius: 7px; padding: 12px 14px; margin-bottom: 14px; }
+    .alert-info { background: #eef4fb; border: 1px solid #b8d0e8; color: #1c4a6e; }
+    .alert-success { background: #edf7ed; border: 1px solid #b8d8b8; color: #1a4a1a; }
+    .alert-warn { background: #f0fafa; border: 1px solid #a0cfcf; color: #0a4545; }
+    .alert-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px; }
+    @media print { body { padding: 0; } }
+  </style>
+  </head><body onload="window.print()">
+  <div class="header">
+    <h1>Practice Feedback</h1>
+    <div class="sub">${company} &nbsp;·&nbsp; ${ivName}${ivTitle ? ' — ' + ivTitle : ''} &nbsp;·&nbsp; ${new Date().toLocaleString()}</div>
+  </div>
+  <div class="question-block">
+    <div class="question-label">Question</div>
+    <div class="question-text">${question}</div>
+  </div>
+  ${answer ? `<div class="answer-block"><div class="answer-label">Your Answer</div><div class="answer-text">${answer}</div></div>` : ''}
+  <div style="margin-top:4px;">${feedbackHTML}</div>
+  </body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
 // ===================================================================
