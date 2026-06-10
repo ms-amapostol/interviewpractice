@@ -728,6 +728,9 @@ a:hover { text-decoration: underline; }
       <p style="font-size:0.72rem;color:var(--subtle);text-align:center;margin-top:10px;">
         This message won't show again on this device.
       </p>
+      <p style="font-size:0.68rem;color:var(--subtle);text-align:center;margin-top:10px;line-height:1.6;border-top:1px solid var(--border);padding-top:10px;">
+        This tool is provided for informational and support purposes only. The creator makes no guarantees regarding outcomes and is not responsible for the content provided or decisions made based on it. Proceed at your own discretion.
+      </p>
     </div>
   </div>
 </div>
@@ -1080,6 +1083,10 @@ a:hover { text-decoration: underline; }
       </div>
     </div>
     <div id="import-status" style="font-size:0.76rem;color:var(--muted);margin-top:10px;"></div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);">🗑 Clear All Stored Data</button>
+      <span style="font-size:0.74rem;color:var(--subtle);margin-left:10px;">Removes everything from this browser — interviewers, resume, JD, settings, and practice history.</span>
+    </div>
   </div>
 
   <!-- Persistent footer — visible on all Interview Setup sub-tabs -->
@@ -1103,9 +1110,10 @@ a:hover { text-decoration: underline; }
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">Your interviewer profiles live here — one card per person. Each card shows their role, what they care about, your strategic angle, and the questions they're likely to ask. Use this as your cheat sheet the morning of the interview. Click <strong>Export Profiles</strong> to download a printable text version you can review offline. To add or edit interviewers, go to <strong>Interview Setup → Interviewers</strong>.</p>
   </div>
   <div id="cheatsheet-header" style="margin-bottom:20px;"></div>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
     <div id="cheatsheet-tabs" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;"></div>
     <button class="btn btn-ghost btn-sm" onclick="exportCheatSheet()" title="Download as text file">⬇ Export Profiles</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);" title="Clear all stored data">🗑 Clear All Data</button>
   </div>
   <div id="cheatsheet-content"></div>
 </div>
@@ -1119,8 +1127,9 @@ a:hover { text-decoration: underline; }
     <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">About This Analysis</div>
     <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">This tab compares your resume against the job description to surface where you're a strong fit, where there are gaps, and which keywords to emphasize in your answers. To generate an analysis, make sure you've added both your resume and the job description in <strong>Interview Setup → My Documents</strong>, then use the button below. If you have an API key, the analysis will be AI-powered and more nuanced. Without one, you'll get a keyword-based comparison.</p>
   </div>
-  <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
     <button class="btn btn-ghost btn-sm" onclick="exportFitAnalysis()" title="Download fit analysis as text">⬇ Export Analysis</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);" title="Clear all stored data">🗑 Clear All Data</button>
   </div>
   <div id="fit-content">
     <div class="empty-state">
@@ -1164,6 +1173,12 @@ a:hover { text-decoration: underline; }
         Voice recording uses your browser's built-in speech recognition — it works best in <strong>Chrome or Edge</strong>. Firefox and Safari have limited support. You can also type your answer directly in the transcript box if you prefer.<br><br>
         <strong>Practice sessions are saved locally, up to 20 most recent.</strong> Once you hit 20, the oldest session is removed to make room for the new one. Export your Full Report regularly to preserve a complete record of your practice.
       </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="exportFullReport()">📄 Export Full Report</button>
+      <button class="btn btn-ghost btn-sm" id="export-session-btn-top" onclick="exportPracticeFeedback()" style="display:none;">⬇ Export This Session</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearAllData()" style="color:var(--red);border-color:var(--red);">🗑 Clear All Data</button>
     </div>
 
     <div class="section-label blue">Interview Simulator</div>
@@ -1219,6 +1234,13 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
 </div>
+
+  <!-- Global footer — visible on all tabs -->
+  <div style="margin-top:32px;padding:16px 0;border-top:1px solid var(--border);text-align:center;">
+    <p style="font-size:0.68rem;color:var(--subtle);line-height:1.7;max-width:640px;margin:0 auto;">
+      This tool is provided for informational and support purposes only. The creator makes no guarantees regarding outcomes and is not responsible for the content provided or decisions made based on it. Proceed at your own discretion.
+    </p>
+  </div>
 
 </div><!-- end main -->
 
@@ -2530,12 +2552,16 @@ function resetAndRetry() {
   document.getElementById('feedback-card').classList.remove('visible');
   const row = document.getElementById('export-feedback-row');
   if (row) row.style.display = 'none';
+  const topBtn = document.getElementById('export-session-btn-top');
+  if (topBtn) topBtn.style.display = 'none';
 }
 function nextAndReset() {
   nextQ();
   document.getElementById('feedback-card').classList.remove('visible');
   const row = document.getElementById('export-feedback-row');
   if (row) row.style.display = 'none';
+  const topBtn = document.getElementById('export-session-btn-top');
+  if (topBtn) topBtn.style.display = 'none';
 }
 
 // ===================================================================
@@ -2730,6 +2756,8 @@ function exportFitAnalysis() {
 function showFeedbackExport() {
   const row = document.getElementById('export-feedback-row');
   if (row) row.style.display = 'block';
+  const topBtn = document.getElementById('export-session-btn-top');
+  if (topBtn) topBtn.style.display = 'inline-flex';
 }
 
 function exportFullReport() {
