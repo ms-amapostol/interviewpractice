@@ -1,0 +1,2900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --border: #d6dae0;
+  --text: #1c1c2e;
+  --muted: #666680;
+  --subtle: #aaa8b8;
+  --gold: #1a8585;
+  --gold-light: #f0fafa;
+  --gold-border: #a0cfcf;
+  --blue: #2e6ea6;
+  --blue-light: #f0f6fc;
+  --blue-border: #b8d4f0;
+  --red: #c94c4c;
+  --red-light: #fff5f5;
+  --green: #2a7a2a;
+  --green-light: #edfaed;
+  --green-border: #b8ddb8;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+}
+
+h1, h2, h3, .serif { font-family: 'DM Serif Display', serif; }
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ========== HEADER ========== */
+.app-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px 0;
+}
+.app-header-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.app-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.45rem;
+  color: var(--text);
+  line-height: 1;
+}
+.app-subtitle {
+  font-size: 0.72rem;
+  color: var(--subtle);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* ========== TAB NAV ========== */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 9px 18px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.tab-btn:hover { color: var(--gold); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-btn.sim-btn:hover { color: var(--blue); }
+.tab-btn.sim-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ========== MAIN CONTENT ========== */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ========== SECTION LABELS ========== */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.section-label.blue { color: var(--blue); }
+
+/* ========== CARDS ========== */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); }
+.card-accent.blue { background: var(--blue); }
+
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.card-subtitle {
+  font-size: 0.7rem;
+  color: var(--gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+/* ========== FORM ELEMENTS ========== */
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--gold); }
+.form-textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+.form-input[type="password"] { font-family: monospace; }
+
+.file-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg);
+}
+.file-upload-area:hover { border-color: var(--gold); background: var(--gold-light); }
+.file-upload-area.has-file { border-color: var(--green); background: var(--green-light); border-style: solid; }
+.file-upload-area input[type="file"] { display: none; }
+.upload-icon { font-size: 1.6rem; margin-bottom: 8px; }
+.upload-text { font-size: 0.8rem; color: var(--muted); }
+.upload-filename { font-size: 0.8rem; color: var(--green); font-weight: 600; margin-top: 6px; }
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  text-align: center;
+  justify-content: center;
+}
+.btn-gold { background: var(--gold); color: #fff; }
+.btn-gold:hover { background: #156a6a; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #245a8a; }
+.btn-ghost {
+  background: var(--white);
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+.btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #ddb8b8; }
+.btn-danger:hover { background: #fde8e8; }
+.btn-sm { padding: 6px 12px; font-size: 0.74rem; }
+.btn-full { width: 100%; }
+
+/* ========== BADGES ========== */
+.badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.badge-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+.badge-gold { background: var(--gold-light); color: #0d5050; border: 1px solid var(--gold-border); }
+.badge-blue { background: var(--blue-light); color: #1c4a6e; border: 1px solid var(--blue-border); }
+
+/* ========== GRID ========== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ========== ALERTS ========== */
+.alert {
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+.alert-info { background: var(--blue-light); border: 1px solid var(--blue-border); color: #1c4a6e; }
+.alert-warn { background: var(--gold-light); border: 1px solid var(--gold-border); color: #0a4545; }
+.alert-success { background: var(--green-light); border: 1px solid var(--green-border); color: #1a4a1a; }
+.alert-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+/* ========== DIVIDER ========== */
+.divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* ========== STATUS INDICATOR ========== */
+.status-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.dot-green { background: var(--green); }
+.dot-red { background: var(--red); }
+.dot-gray { background: var(--subtle); }
+
+/* ========== CHEAT SHEET CARDS ========== */
+.cs-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.cs-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent-color, var(--gold));
+}
+.cs-row { margin-bottom: 14px; }
+.cs-row-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+  margin-bottom: 5px;
+}
+.cs-row-body { font-size: 0.82rem; line-height: 1.6; color: #444458; }
+.cs-watchfor {
+  background: var(--red-light);
+  border-left: 3px solid var(--red);
+  padding: 8px 12px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.78rem;
+  color: #8a2020;
+  line-height: 1.5;
+  margin-top: 12px;
+}
+.cs-watchfor-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.cs-questions {
+  background: var(--blue-light);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.cs-q-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.cs-q-item {
+  font-size: 0.78rem;
+  color: #2a5a88;
+  line-height: 1.52;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--blue-border);
+}
+.cs-q-item:last-child { border-bottom: none; }
+.cs-q-item::before { content: 'Q: '; color: var(--blue); font-weight: 700; font-size: 0.68rem; }
+
+/* ========== PRACTICE / SIMULATOR ========== */
+.sim-select {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.sim-select:focus { border-color: var(--blue); }
+
+.question-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  display: none;
+}
+.question-card.visible { display: block; }
+.q-who {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.q-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+.q-nav { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.q-nav-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 5px 12px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.q-nav-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+.recorder-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+  display: none;
+}
+.recorder-card.visible { display: block; }
+
+.record-btn {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--red);
+  background: var(--red-light);
+  color: var(--red);
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+.record-btn.recording {
+  background: var(--red);
+  color: #fff;
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(201,76,76,0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(201,76,76,0); }
+  100% { box-shadow: 0 0 0 0 rgba(201,76,76,0); }
+}
+.record-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 14px; }
+.transcript-box:empty::before {
+  content: attr(data-placeholder);
+  color: var(--subtle);
+  font-style: italic;
+  pointer-events: none;
+}
+.transcript-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  min-height: 90px;
+  font-size: 0.84rem;
+  color: var(--subtle);
+  line-height: 1.6;
+  text-align: left;
+  margin-bottom: 16px;
+}
+.transcript-box.has-text { color: var(--text); }
+
+.feedback-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  display: none;
+}
+.feedback-card.visible { display: block; }
+.feedback-loading { text-align: center; color: var(--muted); font-size: 0.84rem; padding: 24px; }
+
+.scores-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+.score-card {
+  flex: 1;
+  min-width: 130px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+.score-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--subtle); margin-bottom: 8px; }
+.score-num { font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1; margin-bottom: 4px; }
+.score-sub { font-size: 0.68rem; color: var(--subtle); }
+.score-high { color: var(--green); }
+.score-mid { color: var(--gold); }
+.score-low { color: var(--red); }
+
+.verdict {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.verdict-yes { background: var(--green-light); border: 1px solid var(--green-border); color: #1a5a1a; }
+.verdict-lean { background: var(--gold-light); border: 1px solid var(--gold-border); color: #0a4545; }
+.verdict-no { background: var(--red-light); border: 1px solid #ddb8b8; color: #7a1a1a; }
+
+.feedback-section { margin-bottom: 14px; }
+.feedback-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+  margin-bottom: 5px;
+}
+.feedback-text { font-size: 0.84rem; line-height: 1.62; color: #444458; }
+
+.one-thing-box {
+  background: #f0fafa;
+  border: 1px solid #a0cfcf;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.coaching-box {
+  background: var(--blue-light);
+  border: 1px solid var(--blue-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.coaching-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+.coaching-sub-label { font-size: 0.7rem; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+.coaching-body { font-size: 0.82rem; line-height: 1.58; color: #1c4a6e; margin-bottom: 12px; }
+.sample-box {
+  background: #e8f2fc;
+  border-left: 3px solid var(--blue);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 14px;
+}
+.sample-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 6px; }
+.sample-text { font-size: 0.82rem; line-height: 1.62; color: #1c3a5a; font-style: italic; }
+
+/* ========== FIT ANALYSIS ========== */
+.fit-meter {
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+.fit-meter-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--gold);
+  transition: width 0.6s ease;
+}
+.ats-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin: 3px 3px 3px 0;
+}
+.ats-match { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+.ats-missing { background: var(--red-light); color: var(--red); border: 1px solid #ddb8b8; }
+
+/* ========== INTERVIEWER PROFILE BUILDER ========== */
+.profile-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.profile-color-strip {
+  width: 4px;
+  border-radius: 2px;
+  min-height: 40px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-weight: 600; font-size: 0.9rem; }
+.profile-title { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+.profile-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ========== SETTINGS NAV ========== */
+.settings-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+  margin-bottom: 0;
+}
+.settings-nav-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  margin-right: 6px;
+  padding-right: 14px;
+  border-right: 1px solid var(--border);
+}
+.settings-nav-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.settings-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+.settings-nav-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+
+/* ========== EMPTY STATES ========== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--subtle);
+}
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 14px; }
+.empty-state-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--muted); margin-bottom: 8px; }
+.empty-state-body { font-size: 0.84rem; line-height: 1.6; max-width: 380px; margin: 0 auto 20px; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 680px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .scores-row { flex-direction: column; }
+  .app-header-top { flex-wrap: wrap; }
+  .main { padding: 20px 14px 60px; }
+}
+
+/* ========== SCHEDULE ========== */
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+.schedule-time {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  white-space: nowrap;
+  min-width: 60px;
+}
+.schedule-name { font-weight: 600; font-size: 0.85rem; }
+.schedule-role { font-size: 0.74rem; color: var(--muted); }
+
+/* spinner */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     WELCOME MODAL
+     ================================================================ -->
+<div id="welcome-overlay" style="
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(15,20,30,0.72);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  backdrop-filter:blur(3px);
+">
+  <div style="
+    background:#fff;border-radius:16px;max-width:520px;width:100%;
+    box-shadow:0 24px 60px rgba(0,0,0,0.28);
+    overflow:hidden;
+  ">
+    <!-- Teal header band -->
+    <div style="background:var(--gold);padding:28px 32px 20px;text-align:center;">
+      <!-- Photo -->
+      <div style="
+        width:90px;height:90px;border-radius:50%;
+        background:#fff;
+        border:3px solid rgba(255,255,255,0.6);
+        margin:0 auto 14px;
+        overflow:hidden;
+        display:flex;align-items:center;justify-content:center;
+      ">
+        <!-- PHOTO PLACEHOLDER — replace src with base64 or URL -->
+        <img id="welcome-photo" src="data:image/jpeg;base64,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" alt="Anastasia"
+          style="width:100%;height:100%;object-fit:cover;display:none;"
+          onerror="this.style.display='none'">
+        <span id="welcome-photo-fallback" style="font-size:2rem;">👩</span>
+      </div>
+      <div style="color:#fff;font-size:1.15rem;font-weight:700;letter-spacing:0.01em;">Hi, I'm Anastasia!</div>
+      <div style="color:rgba(255,255,255,0.82);font-size:0.8rem;margin-top:3px;">EdTech Professional and Career Advocate</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:24px 32px 28px;">
+      <p style="font-size:0.9rem;line-height:1.72;color:#2a2a3e;margin-bottom:14px;">
+        I've spent my whole career supporting learners pursue their dreams, and I often wish I could be a personal resource to them, to help them achieve their next step.
+      </p>
+      <p style="font-size:0.9rem;line-height:1.72;color:#2a2a3e;margin-bottom:14px;">
+        This <strong>free Interview Practice tool</strong> is my way of being in your corner — even if I can't be there in person. This is built on everything I've learned over a decade of working alongside students and institutions; I hope you find it helpful!
+      </p>
+      <p style="font-size:0.9rem;line-height:1.72;color:#2a2a3e;margin-bottom:22px;">
+        If you have any comments or feedback — I invite you to reach out to me on <a href="https://www.linkedin.com/in/aapostol1211/" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">LinkedIn</a> and send me a message, so I can learn from you too. Thanks for letting me be a small part of your success journey. 🙌
+      </p>
+      <button onclick="dismissWelcome()" style="
+        width:100%;padding:13px;border-radius:8px;border:none;cursor:pointer;
+        background:var(--gold);color:#fff;font-size:0.92rem;font-weight:700;
+        letter-spacing:0.02em;transition:background 0.15s;
+      " onmouseover="this.style.background='#156a6a'" onmouseout="this.style.background='var(--gold)'">
+        Let's get started →
+      </button>
+      <p style="font-size:0.72rem;color:var(--subtle);text-align:center;margin-top:10px;">
+        This message won't show again on this device.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- App header -->
+<div class="app-header">
+  <div class="app-header-top">
+    <div>
+      <div class="app-title">Interview Practice</div>
+      <div class="app-subtitle">Prep smarter. Walk in ready.</div>
+    </div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('settings')">📝 Interview Setup</button>
+    <button class="tab-btn" onclick="showTab('cheatsheet')">👥 Interviewer Profiles</button>
+    <button class="tab-btn" onclick="showTab('fitanalysis')">🎯 Fit Analysis</button>
+    <button class="tab-btn sim-btn" onclick="showTab('practice')">🎙 Practice</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ================================================================
+     SETTINGS VIEW
+     ================================================================ -->
+<div class="view active" id="view-settings">
+
+  <!-- How to Use This App -->
+  <div class="alert alert-info" style="margin-bottom:20px;">
+    <div class="alert-label">How to use this app</div>
+    Start here in <strong>Interview Setup</strong>: fill in your interview details, add interviewer profiles, upload your resume and job description, and optionally add an AI API key for personalized feedback. Then use <strong>Interviewer Profiles</strong> as your quick-reference cheat sheet during prep, <strong>Fit Analysis</strong> to understand your positioning and ATS alignment, and <strong>Practice</strong> to rehearse with real-time coaching.
+  </div>
+
+  <!-- Connected: Setup Steps nav + content sections -->
+  <div style="border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:20px;background:var(--white);">
+
+  <div class="settings-nav">
+    <span class="settings-nav-label">Setup Steps</span>
+    <button class="settings-nav-btn active" onclick="showSettings('setup')">Interview Details</button>
+    <button class="settings-nav-btn" onclick="showSettings('interviewers')">Interviewers</button>
+    <button class="settings-nav-btn" onclick="showSettings('documents')">My Documents</button>
+    <button class="settings-nav-btn" onclick="showSettings('api')">AI & API</button>
+    <button class="settings-nav-btn" onclick="showSettings('privacy')">Privacy</button>
+  </div>
+
+  <div style="padding:20px 20px 24px;">
+
+  <!-- SETUP -->
+  <div class="settings-section" id="settings-setup">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">Interview Details</div>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="form-group">
+          <label class="form-label">Company / Organization</label>
+          <input class="form-input" id="s-company" type="text" placeholder="e.g. Acme Corp" oninput="autosave()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Position</label>
+          <input class="form-input" id="s-role" type="text" placeholder="e.g. Senior Product Manager" oninput="autosave()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Interview Date</label>
+          <input class="form-input" id="s-date" type="date" oninput="autosave()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Format</label>
+          <select class="form-select" id="s-format" onchange="autosave()">
+            <option value="single">Single interview</option>
+            <option value="panel">Panel / multiple rounds</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="schedule-card" style="display:none;">
+      <div class="card-accent"></div>
+      <div class="section-label">Schedule</div>
+      <div id="schedule-list" style="margin-top:8px;"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addScheduleRow()" style="margin-top:8px;">+ Add time slot</button>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
+      <button class="btn btn-gold btn-sm" onclick="saveInterviewDetails()">Save Details</button>
+      <span id="details-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+    </div>
+
+  </div>
+
+  <!-- INTERVIEWERS -->
+  <div class="settings-section" id="settings-interviewers" style="display:none;">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">Add Interviewer Profile</div>
+
+      <!-- STEP 1: User fills in -->
+      <div style="margin:16px 0 0;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="background:var(--gold);color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;padding:3px 10px;border-radius:12px;white-space:nowrap;">Step 1 — You fill this in</div>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">Add their basic info, then upload or paste their LinkedIn profile, bio, or any background notes you have on them.</p>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input class="form-input" id="iv-name" type="text" placeholder="First Last">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Title / Role</label>
+            <input class="form-input" id="iv-title" type="text" placeholder="e.g. VP of Engineering">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Interview Time (optional)</label>
+            <input class="form-input" id="iv-time" type="text" placeholder="e.g. 1:00 PM">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Card Color</label>
+            <select class="form-select" id="iv-color">
+              <option value="#1a8585">Teal</option>
+              <option value="#2e6ea6">Blue</option>
+              <option value="#2a8a5a">Green</option>
+              <option value="#c94c4c">Red</option>
+              <option value="#6666cc">Purple</option>
+              <option value="#2a8a8a">Teal</option>
+              <option value="#7a50cc">Violet</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Upload their profile (PDF or DOCX) — or paste below</label>
+          <div class="file-upload-area" id="iv-upload-area" onclick="document.getElementById('iv-file').click()">
+            <input type="file" id="iv-file" accept=".pdf,.docx,.doc,.txt" onchange="handleProfileFile(event)">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">Click to upload PDF, DOCX, or TXT</div>
+            <div class="upload-filename" id="iv-filename" style="display:none;"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Background / Bio</label>
+          <textarea class="form-textarea" id="iv-background" placeholder="Paste their LinkedIn bio, an intro email, or any notes about this person — career history, current role, what they care about, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 2: Generate with AI (bridge) -->
+      <div style="margin:20px 0;padding:16px;background:var(--gold-light);border:1px solid var(--gold-border);border-radius:var(--radius-sm);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="background:var(--gold);color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;padding:3px 10px;border-radius:12px;white-space:nowrap;">Step 2 — Generate the analysis</div>
+          <div style="flex:1;height:1px;background:var(--gold-border);"></div>
+        </div>
+        <p style="font-size:0.8rem;color:#0a4545;line-height:1.6;margin-bottom:14px;">
+          Choose how to fill in Step 3. Both options work — pick whichever fits your setup.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+          <div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--gold-border);border-radius:var(--radius-sm);padding:12px;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:6px;">✨ AI-Powered</div>
+            <p style="font-size:0.76rem;color:#0a4545;line-height:1.55;margin-bottom:10px;">Personalized to their specific background and your role. Requires an API key (set up in AI &amp; API tab).</p>
+            <button class="btn btn-gold btn-sm" onclick="generateProfileWithAI()">✨ Generate with AI</button>
+          </div>
+          <div style="flex:1;min-width:200px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:6px;">⚡ Instant — No AI needed</div>
+            <p style="font-size:0.76rem;color:var(--muted);line-height:1.55;margin-bottom:10px;">Generates questions and coaching based on their title and seniority level. Works without any API key.</p>
+            <button class="btn btn-blue btn-sm" onclick="generateFromRole()">⚡ Generate from Role</button>
+          </div>
+        </div>
+        <div id="iv-ai-status" style="font-size:0.76rem;color:var(--muted);"></div>
+      </div>
+
+      <!-- STEP 3: AI-generated fields (always editable) -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="background:var(--blue);color:#fff;font-size:0.68rem;font-weight:700;letter-spacing:0.08em;padding:3px 10px;border-radius:12px;white-space:nowrap;">Step 3 — Review &amp; edit</div>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">These fields are auto-filled by AI if you ran Step 2 — but you can always write or edit them yourself. They power the Interviewer Profiles tab and the Practice simulator.</p>
+
+        <div class="form-group">
+          <label class="form-label">Questions they're likely to ask</label>
+          <textarea class="form-textarea" id="iv-questions" placeholder="One question per line — AI will generate these, or write your own based on their role and what you'd expect them to probe on." style="min-height:110px;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">What they want to see in a candidate</label>
+          <textarea class="form-textarea" id="iv-wants" placeholder="What matters most to this person? What lens are they using to evaluate you?" style="min-height:80px;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your angle &amp; watch-fors</label>
+          <textarea class="form-textarea" id="iv-angle" placeholder="How should you frame yourself with this specific person? Any landmines to avoid or dynamics to navigate?" style="min-height:80px;"></textarea>
+        </div>
+
+        <div id="iv-sources" style="display:none;margin-top:6px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);">
+          <span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);">Sources</span>
+          <div id="iv-sources-links" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-blue" onclick="saveInterviewer()">Save Interviewer</button>
+        <button class="btn btn-ghost" onclick="clearInterviewerForm()">Clear Form</button>
+        <span style="font-size:0.76rem;color:var(--subtle);">Saves to your browser and adds the card to the Interviewer Profiles tab.</span>
+      </div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <div class="section-label">Saved Interviewers</div>
+      <div id="interviewer-list"></div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div class="settings-section" id="settings-documents" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">Why we need these documents</div>
+      Your resume and the job description power two key features: the <strong>Fit Analysis</strong> tab, which scores how well your experience aligns with the role, and the <strong>Practice</strong> tab, which uses your background to generate more relevant, personalized feedback. Neither document leaves your device — they're stored locally in your browser and sent to the AI only when you explicitly run an analysis or request feedback.
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent"></div>
+      <div class="section-label">Your Resume</div>
+      <div class="file-upload-area" id="resume-upload-area" onclick="document.getElementById('resume-file').click()" style="margin:12px 0;">
+        <input type="file" id="resume-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'resume')">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
+        <div class="upload-filename" id="resume-filename" style="display:none;"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Or paste your resume text</label>
+        <textarea class="form-textarea" id="resume-text" placeholder="Paste your resume content here..." style="min-height:200px;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button class="btn btn-gold btn-sm" onclick="saveDoc('resume')">Save Resume</button>
+          <span id="resume-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">Job Description</div>
+      <div class="file-upload-area" id="jd-upload-area" onclick="document.getElementById('jd-file').click()" style="margin:12px 0;">
+        <input type="file" id="jd-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'jd')">
+        <div class="upload-icon">📋</div>
+        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
+        <div class="upload-filename" id="jd-filename" style="display:none;"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Or paste the job description</label>
+        <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:200px;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button class="btn btn-gold btn-sm" onclick="saveDoc('jd')">Save Job Description</button>
+          <span id="jd-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API -->
+  <div class="settings-section" id="settings-api" style="display:none;">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">AI Provider</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin:8px 0 4px;">An API key unlocks personalized, AI-driven feedback written in the voice of your specific interviewers. Without one, you still get structured coaching — including the STARR framework, question-type tips, and best-practice guidance — it's just not customized to the people in your interview loop.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px;">
+        <div style="flex:1;min-width:160px;padding:12px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:4px;">✓ Works without AI</div>
+          <div style="font-size:0.79rem;color:#444458;line-height:1.5;">Role-based question generation · Interviewer profiles · STARR coaching · Fit keyword check · All exports</div>
+        </div>
+        <div style="flex:1;min-width:160px;padding:12px;background:var(--gold-light);border:1px solid var(--gold-border);border-radius:8px;">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gold);margin-bottom:4px;">✨ Unlocked with AI</div>
+          <div style="font-size:0.79rem;color:#444458;line-height:1.5;">Persona-driven interview questions · Feedback in your interviewer's voice · Intelligent fit analysis · AI-generated answer coaching</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Provider</label>
+        <select class="form-select" id="ai-provider" onchange="onProviderChange()">
+          <option value="anthropic">Anthropic (Claude) — Recommended</option>
+          <option value="openai">OpenAI (ChatGPT)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="api-key-label">Anthropic API Key</label>
+        <div style="display:flex;gap:10px;">
+          <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-..." style="font-family:monospace;">
+          <button class="btn btn-gold" onclick="saveApiKey()">Save</button>
+        </div>
+        <div id="api-key-status" style="font-size:0.74rem;margin-top:6px;color:var(--muted);">Key stays in your browser only — never sent anywhere except the AI provider you choose.</div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:8px;">
+        <div class="alert-label">Where to get an API key</div>
+        <strong>Anthropic (Claude):</strong> <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys<br>
+        <strong>OpenAI (ChatGPT):</strong> <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY -->
+  <div class="settings-section" id="settings-privacy" style="display:none;">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">How Your Data Is Stored</div>
+      <div class="alert alert-success" style="margin:12px 0;">
+        <div class="alert-label">🔒 100% Local Storage</div>
+        Everything you enter in this app — your resume, the job description, interviewer profiles, and your API key — is stored exclusively in your browser's <strong>localStorage</strong>. It never touches any server. It never leaves your device.
+      </div>
+      <p style="font-size:0.84rem;line-height:1.7;color:#444458;margin-bottom:14px;">
+        <strong>What this means for you:</strong><br>
+        • Your data persists between sessions on the same browser and device<br>
+        • Clearing your browser data or switching browsers will clear the app<br>
+        • No account is needed and nothing is synced to any cloud<br>
+        • If you use an AI API key, your answer text is sent to the provider you chose (Anthropic or OpenAI) for feedback — that's the only time data leaves your device<br>
+        • Your API key is stored locally and sent only to the provider's API endpoint
+      </p>
+      <button class="btn btn-danger btn-sm" onclick="clearAllData()">Clear All Stored Data</button>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:8px;">
+      <div class="alert-label">Shared Computers</div>
+      If you're using a shared or public computer, click "Clear All Stored Data" when you're done to remove your information from this browser.
+    </div>
+
+  </div>
+
+  </div><!-- end settings content padding -->
+  </div><!-- end settings wrapper block -->
+
+  <!-- Your Interview Data — footer section -->
+  <div style="border-top:2px solid var(--border);padding-top:20px;margin-bottom:24px;">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Your Interview Data</div>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:16px;">Everything you enter here is stored in your browser — no account needed, nothing uploaded to any server. Use the options below to back up your work, move it to a different device, or export a polished report to review before your interview.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:160px;">
+        <button class="btn btn-ghost btn-sm btn-full" onclick="exportAllData()">💾 Save Progress</button>
+        <p style="font-size:0.74rem;color:var(--subtle);line-height:1.5;margin-top:6px;">Downloads a backup of everything — interviewers, resume, JD, and settings. Use this to continue on another device or browser, or just to keep a copy safe. Your API key is excluded for security.</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <label class="btn btn-ghost btn-sm btn-full" style="cursor:pointer;">
+          ⬆ Restore Backup
+          <input type="file" accept=".json" style="display:none;" onchange="importAllData(event)">
+        </label>
+        <p style="font-size:0.74rem;color:var(--subtle);line-height:1.5;margin-top:6px;">Upload a previously saved backup file to restore your full setup instantly. This will overwrite what's currently in the app, so save your progress first if needed.</p>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <button class="btn btn-gold btn-sm btn-full" onclick="exportFullReport()">📄 Export Full Report</button>
+        <p style="font-size:0.74rem;color:var(--subtle);line-height:1.5;margin-top:6px;">Generates a complete HTML report — interviewer profiles, fit analysis, and up to 20 of your most recent practice sessions. Open it in any browser, print to PDF, or save it to review the night before your interview.</p>
+      </div>
+    </div>
+    <div id="import-status" style="font-size:0.76rem;color:var(--muted);margin-top:10px;"></div>
+  </div>
+
+  <!-- Persistent footer — visible on all Interview Setup sub-tabs -->
+  <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);text-align:center;">
+    <p style="font-size:0.8rem;color:var(--subtle);line-height:1.8;">
+      Interested in supporting Anastasia? Check out her passion project built to serve early talent<br>
+      who need a hand figuring out their next career step:<br>
+      <a href="https://yournextstepai.com" target="_blank" style="color:var(--gold);font-weight:600;">yournextstepai.com</a>
+    </p>
+  </div>
+
+</div><!-- end settings view -->
+
+
+<!-- ================================================================
+     CHEAT SHEET VIEW
+     ================================================================ -->
+<div class="view" id="view-cheatsheet">
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;margin-bottom:20px;">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">How to Use This Tab</div>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">Your interviewer profiles live here — one card per person. Each card shows their role, what they care about, your strategic angle, and the questions they're likely to ask. Use this as your cheat sheet the morning of the interview. Click <strong>Export Profiles</strong> to download a printable text version you can review offline. To add or edit interviewers, go to <strong>Interview Setup → Interviewers</strong>.</p>
+  </div>
+  <div id="cheatsheet-header" style="margin-bottom:20px;"></div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+    <div id="cheatsheet-tabs" style="display:flex;gap:8px;flex-wrap:wrap;flex:1;"></div>
+    <button class="btn btn-ghost btn-sm" onclick="exportCheatSheet()" title="Download as text file">⬇ Export Profiles</button>
+  </div>
+  <div id="cheatsheet-content"></div>
+</div>
+
+
+<!-- ================================================================
+     FIT ANALYSIS VIEW
+     ================================================================ -->
+<div class="view" id="view-fitanalysis">
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;margin-bottom:20px;">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">About This Analysis</div>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">This tab compares your resume against the job description to surface where you're a strong fit, where there are gaps, and which keywords to emphasize in your answers. To generate an analysis, make sure you've added both your resume and the job description in <strong>Interview Setup → My Documents</strong>, then use the button below. If you have an API key, the analysis will be AI-powered and more nuanced. Without one, you'll get a keyword-based comparison.</p>
+  </div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+    <button class="btn btn-ghost btn-sm" onclick="exportFitAnalysis()" title="Download fit analysis as text">⬇ Export Analysis</button>
+  </div>
+  <div id="fit-content">
+    <div class="empty-state">
+      <div class="empty-state-icon">🎯</div>
+      <div class="empty-state-title">Add your resume &amp; JD first</div>
+      <div class="empty-state-body">Go to Settings → My Documents to paste or upload your resume and the job description. Then come back here for your personalized fit analysis.</div>
+      <button class="btn btn-gold" onclick="showTab('settings');showSettings('documents')">Go to Documents</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     PRACTICE VIEW
+     ================================================================ -->
+<div class="view" id="view-practice">
+  <div style="max-width:820px;">
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;margin-bottom:20px;">
+      <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">How the Practice Simulator Works</div>
+      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">This simulator lets you practice answering interview questions out loud, then get immediate feedback on your response. Here's how to use it:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:12px;">
+        <div style="padding:10px 12px;background:var(--blue-light);border-radius:8px;border:1px solid var(--blue-border);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:4px;">① Select</div>
+          <div style="font-size:0.78rem;color:#444458;line-height:1.5;">Pick an interviewer from your profile list, then choose a question they're likely to ask.</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--blue-light);border-radius:8px;border:1px solid var(--blue-border);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:4px;">② Record</div>
+          <div style="font-size:0.78rem;color:#444458;line-height:1.5;">Click the mic button and speak your answer. Your words will appear as you talk. Click again to stop.</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--blue-light);border-radius:8px;border:1px solid var(--blue-border);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:4px;">③ Feedback</div>
+          <div style="font-size:0.78rem;color:#444458;line-height:1.5;">Click "Get Feedback" to receive coaching. With an API key, feedback is persona-driven. Without one, you'll get STARR-based best-practice coaching.</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--blue-light);border-radius:8px;border:1px solid var(--blue-border);">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue);margin-bottom:4px;">④ Export</div>
+          <div style="font-size:0.78rem;color:#444458;line-height:1.5;">Export individual sessions, or capture everything with Export Full Report (available in the Interview Setup tab).</div>
+        </div>
+      </div>
+      <div class="alert alert-warn" style="margin-bottom:0;">
+        <div class="alert-label">Browser compatibility &amp; storage limit</div>
+        Voice recording uses your browser's built-in speech recognition — it works best in <strong>Chrome or Edge</strong>. Firefox and Safari have limited support. You can also type your answer directly in the transcript box if you prefer.<br><br>
+        <strong>Practice sessions are saved locally, up to 20 most recent.</strong> Once you hit 20, the oldest session is removed to make room for the new one. Export your Full Report regularly to preserve a complete record of your practice.
+      </div>
+    </div>
+
+    <div class="section-label blue">Interview Simulator</div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent blue"></div>
+      <div class="section-label blue">Select Interviewer &amp; Question</div>
+      <select class="sim-select" id="sim-interviewer-select" onchange="onSimInterviewerChange()">
+        <option value="">— Select an interviewer —</option>
+      </select>
+      <div id="sim-api-note" class="alert alert-warn" style="display:none;margin-top:8px;">
+        <div class="alert-label">No API key detected</div>
+        You'll receive built-in coaching based on best-practice frameworks (STARR method, question-type tips). Add an API key in Settings → AI &amp; API for personalized, persona-driven feedback.
+      </div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-who" id="q-who"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-nav">
+        <button class="q-nav-btn" onclick="prevQ()">← Prev</button>
+        <button class="q-nav-btn" onclick="nextQ()">Next →</button>
+        <button class="q-nav-btn" onclick="randomQ()">↺ Random</button>
+      </div>
+    </div>
+
+    <div class="recorder-card" id="recorder-card">
+      <button class="record-btn" id="record-btn" onclick="toggleRecord()">🎙</button>
+      <div class="record-label" id="record-label">Click to record your answer — or type below</div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin:10px 0 8px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span style="font-size:0.72rem;color:var(--subtle);white-space:nowrap;">your answer</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+
+      <div class="transcript-box" id="transcript-box" contenteditable="true"
+           data-placeholder="Speak your answer above — or type it here…"></div>
+
+      <p style="font-size:0.72rem;color:var(--subtle);margin-top:6px;margin-bottom:12px;">
+        💡 Seeing <strong>"Error: not-allowed"</strong>? Your mic was blocked — just type your answer in the box above instead.
+      </p>
+
+      <button class="btn btn-blue" id="submit-btn" style="display:none;" onclick="submitAnswer()">Get Feedback →</button>
+    </div>
+
+    <div class="feedback-card" id="feedback-card">
+      <div id="feedback-content"></div>
+    </div>
+    <div id="export-feedback-row" style="display:none;margin-top:-8px;margin-bottom:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="exportPracticeFeedback()">⬇ Export This Session</button>
+      <span style="font-size:0.74rem;color:var(--subtle);margin-left:10px;">Or use <strong>Export Full Report</strong> at the top to download all saved sessions (up to 20).</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<script>
+// ===================================================================
+// ===================================================================
+// WELCOME MODAL
+// ===================================================================
+function dismissWelcome() {
+  document.getElementById('welcome-overlay').style.display = 'none';
+  try { localStorage.setItem('yns_welcome_seen', '1'); } catch(e) {}
+}
+
+(function initWelcome() {
+  try {
+    if (localStorage.getItem('yns_welcome_seen')) {
+      document.getElementById('welcome-overlay').style.display = 'none';
+    }
+    // Show photo if src is set (will be added when photo is embedded)
+    const img = document.getElementById('welcome-photo');
+    if (img && img.src && img.src !== window.location.href) {
+      img.style.display = 'block';
+      document.getElementById('welcome-photo-fallback').style.display = 'none';
+    }
+  } catch(e) {}
+})();
+
+// ===================================================================
+// GLOBAL STATE
+// ===================================================================
+const STORAGE_KEY = 'yns_interview_practice_v1';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveState(s) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {}
+}
+function getState() { return loadState(); }
+function setState(patch) {
+  const s = loadState();
+  Object.assign(s, patch);
+  saveState(s);
+}
+
+// ===================================================================
+// PDF.js setup
+// ===================================================================
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// ===================================================================
+// TAB NAVIGATION
+// ===================================================================
+function showTab(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const btns = document.querySelectorAll('.tab-btn');
+  const map = { settings: 0, cheatsheet: 1, fitanalysis: 2, practice: 3 };
+  if (btns[map[name]]) btns[map[name]].classList.add('active');
+  if (name === 'cheatsheet') renderCheatSheet();
+  if (name === 'fitanalysis') renderFitAnalysis();
+  if (name === 'practice') initSimulator();
+}
+
+// ===================================================================
+// SETTINGS NAV
+// ===================================================================
+function showSettings(section) {
+  document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('settings-' + section).style.display = 'block';
+  const map = { setup: 0, interviewers: 1, documents: 2, api: 3, privacy: 4 };
+  const btns = document.querySelectorAll('.settings-nav-btn');
+  if (btns[map[section]]) btns[map[section]].classList.add('active');
+  if (section === 'interviewers') renderInterviewerList();
+}
+
+// ===================================================================
+// AUTOSAVE — simple fields
+// ===================================================================
+function autosave() {
+  setState({
+    company: v('s-company'),
+    role: v('s-role'),
+    date: v('s-date'),
+    format: v('s-format'),
+  });
+  toggleScheduleCard();
+}
+
+function saveInterviewDetails() {
+  autosave();
+  const statusEl = document.getElementById('details-save-status');
+  statusEl.textContent = '✓ Saved';
+  statusEl.style.color = 'var(--green)';
+  setTimeout(() => { statusEl.textContent = ''; }, 3000);
+}
+
+function saveDoc(which) {
+  const key = which === 'resume' ? 'resumeText' : 'jdText';
+  const text = v(which === 'resume' ? 'resume-text' : 'jd-text').trim();
+  const statusEl = document.getElementById(which + '-save-status');
+  if (!text) {
+    statusEl.textContent = '⚠ Nothing to save — paste your text first.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+  setState({ [key]: text });
+  statusEl.textContent = '✓ Saved';
+  statusEl.style.color = 'var(--green)';
+  setTimeout(() => { statusEl.textContent = ''; }, 3000);
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function sv(id, val) { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; }
+
+function toggleScheduleCard() {
+  const fmt = document.getElementById('s-format');
+  const card = document.getElementById('schedule-card');
+  if (fmt && card) card.style.display = fmt.value === 'panel' ? 'block' : 'none';
+}
+
+// ===================================================================
+// SCHEDULE
+// ===================================================================
+let scheduleRows = [];
+function addScheduleRow(time='', name='', panel='') {
+  scheduleRows.push({ time, name, panel, id: Date.now() });
+  renderSchedule();
+}
+function renderSchedule() {
+  const el = document.getElementById('schedule-list');
+  if (!el) return;
+  el.innerHTML = scheduleRows.map((r, i) => `
+    <div class="schedule-item">
+      <input class="form-input" style="width:90px;" value="${r.time}" placeholder="1:00 PM" oninput="scheduleRows[${i}].time=this.value;saveSchedule()">
+      <input class="form-input" style="flex:1;" value="${r.name}" placeholder="Interviewer name" oninput="scheduleRows[${i}].name=this.value;saveSchedule()">
+      <input class="form-input" style="flex:1;" value="${r.panel}" placeholder="Panel / context" oninput="scheduleRows[${i}].panel=this.value;saveSchedule()">
+      <button class="btn btn-danger btn-sm" onclick="scheduleRows.splice(${i},1);renderSchedule();saveSchedule()">✕</button>
+    </div>
+  `).join('');
+}
+function saveSchedule() { setState({ schedule: scheduleRows }); }
+
+// ===================================================================
+// FILE PARSING — PDF and DOCX
+// ===================================================================
+async function extractTextFromFile(file) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.txt')) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result);
+      r.onerror = rej;
+      r.readAsText(file);
+    });
+  }
+  if (name.endsWith('.pdf')) {
+    return await extractPDF(file);
+  }
+  if (name.endsWith('.docx') || name.endsWith('.doc')) {
+    return await extractDOCX(file);
+  }
+  throw new Error('Unsupported file type. Please use PDF, DOCX, or TXT.');
+}
+
+async function extractPDF(file) {
+  if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js not loaded.');
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it => it.str).join(' ') + '\n';
+  }
+  return text.trim();
+}
+
+async function extractDOCX(file) {
+  if (typeof mammoth === 'undefined') throw new Error('Mammoth.js not loaded.');
+  const ab = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer: ab });
+  return result.value.trim();
+}
+
+async function handleProfileFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const area = document.getElementById('iv-upload-area');
+  const fname = document.getElementById('iv-filename');
+  fname.textContent = '⏳ Extracting text…';
+  fname.style.display = 'block';
+  try {
+    const text = await extractTextFromFile(file);
+    document.getElementById('iv-background').value = text;
+    area.classList.add('has-file');
+    fname.textContent = '✓ ' + file.name;
+  } catch(e) {
+    fname.textContent = '⚠ ' + e.message;
+    area.classList.remove('has-file');
+  }
+}
+
+async function handleDocFile(event, which) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const fnameEl = document.getElementById(which + '-filename');
+  const areaEl = document.getElementById(which + '-upload-area');
+  const textEl = document.getElementById(which + '-text');
+  fnameEl.textContent = '⏳ Extracting…';
+  fnameEl.style.display = 'block';
+  try {
+    const text = await extractTextFromFile(file);
+    textEl.value = text;
+    areaEl.classList.add('has-file');
+    fnameEl.textContent = '✓ ' + file.name + ' — click Save below to confirm.';
+    // Don't autosave yet — let user click the Save button for explicit confirmation
+  } catch(e) {
+    fnameEl.textContent = '⚠ ' + e.message;
+  }
+}
+
+// ===================================================================
+// INTERVIEWER PROFILES
+// ===================================================================
+const COLORS = ['#1a8585','#2e6ea6','#2a8a5a','#c94c4c','#6666cc','#8a6acc','#7a50cc'];
+
+function saveInterviewer() {
+  const name = document.getElementById('iv-name').value.trim();
+  if (!name) { alert('Please enter a name.'); return; }
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  const iv = {
+    id: Date.now(),
+    name,
+    title: document.getElementById('iv-title').value.trim(),
+    time: document.getElementById('iv-time').value.trim(),
+    color: document.getElementById('iv-color').value,
+    background: document.getElementById('iv-background').value.trim(),
+    questions: document.getElementById('iv-questions').value.trim().split('\n').filter(q => q.trim()),
+    wants: document.getElementById('iv-wants').value.trim(),
+    angle: document.getElementById('iv-angle').value.trim(),
+  };
+  interviewers.push(iv);
+  setState({ interviewers });
+  clearInterviewerForm();
+  renderInterviewerList();
+}
+
+function clearInterviewerForm() {
+  ['iv-name','iv-title','iv-time','iv-background','iv-questions','iv-wants','iv-angle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('iv-color').value = '#1a8585';
+  document.getElementById('iv-filename').style.display = 'none';
+  document.getElementById('iv-upload-area').classList.remove('has-file');
+  document.getElementById('iv-ai-status').textContent = '';
+  document.getElementById('iv-sources').style.display = 'none';
+  document.getElementById('iv-sources-links').innerHTML = '';
+}
+
+function deleteInterviewer(id) {
+  if (!confirm('Remove this interviewer?')) return;
+  const s = getState();
+  s.interviewers = (s.interviewers || []).filter(iv => iv.id !== id);
+  saveState(s);
+  renderInterviewerList();
+}
+
+function editInterviewer(id) {
+  const s = getState();
+  const iv = (s.interviewers || []).find(i => i.id === id);
+  if (!iv) return;
+  sv('iv-name', iv.name);
+  sv('iv-title', iv.title);
+  sv('iv-time', iv.time);
+  sv('iv-color', iv.color);
+  sv('iv-background', iv.background);
+  sv('iv-questions', (iv.questions || []).join('\n'));
+  sv('iv-wants', iv.wants);
+  sv('iv-angle', iv.angle);
+  deleteInterviewer(id);
+  window.scrollTo(0, 0);
+}
+
+function renderInterviewerList() {
+  const el = document.getElementById('interviewer-list');
+  if (!el) return;
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  if (!interviewers.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:32px 0;"><div class="empty-state-icon">👤</div><div class="empty-state-title">No interviewers yet</div><div class="empty-state-body">Fill in the form above and click Save Interviewer.</div></div>';
+    return;
+  }
+  el.innerHTML = interviewers.map(iv => `
+    <div class="profile-card">
+      <div class="profile-color-strip" style="background:${iv.color};"></div>
+      <div class="profile-info">
+        <div class="profile-name">${esc(iv.name)}</div>
+        <div class="profile-title">${esc(iv.title)}${iv.time ? ' · ' + esc(iv.time) : ''}</div>
+        ${iv.questions && iv.questions.length ? '<div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">' + iv.questions.length + ' question(s) loaded</div>' : ''}
+      </div>
+      <div class="profile-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${iv.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInterviewer(${iv.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===================================================================
+// ROLE-BASED PROFILE GENERATOR (no AI required)
+// ===================================================================
+function classifyRole(title) {
+  const t = (title || '').toLowerCase();
+
+  // --- Seniority tier ---
+  let tier = 'manager';
+  if (/\b(ceo|cfo|coo|cto|cmo|cpo|ciso|president|chancellor|superintendent|provost|executive director|managing director|general counsel|partner)\b/.test(t)) tier = 'csuite';
+  else if (/\b(svp|evp|sr\.?\s*vp|senior vp|senior vice president|vp|vice president|principal)\b/.test(t)) tier = 'vp';
+  else if (/\b(director|avp|associate vp|associate vice president|head of|dean)\b/.test(t)) tier = 'director';
+  else if (/\b(senior manager|sr\.?\s*manager|manager|lead|supervisor|team lead)\b/.test(t)) tier = 'manager';
+  else if (/\b(coordinator|specialist|analyst|associate(?! vp| vice)|assistant(?! vp| vice)|staff|officer(?! chief))\b/.test(t)) tier = 'peer';
+  else if (/\b(recruiter|talent|hr |human resources|people ops|people partner|people business)\b/.test(t)) tier = 'hr';
+  else if (/\b(professor|faculty|chair|instructor|lecturer|adjunct|research)\b/.test(t)) tier = 'faculty';
+
+  // --- Function ---
+  let fn = 'general';
+  if (/\b(finance|cfo|financial|budget|accounting|controller|treasury|fiscal)\b/.test(t)) fn = 'finance';
+  else if (/\b(engineer|developer|software|technical|architect|data|ai |ml |infrastructure|devops|security|it |information tech)\b/.test(t)) fn = 'tech';
+  else if (/\b(marketing|brand|content|creative|communications|pr |public relations|media|demand gen|growth)\b/.test(t)) fn = 'marketing';
+  else if (/\b(sales|revenue|business development|account exec|account manager|commercial|new business)\b/.test(t)) fn = 'sales';
+  else if (/\b(operations|ops|process|logistics|supply chain|procurement|facilities)\b/.test(t)) fn = 'operations';
+  else if (/\b(product|ux|user experience|design|research)\b/.test(t)) fn = 'product';
+  else if (/\b(legal|compliance|counsel|regulatory|risk|audit)\b/.test(t)) fn = 'legal';
+  else if (/\b(provost|academic|curriculum|instruction|faculty|dean|professor|pedagogy)\b/.test(t)) fn = 'academic';
+  else if (/\b(enrollment|admissions|registrar|student success|advising|financial aid)\b/.test(t)) fn = 'enrollment';
+
+  return { tier, fn };
+}
+
+const ROLE_BANKS = {
+  csuite: {
+    wants: 'Strategic clarity, executive presence, and cultural fit at the leadership level. They want to know you can operate with autonomy, make decisions with incomplete information, and represent the organization externally. They\'re assessing whether you think in terms of the whole system, not just your function.',
+    angle: 'Lead with outcomes and organizational impact, not process. Speak their language: risk, sustainability, alignment, and long-term value. Be direct and confident — they have limited patience for hedging. Frame your experience as proof of judgment, not just execution.',
+    questions: [
+      'What\'s your vision for this role in the first 6-12 months?',
+      'How do you think about the ROI of this function at an organizational level?',
+      'Tell me about a time you had to make a high-stakes decision without complete information.',
+      'How have you driven organization-wide change or alignment across competing priorities?',
+      'What does success look like for this role two years from now?',
+      'How do you build trust with a board, cabinet, or senior leadership team quickly?',
+      'What\'s the biggest strategic risk you see in this space, and how would you address it?',
+    ],
+  },
+  vp: {
+    wants: 'Someone who can own both the strategy and the execution — building and leading teams, managing upward, and delivering measurable results. They want to see cross-functional influence and the ability to scale. They\'re evaluating whether you can be trusted with organizational authority.',
+    angle: 'Show that you think at the VP level — you\'re not just delivering projects, you\'re building systems and teams. Demonstrate results with numbers. Show how you\'ve influenced people who don\'t report to you. Don\'t undersell scope or seniority.',
+    questions: [
+      'How do you build and develop a high-performing team from scratch or inherit one?',
+      'Walk me through how you\'ve influenced cross-functional stakeholders without direct authority.',
+      'How do you balance long-term strategy with near-term execution pressures?',
+      'Tell me about a time you had to pivot strategy mid-stream. What drove the change and what was the outcome?',
+      'What metrics do you use to define success in your function, and how do you communicate them to leadership?',
+      'How have you managed organizational change — restructures, new systems, culture shifts?',
+      'How do you think about building toward the next level of scale?',
+    ],
+  },
+  director: {
+    wants: 'Execution excellence combined with strategic awareness. They\'re evaluating whether you can own a domain end-to-end — setting direction, managing a team, hitting metrics, and handling complexity. They want someone who manages up well and doesn\'t create noise.',
+    angle: 'Lead with your track record of owning and delivering. Use specific numbers. Show that you\'ve built processes and people, not just done the work yourself. Demonstrate awareness of the broader organizational context your function sits in.',
+    questions: [
+      'Tell me about a complex initiative you owned from start to finish — what was your process and what was the outcome?',
+      'How do you translate organizational strategy into your team\'s day-to-day priorities?',
+      'What metrics matter most in your domain, and how do you hold yourself and your team accountable to them?',
+      'Tell me about a time you had to build a function, team, or process from the ground up.',
+      'How do you handle resource constraints when you have more priorities than capacity?',
+      'How do you communicate upward when things are off track or you need to reset expectations?',
+      'Tell me about a time you had to manage a difficult team dynamic or underperforming team member.',
+    ],
+  },
+  manager: {
+    wants: 'Collaboration, accountability, and a proven ability to execute on specific deliverables. They\'re assessing cultural fit, day-to-day working style, and whether you\'ll be easy to work with. They want to understand your craft and how you handle challenge.',
+    angle: 'Be specific and concrete. Use real examples from recent work. Show that you\'re a strong peer — collaborative, accountable, and low-drama. Demonstrate curiosity about their team\'s work and signal that you\'ll make their job easier, not harder.',
+    questions: [
+      'Walk me through a recent project you owned — what was your role, what was the challenge, and what was the outcome?',
+      'How do you prioritize when everything feels equally urgent?',
+      'Tell me about a time you had a conflict with a colleague or stakeholder. How did you handle it?',
+      'How do you give and receive critical feedback?',
+      'What does your process look like when you start a new project or initiative?',
+      'Tell me about something new you\'ve had to learn quickly to do your job well.',
+      'What does a productive working relationship look like to you?',
+    ],
+  },
+  peer: {
+    wants: 'A strong collaborator who does excellent work, communicates clearly, and is easy to work with. They\'re assessing whether you\'ll be a good teammate — do you pull your weight, do you ask for help appropriately, and do you make the people around you better?',
+    angle: 'Be genuine and warm. Show your craft through specific examples. Demonstrate that you know when to ask for help and when to figure things out independently. Ask about their work — peers who show curiosity about the team signal that they\'ll integrate well.',
+    questions: [
+      'Tell me about a project you\'re most proud of and why.',
+      'How do you collaborate with teammates who have different working styles?',
+      'How do you handle it when you\'re blocked or waiting on someone else?',
+      'What tools or processes do you rely on most to stay organized?',
+      'Tell me about a time you made a mistake at work — what happened and what did you do?',
+      'What does a great day at work look like for you?',
+      'How do you onboard yourself when you\'re new to a team or project?',
+    ],
+  },
+  hr: {
+    wants: 'Clarity on fit, motivation, and logistics. They\'re doing a screening pass — assessing whether you\'re genuinely interested, culturally aligned, and a realistic candidate. They\'ll also probe for red flags in your background or work history.',
+    angle: 'Be direct and confident about your motivations. Don\'t be evasive about comp or timeline. Have a crisp "tell me about yourself" ready. Show genuine enthusiasm for the company — not just the role. They\'re your advocate if they like you.',
+    questions: [
+      'Tell me about yourself and walk me through your background.',
+      'Why are you interested in this role and this company specifically?',
+      'Why are you leaving (or looking to leave) your current role?',
+      'What are your salary expectations?',
+      'What\'s your availability / earliest start date?',
+      'What type of work environment do you thrive in?',
+      'What questions do you have about the company or culture?',
+    ],
+  },
+  faculty: {
+    wants: 'Evidence that you understand and respect the academic context — shared governance, faculty autonomy, student outcomes, and the difference between enrollment pressure and academic mission. They want a partner, not an administrator who hands things down.',
+    angle: 'Lead with outcomes and student success, not enrollment numbers alone. Show that you understand the faculty perspective and will bring them into decisions rather than around them. Demonstrate intellectual curiosity about their work and genuine respect for their expertise.',
+    questions: [
+      'How have you worked with faculty to develop or grow academic programs?',
+      'How do you navigate shared governance when decisions need to move quickly?',
+      'What does program quality mean to you, and how do you protect it as enrollment scales?',
+      'How have you handled tension between enrollment goals and academic standards?',
+      'What\'s your approach to building trust with faculty who are skeptical of administrative initiatives?',
+      'How have you used data to inform academic program decisions collaboratively?',
+      'Tell me about a time you pushed back on a growth target to protect program quality.',
+    ],
+  },
+};
+
+const FUNCTION_QUESTIONS = {
+  finance: [
+    'How do you think about the unit economics of this function — cost per outcome, ROI, payback period?',
+    'Walk me through how you\'ve built or managed a budget in a resource-constrained environment.',
+    'How do you present financial risk or bad news to leadership?',
+  ],
+  tech: [
+    'Walk me through a technical decision you made that had significant organizational impact.',
+    'How do you think about build vs. buy vs. partner when evaluating technology solutions?',
+    'How do you communicate technical tradeoffs to non-technical stakeholders?',
+  ],
+  marketing: [
+    'How do you think about brand versus performance marketing, and how do you balance them?',
+    'Walk me through a campaign or initiative that didn\'t work — what happened and what did you learn?',
+    'How do you measure the impact of marketing on revenue or organizational outcomes?',
+  ],
+  sales: [
+    'Walk me through your approach to building and qualifying a pipeline.',
+    'How do you handle a deal that\'s stalling or going cold?',
+    'How do you forecast accurately, especially in volatile conditions?',
+  ],
+  operations: [
+    'Tell me about a process you redesigned that created meaningful efficiency gains.',
+    'How do you think about capacity planning when growth is uncertain?',
+    'How do you manage vendor or partner relationships when something goes wrong?',
+  ],
+  product: [
+    'How do you decide what to build next when you have more requests than capacity?',
+    'Walk me through how you gather and synthesize user feedback into product decisions.',
+    'How do you work through disagreement with engineering or design on scope or direction?',
+  ],
+  legal: [
+    'How do you balance risk mitigation with moving the business forward quickly?',
+    'Tell me about a time you had to advise leadership on a decision they didn\'t want to hear.',
+    'How do you stay current on regulatory changes that affect your organization?',
+  ],
+  academic: [
+    'What does a high-quality online or hybrid learning experience look like to you?',
+    'How do you think about program design in a way that serves both students and the institution?',
+    'How do you stay current on pedagogical best practices in your discipline?',
+  ],
+  enrollment: [
+    'How do you think about the full student journey from first inquiry to enrollment to persistence?',
+    'What data do you use to diagnose where students are dropping out of the funnel, and what do you do about it?',
+    'How have you built or leveraged employer and community partnerships to grow enrollment pipelines?',
+  ],
+};
+
+// ===================================================================
+// SOURCE CITATIONS for role-based generation
+// ===================================================================
+const ROLE_SOURCES = {
+  csuite: [
+    { label: 'Indeed — Executive Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/executive-interview-questions' },
+    { label: 'HBR — Leadership & Interviewing', url: 'https://hbr.org/topic/subject/interviewing' },
+    { label: 'Spencer Stuart — Executive Interview Prep', url: 'https://www.spencerstuart.com/research-and-insight/what-to-expect-in-executive-interviews' },
+  ],
+  vp: [
+    { label: 'Indeed — VP Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/vice-president-interview-questions' },
+    { label: 'HBR — Senior Leader Interviews', url: 'https://hbr.org/topic/subject/interviewing' },
+  ],
+  director: [
+    { label: 'Indeed — Director Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/director-interview-questions' },
+    { label: 'SHRM — Structured Interviewing Guide', url: 'https://www.shrm.org/topics-tools/tools/interview-questions-and-job-descriptions' },
+  ],
+  manager: [
+    { label: 'Indeed — Management Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/management-interview-questions' },
+    { label: 'SHRM — Competency-Based Interviewing', url: 'https://www.shrm.org/topics-tools/tools/interview-questions-and-job-descriptions' },
+  ],
+  peer: [
+    { label: 'Indeed — Common Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/interview-questions-and-answers' },
+    { label: 'Glassdoor — Interview Tips & Questions', url: 'https://www.glassdoor.com/blog/common-interview-questions/' },
+  ],
+  hr: [
+    { label: 'Indeed — HR Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/human-resources-interview-questions' },
+    { label: 'SHRM — HR Interview Guides', url: 'https://www.shrm.org/topics-tools/tools/interview-questions-and-job-descriptions' },
+  ],
+  faculty: [
+    { label: 'Indeed — Professor Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/professor-interview-questions' },
+    { label: 'Chronicle of Higher Education — Academic Job Interview', url: 'https://www.chronicle.com/article/preparing-for-an-academic-job-interview' },
+    { label: 'Inside Higher Ed — Interview Preparation', url: 'https://www.insidehighered.com/advice/2018/10/08/advice-preparing-academic-job-interview-opinion' },
+  ],
+};
+
+const FUNCTION_SOURCES = {
+  finance:     { label: 'Investopedia — Finance Interview Questions', url: 'https://www.investopedia.com/articles/financial-careers/09/common-finance-interview-questions.asp' },
+  tech:        { label: 'Indeed — Software Engineer Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/software-engineer-interview-questions' },
+  marketing:   { label: 'HubSpot — Marketing Interview Questions', url: 'https://blog.hubspot.com/marketing/marketing-interview-questions' },
+  sales:       { label: 'HubSpot — Sales Interview Questions', url: 'https://blog.hubspot.com/sales/sales-job-interview-questions' },
+  operations:  { label: 'Indeed — Operations Manager Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/operations-manager-interview-questions' },
+  product:     { label: 'Indeed — Product Manager Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/product-manager-interview-questions' },
+  legal:       { label: 'Indeed — Legal Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/legal-interview-questions' },
+  academic:    { label: 'Chronicle of Higher Education — Academic Job Interview', url: 'https://www.chronicle.com/article/preparing-for-an-academic-job-interview' },
+  enrollment:  { label: 'Indeed — Admissions Counselor Interview Questions', url: 'https://www.indeed.com/career-advice/interviewing/admissions-counselor-interview-questions' },
+};
+
+const BASE_SOURCES = [
+  { label: 'Indeed — STAR Interview Method', url: 'https://www.indeed.com/career-advice/interviewing/how-to-use-the-star-interview-response-technique' },
+];
+
+function generateFromRole() {
+  const title = document.getElementById('iv-title').value.trim();
+  const statusEl = document.getElementById('iv-ai-status');
+
+  if (!title) {
+    statusEl.textContent = '⚠ Add a title in Step 1 first — that\'s what this uses to generate.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  const { tier, fn } = classifyRole(title);
+  const bank = ROLE_BANKS[tier] || ROLE_BANKS.manager;
+
+  // Combine base questions with up to 2 function-specific ones
+  const fnQs = FUNCTION_QUESTIONS[fn] || [];
+  const questions = [...bank.questions, ...fnQs.slice(0, 2)];
+
+  // Populate the fields
+  sv('iv-questions', questions.join('\n'));
+  sv('iv-wants', bank.wants);
+  sv('iv-angle', bank.angle);
+
+  // Build and show citations
+  const tierSources = ROLE_SOURCES[tier] || [];
+  const allSources = [...BASE_SOURCES, ...tierSources];
+  if (fn !== 'general' && FUNCTION_SOURCES[fn]) allSources.push(FUNCTION_SOURCES[fn]);
+
+  const linksEl = document.getElementById('iv-sources-links');
+  linksEl.innerHTML = allSources.map(s =>
+    `<a href="${s.url}" target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;font-size:0.72rem;padding:3px 10px;border-radius:12px;
+              background:var(--gold-light);border:1px solid var(--gold-border);
+              color:var(--gold);text-decoration:none;white-space:nowrap;"
+       onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"
+     >${s.label}</a>`
+  ).join('');
+  document.getElementById('iv-sources').style.display = 'block';
+
+  const tierLabels = { csuite: 'C-Suite / Executive', vp: 'VP / Senior Leader', director: 'Director / AVP', manager: 'Manager / Team Lead', peer: 'Peer / Individual Contributor', hr: 'HR / Recruiter', faculty: 'Faculty / Academic' };
+  const fnLabel = fn !== 'general' ? ` · ${fn.charAt(0).toUpperCase() + fn.slice(1)} function detected` : '';
+  statusEl.textContent = `✓ Generated for: ${tierLabels[tier]}${fnLabel}. Review and personalize before saving.`;
+  statusEl.style.color = 'var(--green)';
+}
+
+// ===================================================================
+// AI — Generate profile fields from background text
+// ===================================================================
+async function generateProfileWithAI() {
+  const s = getState();
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  if (!key) {
+    document.getElementById('iv-ai-status').textContent = '⚠ Add an API key in Settings → AI & API first.';
+    return;
+  }
+  const background = document.getElementById('iv-background').value.trim();
+  const role = s.role || '';
+  if (!background) {
+    document.getElementById('iv-ai-status').textContent = '⚠ Add background text first (upload or paste).';
+    return;
+  }
+  document.getElementById('iv-ai-status').innerHTML = '<span class="spinner"></span>Generating…';
+  document.getElementById('iv-sources').style.display = 'none';
+  document.getElementById('iv-sources-links').innerHTML = '';
+
+  const prompt = `You are helping someone prepare for a job interview. Here is a profile or bio of one of their interviewers. The candidate is interviewing for: "${role}".
+
+Interviewer background text:
+${background}
+
+Extract and generate the following. Return ONLY valid JSON:
+{
+  "name": "<full name if not already filled>",
+  "title": "<their current title and company>",
+  "wants": "<2-3 sentences: what this person likely cares about and evaluates candidates on, based on their background>",
+  "angle": "<2-3 sentences: how the candidate should frame themselves and what to watch out for with this specific person>",
+  "questions": ["<likely interview question 1>","<likely question 2>","<likely question 3>","<likely question 4>","<likely question 5>"]
+}`;
+
+  try {
+    const text = await callAI(provider, key, prompt, 800);
+    const data = parseJSON(text);
+    if (data.name && !document.getElementById('iv-name').value) sv('iv-name', data.name);
+    if (data.title && !document.getElementById('iv-title').value) sv('iv-title', data.title);
+    if (data.wants) sv('iv-wants', data.wants);
+    if (data.angle) sv('iv-angle', data.angle);
+    if (data.questions && data.questions.length) sv('iv-questions', data.questions.join('\n'));
+    document.getElementById('iv-ai-status').textContent = '✓ Fields generated — review and edit before saving.';
+  } catch(e) {
+    document.getElementById('iv-ai-status').textContent = '⚠ Error: ' + e.message;
+  }
+}
+
+// ===================================================================
+// API KEY
+// ===================================================================
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const provider = document.getElementById('ai-provider').value;
+  if (!key) { document.getElementById('api-key-status').textContent = 'Please enter a key.'; return; }
+  setState({ apiKey: key, aiProvider: provider });
+  document.getElementById('api-key-status').textContent = '✓ Key saved locally. Never sent to any server — only to the AI provider.';
+  document.getElementById('api-key-status').style.color = 'var(--green)';
+}
+
+function onProviderChange() {
+  const p = document.getElementById('ai-provider').value;
+  document.getElementById('api-key-label').textContent = p === 'openai' ? 'OpenAI API Key' : 'Anthropic API Key';
+  const input = document.getElementById('api-key-input');
+  input.placeholder = p === 'openai' ? 'sk-...' : 'sk-ant-...';
+}
+
+// ===================================================================
+// AI CALL (Anthropic or OpenAI, client-side)
+// ===================================================================
+async function callAI(provider, key, userPrompt, maxTokens=1500, systemPrompt='') {
+  if (provider === 'openai') {
+    const msgs = [];
+    if (systemPrompt) msgs.push({ role: 'system', content: systemPrompt });
+    else msgs.push({ role: 'system', content: 'You are a helpful interview coaching assistant.' });
+    msgs.push({ role: 'user', content: userPrompt });
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: maxTokens, messages: msgs })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'OpenAI API error');
+    return data.choices[0].message.content.trim();
+  } else {
+    const body = {
+      model: 'claude-sonnet-4-6',
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: userPrompt }]
+    };
+    if (systemPrompt) body.system = systemPrompt;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Anthropic API error');
+    return data.content[0].text.trim();
+  }
+}
+
+function parseJSON(text) {
+  try { return JSON.parse(text); } catch(e) {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('Could not parse AI response as JSON.');
+  }
+}
+
+// ===================================================================
+// CHEAT SHEET
+// ===================================================================
+let csActiveIdx = 0;
+
+function renderCheatSheet() {
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  const header = document.getElementById('cheatsheet-header');
+  const tabsEl = document.getElementById('cheatsheet-tabs');
+  const content = document.getElementById('cheatsheet-content');
+
+  if (!interviewers.length) {
+    header.innerHTML = '';
+    tabsEl.innerHTML = '';
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-title">No interviewers added yet</div>
+        <div class="empty-state-body">Go to Settings → Interviewers to add the people you'll be meeting with.</div>
+        <button class="btn btn-gold" onclick="showTab('settings');showSettings('interviewers')">Add Interviewers</button>
+      </div>`;
+    return;
+  }
+
+  const company = s.company || 'Your Interview';
+  const role = s.role || '';
+  const dateStr = s.date ? new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }) : '';
+  header.innerHTML = `
+    <h1 style="font-family:'DM Serif Display',serif;font-size:1.6rem;margin-bottom:4px;">${esc(company)} — Interviewer Profiles</h1>
+    ${role ? '<div class="section-label" style="margin-bottom:0;">' + esc(role) + '</div>' : ''}
+    ${dateStr ? '<div style="font-size:0.75rem;color:var(--subtle);margin-top:4px;">' + dateStr + '</div>' : ''}
+  `;
+
+  tabsEl.innerHTML = interviewers.map((iv, i) => `
+    <button onclick="csShowTab(${i})" id="cs-tab-${i}" style="
+      padding:7px 16px;border-radius:6px;font-size:0.74rem;font-weight:600;cursor:pointer;
+      border:1.5px solid ${i===csActiveIdx ? iv.color : 'var(--border)'};
+      background:${i===csActiveIdx ? iv.color : 'var(--white)'};
+      color:${i===csActiveIdx ? '#fff' : 'var(--muted)'};
+      transition:all 0.15s;
+    ">${iv.time ? iv.time + ' — ' : ''}${esc(iv.name)}</button>
+  `).join('');
+
+  renderCSCard(interviewers[csActiveIdx]);
+}
+
+function csShowTab(i) {
+  const s = getState();
+  csActiveIdx = i;
+  renderCheatSheet();
+}
+
+function renderCSCard(iv) {
+  if (!iv) return;
+  const content = document.getElementById('cheatsheet-content');
+  content.innerHTML = `
+    <div class="cs-card" style="--accent-color:${iv.color};">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${iv.color};"></div>
+      <div style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:3px;">${esc(iv.name)}</div>
+      <div style="font-size:0.7rem;color:${iv.color};font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;">${esc(iv.title)}</div>
+
+      ${iv.background ? `
+        <div class="cs-row">
+          <div class="cs-row-label">Background</div>
+          <div class="cs-row-body">${esc(iv.background).substring(0, 600)}${iv.background.length > 600 ? '…' : ''}</div>
+        </div>` : ''}
+
+      ${iv.wants ? `
+        <div class="cs-row">
+          <div class="cs-row-label">What They Want to See</div>
+          <div class="cs-row-body">${esc(iv.wants)}</div>
+        </div>` : ''}
+
+      ${iv.angle ? `
+        <div class="cs-watchfor">
+          <div class="cs-watchfor-label">⚡ Your Angle &amp; Watch-Fors</div>
+          ${esc(iv.angle)}
+        </div>` : ''}
+
+      ${iv.questions && iv.questions.length ? `
+        <div class="cs-questions">
+          <div class="cs-q-label">Questions They May Ask</div>
+          ${iv.questions.map(q => '<div class="cs-q-item">' + esc(q) + '</div>').join('')}
+        </div>` : ''}
+    </div>
+  `;
+}
+
+// ===================================================================
+// FIT ANALYSIS
+// ===================================================================
+async function renderFitAnalysis() {
+  const s = getState();
+  const resume = s.resumeText || '';
+  const jd = s.jdText || '';
+  const content = document.getElementById('fit-content');
+
+  if (!resume || !jd) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🎯</div>
+        <div class="empty-state-title">Add your resume &amp; JD first</div>
+        <div class="empty-state-body">Go to Settings → My Documents and paste or upload both documents.</div>
+        <button class="btn btn-gold" onclick="showTab('settings');showSettings('documents')">Go to Documents</button>
+      </div>`;
+    return;
+  }
+
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+
+  if (key) {
+    content.innerHTML = '<div class="feedback-loading"><span class="spinner"></span>Analyzing your fit…</div>';
+    try {
+      const result = await runAIFitAnalysis(provider, key, resume, jd, s.role, s.company);
+      setState({ fitResult: result, fitResultDate: new Date().toISOString() });
+      renderFitResult(result, true);
+    } catch(e) {
+      content.innerHTML = renderFitRuleBased(resume, jd) + `<div class="alert alert-warn" style="margin-top:16px;">AI fit analysis failed (${esc(e.message)}). Showing keyword analysis instead.</div>`;
+    }
+  } else {
+    content.innerHTML = renderFitRuleBased(resume, jd);
+  }
+}
+
+async function runAIFitAnalysis(provider, key, resume, jd, role, company) {
+  const prompt = `You are an expert career coach and resume advisor. Analyze how well this candidate's resume fits the job description.
+
+JOB: ${role || 'not specified'} at ${company || 'not specified'}
+
+JOB DESCRIPTION:
+${jd.substring(0, 3000)}
+
+RESUME:
+${resume.substring(0, 3000)}
+
+Return ONLY valid JSON:
+{
+  "overallFit": <0-100>,
+  "fitLabel": "<Excellent Fit / Strong Fit / Good Fit / Partial Fit / Weak Fit>",
+  "fitSummary": "<3-4 sentences: honest assessment of overall fit>",
+  "strengths": ["<strength 1>","<strength 2>","<strength 3>"],
+  "gaps": ["<gap or risk 1>","<gap 2>"],
+  "highlight": ["<experience/achievement to emphasize in interview 1>","<2>","<3>","<4>"],
+  "atsKeywordsMatched": ["<keyword from JD found in resume>"],
+  "atsKeywordsMissing": ["<important JD keyword NOT in resume>"],
+  "atsTips": "<2-3 sentences of ATS and keyword optimization advice>"
+}`;
+
+  const text = await callAI(provider, key, prompt, 1200);
+  return parseJSON(text);
+}
+
+function renderFitResult(r, aiPowered) {
+  const content = document.getElementById('fit-content');
+  const color = r.overallFit >= 75 ? 'var(--green)' : r.overallFit >= 50 ? 'var(--gold)' : 'var(--red)';
+  content.innerHTML = `
+    ${aiPowered ? '<div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">✨ AI-Powered Analysis</div>Powered by your connected AI provider.</div>' : ''}
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent"></div>
+      <div class="section-label">Overall Fit</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2.8rem;color:${color};margin:8px 0 4px;">${r.overallFit}%</div>
+      <div style="font-weight:600;color:${color};margin-bottom:10px;">${esc(r.fitLabel)}</div>
+      <div class="fit-meter"><div class="fit-meter-fill" style="width:${r.overallFit}%;background:${color};"></div></div>
+      <p style="font-size:0.84rem;line-height:1.65;color:#444458;margin-top:14px;">${esc(r.fitSummary)}</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="card">
+        <div class="card-accent" style="background:var(--green);"></div>
+        <div class="section-label">Strengths</div>
+        <ul style="padding-left:18px;margin-top:8px;">
+          ${(r.strengths||[]).map(s => '<li style="font-size:0.82rem;line-height:1.6;margin-bottom:6px;color:#444458;">' + esc(s) + '</li>').join('')}
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:var(--red);"></div>
+        <div class="section-label">Gaps / Risks</div>
+        <ul style="padding-left:18px;margin-top:8px;">
+          ${(r.gaps||[]).map(g => '<li style="font-size:0.82rem;line-height:1.6;margin-bottom:6px;color:#444458;">' + esc(g) + '</li>').join('')}
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent" style="background:var(--blue);"></div>
+      <div class="section-label blue">What to Highlight in Your Interviews</div>
+      <ul style="padding-left:18px;margin-top:8px;">
+        ${(r.highlight||[]).map(h => '<li style="font-size:0.84rem;line-height:1.65;margin-bottom:8px;color:#1c4a6e;">' + esc(h) + '</li>').join('')}
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent" style="background:var(--gold);"></div>
+      <div class="section-label">ATS Keywords</div>
+      <div style="margin:10px 0 6px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);">Matched in your resume</div>
+      <div>${(r.atsKeywordsMatched||[]).map(k => '<span class="ats-tag ats-match">' + esc(k) + '</span>').join('')}</div>
+      <div style="margin:12px 0 6px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);">Missing — consider adding to resume or speaking to in interviews</div>
+      <div>${(r.atsKeywordsMissing||[]).map(k => '<span class="ats-tag ats-missing">' + esc(k) + '</span>').join('')}</div>
+      <p style="font-size:0.82rem;line-height:1.62;color:#444458;margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">${esc(r.atsTips)}</p>
+    </div>
+
+    <button class="btn btn-ghost btn-sm" onclick="renderFitAnalysis()">↺ Re-run Analysis</button>
+  `;
+}
+
+function renderFitRuleBased(resume, jd) {
+  const resumeLower = resume.toLowerCase();
+  const words = jd.toLowerCase().match(/\b[a-z][a-z\-]{3,}\b/g) || [];
+  const freq = {};
+  words.forEach(w => { if (!STOPWORDS.has(w)) freq[w] = (freq[w]||0) + 1; });
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0, 40);
+  const matched = sorted.filter(([w]) => resumeLower.includes(w)).map(([w]) => w);
+  const missing = sorted.filter(([w]) => !resumeLower.includes(w)).map(([w]) => w).slice(0,15);
+  const pct = Math.round(matched.length / Math.max(sorted.length, 1) * 100);
+  const color = pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--gold)' : 'var(--red)';
+  const label = pct >= 75 ? 'Strong keyword alignment' : pct >= 50 ? 'Moderate keyword alignment' : 'Low keyword alignment — gap to close';
+
+  return `
+    <div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">Keyword Analysis Mode</div>No AI key detected — showing keyword match analysis. Add an API key for full AI-powered fit analysis.</div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent"></div>
+      <div class="section-label">Keyword Match Score</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2.8rem;color:${color};margin:8px 0 4px;">${pct}%</div>
+      <div style="font-weight:600;color:${color};margin-bottom:10px;">${label}</div>
+      <div class="fit-meter"><div class="fit-meter-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent" style="background:var(--gold);"></div>
+      <div class="section-label">ATS Keywords</div>
+      <div style="margin:10px 0 6px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);">Found in your resume</div>
+      <div>${matched.map(k => '<span class="ats-tag ats-match">' + esc(k) + '</span>').join('')}</div>
+      <div style="margin:12px 0 6px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);">In JD but not your resume — consider addressing in interviews</div>
+      <div>${missing.map(k => '<span class="ats-tag ats-missing">' + esc(k) + '</span>').join('')}</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-accent" style="background:var(--blue);"></div>
+      <div class="section-label blue">General Interview Tips</div>
+      <ul style="padding-left:18px;margin-top:8px;">
+        ${GENERAL_TIPS.map(t => '<li style="font-size:0.82rem;line-height:1.65;margin-bottom:8px;color:#444458;">' + t + '</li>').join('')}
+      </ul>
+    </div>
+  `;
+}
+
+// ===================================================================
+// PRACTICE SIMULATOR
+// ===================================================================
+let simIV = null;
+let simQIdx = 0;
+let simRecognition = null;
+let simIsRecording = false;
+let simTranscript = '';
+
+function initSimulator() {
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  const sel = document.getElementById('sim-interviewer-select');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Select an interviewer —</option>';
+  interviewers.forEach((iv, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = (iv.time ? iv.time + ' — ' : '') + iv.name + (iv.title ? ' (' + iv.title + ')' : '');
+    sel.appendChild(opt);
+  });
+  if (prev) sel.value = prev;
+
+  const hasKey = !!(s.apiKey);
+  document.getElementById('sim-api-note').style.display = hasKey ? 'none' : 'block';
+
+  // Always wire up the transcript box for typed input
+  const box = document.getElementById('transcript-box');
+  if (box && !box._inputBound) {
+    box._inputBound = true;
+    box.addEventListener('input', () => {
+      simTranscript = box.textContent.trim();
+      box.className = simTranscript ? 'transcript-box has-text' : 'transcript-box';
+      document.getElementById('submit-btn').style.display = simTranscript.length > 10 ? 'inline-flex' : 'none';
+    });
+  }
+}
+
+function onSimInterviewerChange() {
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  const idx = parseInt(document.getElementById('sim-interviewer-select').value);
+  if (isNaN(idx)) { simIV = null; hideSimPanels(); return; }
+  simIV = interviewers[idx];
+  simQIdx = 0;
+  showSimQuestion();
+  document.getElementById('recorder-card').classList.add('visible');
+  resetRecorder();
+  document.getElementById('feedback-card').classList.remove('visible');
+}
+
+function showSimPanels() {
+  document.getElementById('question-card').classList.add('visible');
+  document.getElementById('recorder-card').classList.add('visible');
+}
+
+function hideSimPanels() {
+  document.getElementById('question-card').classList.remove('visible');
+  document.getElementById('recorder-card').classList.remove('visible');
+  document.getElementById('feedback-card').classList.remove('visible');
+}
+
+function showSimQuestion() {
+  if (!simIV || !simIV.questions || !simIV.questions.length) {
+    document.getElementById('question-card').classList.remove('visible');
+    return;
+  }
+  document.getElementById('q-who').textContent = simIV.name + (simIV.title ? ' · ' + simIV.title : '');
+  document.getElementById('q-text').textContent = simIV.questions[simQIdx];
+  document.getElementById('question-card').classList.add('visible');
+  resetRecorder();
+  document.getElementById('feedback-card').classList.remove('visible');
+}
+
+function nextQ() { if (!simIV || !simIV.questions) return; simQIdx = (simQIdx + 1) % simIV.questions.length; showSimQuestion(); }
+function prevQ() { if (!simIV || !simIV.questions) return; simQIdx = (simQIdx - 1 + simIV.questions.length) % simIV.questions.length; showSimQuestion(); }
+function randomQ() {
+  if (!simIV || !simIV.questions || simIV.questions.length < 2) return;
+  const old = simQIdx;
+  while (simQIdx === old) simQIdx = Math.floor(Math.random() * simIV.questions.length);
+  showSimQuestion();
+}
+
+function resetRecorder() {
+  if (simRecognition) { try { simRecognition.stop(); } catch(e){} }
+  simIsRecording = false; simTranscript = '';
+  const btn = document.getElementById('record-btn');
+  if (btn) { btn.className = 'record-btn'; btn.textContent = '🎙'; }
+  const label = document.getElementById('record-label');
+  if (label) label.textContent = 'Click to start recording your answer';
+  const box = document.getElementById('transcript-box');
+  if (box) { box.textContent = ''; box.className = 'transcript-box'; }
+  const sub = document.getElementById('submit-btn');
+  if (sub) sub.style.display = 'none';
+}
+
+function toggleRecord() { simIsRecording ? stopRecording() : startRecording(); }
+
+function startRecording() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const label = document.getElementById('record-label');
+    if (label) label.textContent = 'Voice not supported in this browser — type your answer below.';
+    document.getElementById('transcript-box').focus();
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  simRecognition = new SR();
+  simRecognition.continuous = true; simRecognition.interimResults = true; simRecognition.lang = 'en-US';
+  let finalTranscript = '';
+  simRecognition.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + ' ';
+      else interim += e.results[i][0].transcript;
+    }
+    simTranscript = finalTranscript + interim;
+    const box = document.getElementById('transcript-box');
+    box.textContent = simTranscript || 'Listening…';
+    box.className = simTranscript ? 'transcript-box has-text' : 'transcript-box';
+  };
+  simRecognition.onerror = e => {
+    stopRecording();
+    const label = document.getElementById('record-label');
+    if (label) label.textContent = e.error === 'not-allowed'
+      ? 'Mic blocked — type your answer in the box below.'
+      : 'Error: ' + e.error + '. Try again.';
+  };
+  simRecognition.onend = () => { if (simIsRecording) { try { simRecognition.start(); } catch(e){} } };
+  simRecognition.start();
+  simIsRecording = true;
+  document.getElementById('record-btn').className = 'record-btn recording';
+  document.getElementById('record-btn').textContent = '⏹';
+  document.getElementById('record-label').textContent = 'Recording… click to stop.';
+}
+
+function stopRecording() {
+  simIsRecording = false;
+  if (simRecognition) { try { simRecognition.stop(); } catch(e){} }
+  document.getElementById('record-btn').className = 'record-btn';
+  document.getElementById('record-btn').textContent = '🎙';
+  document.getElementById('record-label').textContent = 'Done. Review above, then submit for feedback.';
+  if (simTranscript && simTranscript.trim().length > 10) {
+    document.getElementById('submit-btn').style.display = 'inline-flex';
+  }
+}
+
+// Returns days until interview (null if no date set, negative if past)
+function daysUntilInterview() {
+  const s = getState();
+  if (!s.date) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const iDate = new Date(s.date + 'T00:00:00');
+  return Math.round((iDate - today) / 86400000);
+}
+
+async function submitAnswer() {
+  if (!simIV || !simTranscript || simTranscript.trim().length < 10) return;
+  const s = getState();
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  const question = simIV.questions[simQIdx];
+  const fc = document.getElementById('feedback-card');
+  const content = document.getElementById('feedback-content');
+  fc.classList.add('visible');
+  content.innerHTML = '<div class="feedback-loading"><span class="spinner"></span>Evaluating your answer as ' + esc(simIV.name) + '…</div>';
+
+  if (key) {
+    await getAIFeedback(provider, key, question, simTranscript.trim(), s);
+  } else {
+    renderBuiltInFeedback(question, simTranscript.trim());
+  }
+}
+
+async function getAIFeedback(provider, key, question, answer, s) {
+  const days = daysUntilInterview();
+  const timeCtx = days === null ? '' :
+    days <= 0 ? '\n\nIMPORTANT: The interview is TODAY or has passed. Be warm and encouraging. Focus only on the single most impactful thing they can do right now — no lengthy critique.' :
+    days < 7  ? `\n\nIMPORTANT: The interview is ${days} day${days===1?'':'s'} away. Keep feedback focused and actionable. Prioritize the 1-2 highest-impact improvements they can realistically make before then. Be encouraging — avoid overwhelming them with deep critique at this stage.` :
+    `\n\nContext: The interview is ${days} days away — there is time to work on feedback thoroughly. Provide comprehensive coaching.`;
+
+  const systemPrompt = `You are ${simIV.name}${simIV.title ? ', ' + simIV.title : ''}. ${simIV.background ? 'Background: ' + simIV.background.substring(0, 500) : ''} ${simIV.wants ? 'What you care about: ' + simIV.wants : ''}
+
+You are evaluating a candidate's spoken interview answer. The candidate is interviewing for: "${s.role || 'this role'}" at "${s.company || 'this company'}".
+${s.resumeText ? 'Candidate resume summary: ' + s.resumeText.substring(0, 800) : ''}${timeCtx}
+
+Rate the answer and provide coaching. Return ONLY valid JSON:
+{
+  "answer_quality": { "score": <1-10>, "label": "<Excellent/Strong/Adequate/Weak/Off-target>", "feedback": "<2-3 sentences as this interviewer>" },
+  "succinctness": { "score": <1-10>, "label": "<Tight & Punchy/Just Right/Slightly Long/Too Long/Too Short>", "feedback": "<1-2 sentences>" },
+  "hire_signal": { "score": <1-10>, "verdict": "<Yes — move forward/Lean yes/Neutral/Lean no/No — red flags>", "feedback": "<2-3 sentences of what you're thinking>" },
+  "one_thing": "<The single most important thing to do differently>",
+  "coaching": {
+    "what_went_wrong": "<1-2 sentences: core mistake or missed opportunity>",
+    "structure": "<2-4 sentences: how to structure the answer — use STARR where appropriate>",
+    "in_voice": "<3-6 sentences: a sample answer in the candidate's voice — first-person, warm, direct, results-grounded. Draw on their actual background if available. A model to adapt, not memorize.>"
+  }
+}`;
+
+  try {
+    const text = await callAI(provider, key, `Question asked: "${question}"\n\nCandidate answer: "${answer}"\n\nRate and coach.`, 1500, systemPrompt);
+    const result = parseJSON(text);
+    renderAIFeedback(result, question);
+  } catch(e) {
+    document.getElementById('feedback-content').innerHTML = `<div class="alert alert-warn"><div class="alert-label">AI Error</div>${esc(e.message)}</div>`;
+    renderBuiltInFeedback(question, answer);
+  }
+}
+
+function scoreColor(s) { return s >= 8 ? 'score-high' : s >= 5 ? 'score-mid' : 'score-low'; }
+function verdictClass(v) {
+  if (!v) return 'verdict-lean';
+  if (v.startsWith('Yes')) return 'verdict-yes';
+  if (v.startsWith('Lean yes') || v.startsWith('Neutral')) return 'verdict-lean';
+  return 'verdict-no';
+}
+
+function renderAIFeedback(r, question) {
+  const aq = r.answer_quality, su = r.succinctness, hs = r.hire_signal, co = r.coaching;
+  document.getElementById('feedback-content').innerHTML = `
+    <div class="section-label blue" style="margin-bottom:14px;">Feedback from ${esc(simIV.name)}</div>
+
+    <div class="scores-row">
+      <div class="score-card"><div class="score-label">Answer Quality</div><div class="score-num ${scoreColor(aq.score)}">${aq.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(aq.label)}</div></div>
+      <div class="score-card"><div class="score-label">Succinctness</div><div class="score-num ${scoreColor(su.score)}">${su.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(su.label)}</div></div>
+      <div class="score-card"><div class="score-label">Hire Signal</div><div class="score-num ${scoreColor(hs.score)}">${hs.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">From their POV</div></div>
+    </div>
+
+    <div class="verdict ${verdictClass(hs.verdict)}">${esc(simIV.name)}: "${esc(hs.verdict)}"</div>
+
+    <div class="feedback-section"><div class="feedback-section-label">On Your Answer</div><div class="feedback-text">${esc(aq.feedback)}</div></div>
+    <div class="feedback-section"><div class="feedback-section-label">On Succinctness</div><div class="feedback-text">${esc(su.feedback)}</div></div>
+    <div class="feedback-section"><div class="feedback-section-label">What ${esc(simIV.name.split(' ')[0])} Is Actually Thinking</div><div class="feedback-text">${esc(hs.feedback)}</div></div>
+
+    <div class="one-thing-box">
+      <div class="feedback-section-label" style="color:var(--gold);">⚡ The One Thing to Do Differently</div>
+      <div class="feedback-text" style="color:#0a4545;">${esc(r.one_thing)}</div>
+    </div>
+
+    <div class="coaching-box">
+      <div class="coaching-label">🎯 Coaching — How to Answer This</div>
+      <div class="coaching-sub-label">What went wrong</div>
+      <div class="coaching-body">${esc(co.what_went_wrong)}</div>
+      <div class="coaching-sub-label">The approach that works</div>
+      <div class="coaching-body">${esc(co.structure)}</div>
+      <div class="sample-box">
+        <div class="sample-label">In Your Voice — A Model to Adapt</div>
+        <div class="sample-text">${esc(co.in_voice)}</div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="resetAndRetry()">↺ Try Again</button>
+      <button class="btn btn-blue" onclick="nextAndReset()">Next Question →</button>
+    </div>
+  `;
+  saveFeedbackToHistory('ai', simIV, simIV.questions[simQIdx], simTranscript, r);
+  showFeedbackExport();
+}
+
+function renderBuiltInFeedback(question, answer) {
+  const qType = classifyQuestion(question);
+  const tips = QUESTION_TYPE_TIPS[qType] || QUESTION_TYPE_TIPS.general;
+  const wc = answer.trim().split(/\s+/).length;
+  const wcLabel = wc < 50 ? 'Very short — may lack substance' : wc < 150 ? 'Good length' : wc < 300 ? 'Slightly long — tighten it' : 'Too long — cut by 30-40%';
+  const days = daysUntilInterview();
+  const crunchMode = days !== null && days < 7;
+
+  // Time-context banner
+  const timeBanner = days === null ? '' :
+    days <= 0 ? `<div class="alert alert-success" style="margin-bottom:16px;"><div class="alert-label">🎯 It's interview day — you've got this!</div>Trust your prep. Take a breath. Focus on listening carefully and being yourself.</div>` :
+    crunchMode ? `<div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">⏰ ${days} day${days===1?'':'s'} to go — focused prep mode</div>You don't have time to overhaul everything, and that's okay. Below is the most important thing to work on right now. Keep it simple and rehearse out loud.</div>` :
+    `<div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">📅 ${days} days until your interview</div>You have time to work on this thoroughly. Full coaching below.</div>`;
+
+  const fullCoaching = crunchMode ? '' : `
+    <div class="coaching-box">
+      <div class="coaching-label">🎯 How to Answer This</div>
+      <div class="coaching-sub-label">Structure to use</div>
+      <div class="coaching-body">${tips.structure}</div>
+      <div class="coaching-sub-label">Common mistakes</div>
+      <div class="coaching-body">${tips.mistakes}</div>
+      <div class="sample-box">
+        <div class="sample-label">The STARR Framework</div>
+        <div class="sample-text">${STARR_EXPLANATION}</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-accent"></div>
+      <div class="section-label">General Best Practices</div>
+      <ul style="padding-left:18px;margin-top:8px;">
+        ${GENERAL_INTERVIEW_TIPS.map(t => '<li style="font-size:0.82rem;line-height:1.6;margin-bottom:6px;color:#444458;">' + t + '</li>').join('')}
+      </ul>
+    </div>`;
+
+  const crunchExtra = crunchMode ? `
+    <div class="coaching-box">
+      <div class="coaching-label">✅ Quick Game Plan</div>
+      <div class="coaching-sub-label">The one structural fix</div>
+      <div class="coaching-body">${tips.structure}</div>
+      <div class="sample-box">
+        <div class="sample-label">Remember: STARR in 90 seconds</div>
+        <div class="sample-text"><strong>S</strong>ituation (10 sec) → <strong>T</strong>ask (10 sec) → <strong>A</strong>ction (40 sec — this is where you shine) → <strong>R</strong>esult (20 sec) → <strong>R</strong>eflection (10 sec, optional). Rehearse it out loud once more before you go in.</div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('feedback-content').innerHTML = `
+    <div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">Best-Practice Coaching Mode</div>No API key detected. Feedback is based on proven interview frameworks — not personalized to this specific interviewer.</div>
+    ${timeBanner}
+
+    <div class="scores-row">
+      <div class="score-card"><div class="score-label">Question Type</div><div style="font-family:'DM Serif Display',serif;font-size:1.2rem;margin:8px 0 4px;">${esc(tips.type)}</div><div class="score-sub">Detected</div></div>
+      <div class="score-card"><div class="score-label">Word Count</div><div style="font-family:'DM Serif Display',serif;font-size:1.8rem;margin:8px 0 4px;">${wc}</div><div class="score-sub">${esc(wcLabel)}</div></div>
+    </div>
+
+    <div class="one-thing-box">
+      <div class="feedback-section-label" style="color:var(--gold);">⚡ ${crunchMode ? 'The One Thing to Focus On Right Now' : 'Framework for This Question Type'}</div>
+      <div class="feedback-text" style="color:#0a4545;">${tips.framework}</div>
+    </div>
+
+    ${crunchExtra}${fullCoaching}
+
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" onclick="resetAndRetry()">↺ Try Again</button>
+      <button class="btn btn-blue" onclick="nextAndReset()">Next Question →</button>
+    </div>
+  `;
+  saveFeedbackToHistory('builtin', simIV, simIV.questions[simQIdx], answer, null);
+  showFeedbackExport();
+}
+
+function saveFeedbackToHistory(type, iv, question, answer, aiResult) {
+  const s = getState();
+  const history = s.feedbackHistory || [];
+  history.unshift({
+    date: new Date().toISOString(),
+    type,
+    interviewer: iv ? { name: iv.name, title: iv.title } : null,
+    question,
+    answer,
+    aiResult: aiResult ? {
+      qualityScore: aiResult.answer_quality?.score,
+      qualityLabel: aiResult.answer_quality?.label,
+      qualityFeedback: aiResult.answer_quality?.feedback,
+      succinctScore: aiResult.succinctness?.score,
+      succinctLabel: aiResult.succinctness?.label,
+      hireScore: aiResult.hire_signal?.score,
+      hireVerdict: aiResult.hire_signal?.verdict,
+      hireFeedback: aiResult.hire_signal?.feedback,
+      oneThing: aiResult.one_thing,
+      whatWentWrong: aiResult.coaching?.what_went_wrong,
+      structure: aiResult.coaching?.structure,
+      inVoice: aiResult.coaching?.in_voice,
+    } : null,
+  });
+  setState({ feedbackHistory: history.slice(0, 20) }); // keep last 20
+}
+
+function resetAndRetry() {
+  resetRecorder();
+  document.getElementById('feedback-card').classList.remove('visible');
+  const row = document.getElementById('export-feedback-row');
+  if (row) row.style.display = 'none';
+}
+function nextAndReset() {
+  nextQ();
+  document.getElementById('feedback-card').classList.remove('visible');
+  const row = document.getElementById('export-feedback-row');
+  if (row) row.style.display = 'none';
+}
+
+// ===================================================================
+// QUESTION CLASSIFIER & BUILT-IN COACHING
+// ===================================================================
+function classifyQuestion(q) {
+  const ql = q.toLowerCase();
+  if (/tell me about a time|give me an example|describe a situation|walk me through a time|share an experience|when have you/i.test(ql)) return 'behavioral';
+  if (/what would you do|how would you handle|imagine you|suppose you|if you were/i.test(ql)) return 'situational';
+  if (/why do you want|why this company|why this role|what drew you|what interests you about/i.test(ql)) return 'motivation';
+  if (/tell me about yourself|walk me through your background|describe yourself/i.test(ql)) return 'intro';
+  if (/strength|weakness|greatest challenge|biggest mistake/i.test(ql)) return 'selfassess';
+  if (/where do you see|five years|long.term|career goal/i.test(ql)) return 'future';
+  return 'general';
+}
+
+const QUESTION_TYPE_TIPS = {
+  behavioral: {
+    type: 'Behavioral',
+    framework: 'Use the STARR method: Situation → Task → Action → Result → Reflection. Be specific with one story. Avoid the royal "we" — say what YOU did.',
+    structure: 'Open with a brief context (1 sentence). State your specific task or challenge (1 sentence). Walk through your specific actions (2-3 sentences — this is the meaty part). Share the concrete result with numbers if possible (1-2 sentences). Close with what you learned or would do differently (optional but powerful).',
+    mistakes: 'Talking about what you "usually do" instead of one specific story. Being vague about your personal contribution. Forgetting to state the result. Spending too long on setup and not enough on the action and outcome.',
+  },
+  situational: {
+    type: 'Situational',
+    framework: 'Describe your process step by step. Show how you would gather information, involve stakeholders, and make a decision. Anchor to a real past experience where possible.',
+    structure: 'Acknowledge the situation\'s complexity briefly. Walk through your decision process (who you\'d talk to, what data you\'d need, how you\'d weigh options). State the action you\'d take and why. If relevant, cite a real past example that parallels this.',
+    mistakes: 'Giving a generic "I\'d gather stakeholders and make a decision" answer. Not showing your reasoning process. Ignoring the tradeoffs. Sounding like you\'d never encountered anything like this before.',
+  },
+  motivation: {
+    type: 'Motivation',
+    framework: 'Connect your genuine interests and career arc to something specific about this company and role. Research-backed specificity beats generic enthusiasm every time.',
+    structure: 'Start with what you\'re looking for at this stage of your career (brief). Connect it to something specific about this company or role — a program, a mission, a product, a challenge. Show why the intersection of your background and their needs is a natural match.',
+    mistakes: 'Saying "I\'ve always wanted to work here" without substance. Generic answers about growth and learning. Focusing on what the company can do for you rather than the mutual fit. Not referencing anything specific about the company.',
+  },
+  intro: {
+    type: 'Tell Me About Yourself',
+    framework: 'This is your opening statement, not a biography. Hit: where you\'ve been → what you\'ve built → why you\'re here. Keep it to 90 seconds.',
+    structure: 'Start with your most relevant current or recent role and a key outcome. Arc through 1-2 pivotal experiences that build to this moment. Land on why you\'re sitting in this room — specifically. End with something that signals genuine enthusiasm for this conversation.',
+    mistakes: 'Starting from the beginning of your career. Reading your resume out loud. Going longer than 2 minutes. Ending without a clear "and that\'s why I\'m excited about this role" moment.',
+  },
+  selfassess: {
+    type: 'Strengths & Weaknesses',
+    framework: 'For strengths: pick one that\'s relevant and prove it with a specific example. For weaknesses: be genuinely honest about a real gap, then show what you\'re actively doing about it.',
+    structure: 'For strengths: State the strength, give a specific example of when it mattered, and connect it to why it\'s relevant here. For weaknesses: Name a real one (not a humble-brag), briefly explain how it has shown up, and explain the concrete steps you\'re taking to address it.',
+    mistakes: 'Saying "I work too hard" or "I\'m a perfectionist" as your weakness. Vague strengths without evidence. Weaknesses that are actually dealbreakers for the role. Not showing self-awareness or a growth plan.',
+  },
+  future: {
+    type: 'Future Goals',
+    framework: 'Align your goals to growth within this role and organization. Show ambition but also present-focus — you want this job, not just a stepping stone.',
+    structure: 'Share a direction (not a specific title) that is genuine and relevant. Connect it naturally to what this role would teach you or give you access to. Show that your goals and the organization\'s goals are directionally aligned.',
+    mistakes: 'Describing a career path that clearly goes elsewhere. Being so vague you seem unambitious. Projecting ambition that makes the interviewer feel like a pit stop.',
+  },
+  general: {
+    type: 'General',
+    framework: 'Be specific, concise, and results-oriented. Use concrete examples over abstract claims. Aim for 90 seconds to 2 minutes maximum.',
+    structure: 'Lead with your most relevant point. Support with a specific example or data point. Land on why it matters in this context. Don\'t ramble — if you can say it in fewer words, do.',
+    mistakes: 'Being too abstract or theoretical. Answering a different question than the one asked. Going too long. Forgetting to connect your answer back to the role or company.',
+  },
+};
+
+const STARR_EXPLANATION = 'Situation: Set the scene briefly — when, where, what was at stake. Task: What was your specific responsibility or challenge? Action: What did YOU do, step by step? (This is 60% of your answer.) Result: What was the measurable outcome? Numbers, percentages, business impact. Reflection: What did you learn or how would you approach it differently? (Optional but memorable.)';
+
+const GENERAL_INTERVIEW_TIPS = [
+  'Prepare 5-7 strong STARR stories that can flex across multiple question types. Most interviews come down to the same 10 themes.',
+  'Research each interviewer on LinkedIn before your interview. Tailor your framing to what they care about.',
+  'Lead with results, not process. Interviewers remember outcomes. Start your stories near the end, then fill in context.',
+  'Quantify wherever possible. "Increased enrollment by 32%" lands harder than "significantly grew enrollment."',
+  'Silence is okay. Pause before answering. It signals confidence, not confusion.',
+  'Ask one thoughtful question per interviewer. The best questions demonstrate you\'ve done your homework.',
+  'Mirror the interviewer\'s language. If they say "agile" or "learner-centered," use their vocabulary.',
+  'Prepare a 90-second "Tell me about yourself" that ends with a clear why-this-role landing.',
+];
+
+const GENERAL_TIPS = [
+  'Mirror the JD language in your answers. Interviewers mentally match what they hear to what they\'re looking for.',
+  'Prepare 5-7 STARR stories that flex across multiple question types.',
+  'Quantify your impact wherever possible — percentages, dollar amounts, headcount, timelines.',
+  'Research each interviewer on LinkedIn and tailor your framing to their specific lens.',
+  'Close every interview by asking a thoughtful, research-backed question.',
+];
+
+const STOPWORDS = new Set('the and for with you that have this are from was has been will its your our they their but not also some more than any can all one two three been been about into over after before during through until while although because since though unless until when where who how which what'.split(' '));
+
+// ===================================================================
+// UTILITIES
+// ===================================================================
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function clearAllData() {
+  if (!confirm('Are you sure? This will clear all your data — interviewers, resume, JD, API key, and settings.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ===================================================================
+// EXPORT / IMPORT
+// ===================================================================
+function downloadText(filename, content) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function downloadJSON(filename, obj) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportAllData() {
+  const s = getState();
+  const safe = Object.assign({}, s);
+  delete safe.apiKey; // don't export the key
+  downloadJSON('interview-practice-backup.json', safe);
+}
+
+function importAllData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const s = getState();
+      Object.assign(s, data);
+      saveState(s);
+      document.getElementById('import-status').textContent = '✓ Data imported. Reloading…';
+      setTimeout(() => location.reload(), 800);
+    } catch(err) {
+      document.getElementById('import-status').textContent = '⚠ Could not read file: ' + err.message;
+    }
+  };
+  r.readAsText(file);
+}
+
+function exportCheatSheet() {
+  const s = getState();
+  const interviewers = s.interviewers || [];
+  if (!interviewers.length) { alert('No interviewer profiles to export yet.'); return; }
+  const company = s.company || 'Interview';
+  const role = s.role || '';
+  const date = s.date || '';
+  let out = `INTERVIEWER PROFILES\n`;
+  out += `${company}${role ? ' — ' + role : ''}${date ? ' — ' + date : ''}\n`;
+  out += `${'='.repeat(60)}\n\n`;
+  interviewers.forEach(iv => {
+    out += `${iv.name.toUpperCase()}\n`;
+    if (iv.title) out += `${iv.title}\n`;
+    if (iv.time) out += `${iv.time}\n`;
+    out += `${'-'.repeat(40)}\n`;
+    if (iv.background) out += `BACKGROUND\n${iv.background}\n\n`;
+    if (iv.wants) out += `WHAT THEY WANT TO SEE\n${iv.wants}\n\n`;
+    if (iv.angle) out += `YOUR ANGLE & WATCH-FORS\n${iv.angle}\n\n`;
+    if (iv.questions && iv.questions.length) {
+      out += `QUESTIONS THEY MAY ASK\n`;
+      iv.questions.forEach((q, i) => out += `${i+1}. ${q}\n`);
+      out += '\n';
+    }
+    out += `${'='.repeat(60)}\n\n`;
+  });
+  const fname = (company.replace(/\s+/g, '_') + '_interviewer_profiles.txt').toLowerCase();
+  downloadText(fname, out);
+}
+
+function exportFitAnalysis() {
+  const el = document.getElementById('fit-content');
+  if (!el || el.querySelector('.empty-state')) { alert('Run the fit analysis first.'); return; }
+  const s = getState();
+  const company = s.company || 'Interview';
+  const role = s.role || '';
+  // Extract text content from the rendered fit analysis
+  let out = `FIT ANALYSIS\n`;
+  out += `${company}${role ? ' — ' + role : ''}\n`;
+  out += `Generated: ${new Date().toLocaleDateString()}\n`;
+  out += `${'='.repeat(60)}\n\n`;
+  out += el.innerText || el.textContent;
+  const fname = (company.replace(/\s+/g, '_') + '_fit_analysis.txt').toLowerCase();
+  downloadText(fname, out.replace(/\n{3,}/g, '\n\n'));
+}
+
+// Called from renderAIFeedback / renderBuiltInFeedback via show of export row
+function showFeedbackExport() {
+  const row = document.getElementById('export-feedback-row');
+  if (row) row.style.display = 'block';
+}
+
+function exportFullReport() {
+  const s = getState();
+  const company = s.company || 'Interview';
+  const role = s.role || '';
+  const dateStr = s.date ? new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }) : '';
+  const interviewers = s.interviewers || [];
+  const fit = s.fitResult || null;
+  const history = s.feedbackHistory || [];
+  const generated = new Date().toLocaleString();
+
+  const scoreColor = n => n >= 8 ? '#2a7a2a' : n >= 5 ? '#1a8585' : '#c94c4c';
+
+  // Build interviewer sections
+  const ivHtml = interviewers.length ? interviewers.map(iv => `
+    <div style="background:#fff;border:1px solid #ddd8d0;border-radius:10px;padding:24px;margin-bottom:20px;page-break-inside:avoid;">
+      <div style="height:3px;background:${iv.color};border-radius:2px;margin-bottom:16px;"></div>
+      <div style="font-family:'Georgia',serif;font-size:1.2rem;font-weight:bold;margin-bottom:3px;">${esc(iv.name)}</div>
+      <div style="font-size:0.75rem;color:${iv.color};font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;">${esc(iv.title)}${iv.time ? ' · ' + esc(iv.time) : ''}</div>
+      ${iv.background ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:5px;">Background</div><div style="font-size:0.85rem;line-height:1.65;color:#444458;">${esc(iv.background)}</div></div>` : ''}
+      ${iv.wants ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:5px;">What They Want to See</div><div style="font-size:0.85rem;line-height:1.65;color:#444458;">${esc(iv.wants)}</div></div>` : ''}
+      ${iv.angle ? `<div style="margin-bottom:14px;background:#fff5f5;border-left:3px solid #c94c4c;padding:10px 14px;border-radius:0 6px 6px 0;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c94c4c;margin-bottom:4px;">Your Angle & Watch-Fors</div><div style="font-size:0.84rem;line-height:1.6;color:#8a2020;">${esc(iv.angle)}</div></div>` : ''}
+      ${iv.questions && iv.questions.length ? `
+        <div style="background:#f0f6fc;border:1px solid #b8d4f0;border-radius:6px;padding:12px 16px;margin-top:4px;">
+          <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2e6ea6;margin-bottom:8px;">Questions They May Ask</div>
+          ${iv.questions.map(q => `<div style="font-size:0.82rem;color:#2a5a88;line-height:1.55;padding:4px 0;border-bottom:1px solid #c8dff0;">Q: ${esc(q)}</div>`).join('')}
+        </div>` : ''}
+    </div>`).join('') : '<p style="color:#888;font-style:italic;">No interviewer profiles saved.</p>';
+
+  // Build fit analysis section
+  const fitHtml = fit ? `
+    <div style="margin-bottom:20px;">
+      <div style="font-size:2.5rem;font-weight:bold;color:${scoreColor(fit.overallFit/10)};margin-bottom:4px;">${fit.overallFit}%</div>
+      <div style="font-weight:700;color:${scoreColor(fit.overallFit/10)};margin-bottom:10px;">${esc(fit.fitLabel)}</div>
+      <div style="background:#eee;border-radius:6px;height:10px;margin-bottom:16px;"><div style="background:${scoreColor(fit.overallFit/10)};height:10px;border-radius:6px;width:${fit.overallFit}%;"></div></div>
+      <p style="font-size:0.86rem;line-height:1.7;color:#444458;margin-bottom:16px;">${esc(fit.fitSummary)}</p>
+      ${fit.strengths && fit.strengths.length ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">Strengths</div><ul style="padding-left:18px;">${fit.strengths.map(s => `<li style="font-size:0.84rem;line-height:1.65;margin-bottom:5px;color:#444458;">${esc(s)}</li>`).join('')}</ul></div>` : ''}
+      ${fit.gaps && fit.gaps.length ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">Gaps / Risks</div><ul style="padding-left:18px;">${fit.gaps.map(g => `<li style="font-size:0.84rem;line-height:1.65;margin-bottom:5px;color:#444458;">${esc(g)}</li>`).join('')}</ul></div>` : ''}
+      ${fit.highlight && fit.highlight.length ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">What to Highlight in Interviews</div><ul style="padding-left:18px;">${fit.highlight.map(h => `<li style="font-size:0.84rem;line-height:1.65;margin-bottom:5px;color:#1c4a6e;">${esc(h)}</li>`).join('')}</ul></div>` : ''}
+      ${fit.atsKeywordsMatched && fit.atsKeywordsMatched.length ? `<div style="margin-bottom:8px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">ATS Keywords Matched</div>${fit.atsKeywordsMatched.map(k => `<span style="display:inline-block;background:#edfaed;border:1px solid #b8ddb8;color:#2a7a2a;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:12px;margin:2px;">${esc(k)}</span>`).join('')}</div>` : ''}
+      ${fit.atsKeywordsMissing && fit.atsKeywordsMissing.length ? `<div style="margin-bottom:8px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">ATS Keywords Missing</div>${fit.atsKeywordsMissing.map(k => `<span style="display:inline-block;background:#fff5f5;border:1px solid #ddb8b8;color:#c94c4c;font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:12px;margin:2px;">${esc(k)}</span>`).join('')}</div>` : ''}
+      ${fit.atsTips ? `<p style="font-size:0.84rem;line-height:1.65;color:#444458;margin-top:12px;padding-top:12px;border-top:1px solid #ddd8d0;">${esc(fit.atsTips)}</p>` : ''}
+    </div>` : '<p style="color:#888;font-style:italic;">No fit analysis run yet. Go to the Fit Analysis tab and run your analysis first.</p>';
+
+  // Build practice history section
+  const practiceHtml = history.length ? history.map((entry, i) => {
+    const d = new Date(entry.date).toLocaleString();
+    const r = entry.aiResult;
+    return `
+      <div style="background:#fff;border:1px solid #ddd8d0;border-radius:10px;padding:20px;margin-bottom:16px;page-break-inside:avoid;">
+        <div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2e6ea6;margin-bottom:6px;">${entry.interviewer ? esc(entry.interviewer.name) + ' — ' + esc(entry.interviewer.title) : 'Practice Session'} · ${d}</div>
+        <div style="font-family:'Georgia',serif;font-size:1.05rem;color:#1c1c2e;margin-bottom:12px;">"${esc(entry.question)}"</div>
+        <div style="background:#f5f3ef;border:1px solid #ddd8d0;border-radius:6px;padding:12px;margin-bottom:14px;font-size:0.84rem;line-height:1.65;color:#444458;font-style:italic;">${esc(entry.answer)}</div>
+        ${r ? `
+          <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+            ${[['Answer Quality', r.qualityScore, r.qualityLabel], ['Succinctness', r.succinctScore, r.succinctLabel], ['Hire Signal', r.hireScore, r.hireVerdict]].map(([label, score, sub]) => `
+              <div style="flex:1;min-width:120px;background:#f5f3ef;border:1px solid #ddd8d0;border-radius:8px;padding:12px;text-align:center;">
+                <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:6px;">${label}</div>
+                <div style="font-size:1.8rem;font-weight:bold;color:${scoreColor(score)};line-height:1;">${score}<span style="font-size:0.9rem;color:#aaa8b8;">/10</span></div>
+                <div style="font-size:0.7rem;color:#888;margin-top:4px;">${esc(sub||'')}</div>
+              </div>`).join('')}
+          </div>
+          ${r.qualityFeedback ? `<div style="margin-bottom:10px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:4px;">On Your Answer</div><div style="font-size:0.84rem;line-height:1.65;color:#444458;">${esc(r.qualityFeedback)}</div></div>` : ''}
+          ${r.oneThing ? `<div style="background:#f0fafa;border:1px solid #a0cfcf;border-radius:8px;padding:12px;margin-bottom:10px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#1a8585;margin-bottom:4px;">⚡ The One Thing to Do Differently</div><div style="font-size:0.84rem;line-height:1.65;color:#0a4545;">${esc(r.oneThing)}</div></div>` : ''}
+          ${r.inVoice ? `<div style="background:#e8f2fc;border-left:3px solid #2e6ea6;border-radius:0 6px 6px 0;padding:12px 14px;"><div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;color:#2e6ea6;margin-bottom:5px;">Model Answer — In Your Voice</div><div style="font-size:0.84rem;line-height:1.65;color:#1c3a5a;font-style:italic;">${esc(r.inVoice)}</div></div>` : ''}
+        ` : `<div style="font-size:0.8rem;color:#888;font-style:italic;">Coaching based on best-practice frameworks (no AI key used).</div>`}
+      </div>`;
+  }).join('') : '<p style="color:#888;font-style:italic;">No practice sessions recorded yet. Go to the Practice tab to rehearse with real-time feedback.</p>';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interview Prep Report — ${esc(company)}</title>
+<style>
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f3ef; color: #1c1c2e; margin: 0; padding: 32px 24px; }
+  .report-wrap { max-width: 820px; margin: 0 auto; }
+  .report-header { background: #1c1c2e; color: #fff; border-radius: 10px; padding: 28px 32px; margin-bottom: 28px; }
+  .report-header h1 { font-family: Georgia, serif; font-size: 1.8rem; margin: 0 0 6px; }
+  .report-header .meta { font-size: 0.82rem; color: #aaa8b8; }
+  .section { margin-bottom: 36px; }
+  .section-title { font-family: Georgia, serif; font-size: 1.2rem; color: #1c1c2e; border-bottom: 2px solid #1a8585; padding-bottom: 8px; margin-bottom: 18px; }
+  .footer { text-align: center; font-size: 0.76rem; color: #aaa8b8; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd8d0; }
+  @media print { body { background: #fff; padding: 0; } .report-wrap { max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="report-wrap">
+  <div class="report-header">
+    <h1>${esc(company)}${role ? ' — ' + esc(role) : ''}</h1>
+    <div class="meta">${dateStr ? 'Interview Date: ' + dateStr + ' · ' : ''}Report generated: ${generated}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Interviewer Profiles</div>
+    ${ivHtml}
+  </div>
+
+  <div class="section">
+    <div class="section-title">Fit Analysis</div>
+    ${fitHtml}
+  </div>
+
+  <div class="section">
+    <div class="section-title">Practice Feedback (${history.length} session${history.length !== 1 ? 's' : ''})</div>
+    ${practiceHtml}
+  </div>
+
+  <div class="footer">
+    Generated by Interview Practice · <a href="https://yournextstepai.com" style="color:#1a8585;">yournextstepai.com</a>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (company.replace(/\s+/g,'_') + '_interview_prep_report.html').toLowerCase();
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportPracticeFeedback() {
+  const el = document.getElementById('feedback-content');
+  if (!el) return;
+  const s = getState();
+  const company = s.company || 'Interview';
+  const ivName = simIV ? simIV.name : 'Interviewer';
+  const question = (simIV && simIV.questions) ? simIV.questions[simQIdx] : '';
+  let out = `INTERVIEW PRACTICE FEEDBACK\n`;
+  out += `${company} — ${ivName}\n`;
+  out += `Question: ${question}\n`;
+  out += `Recorded: ${new Date().toLocaleString()}\n`;
+  out += `${'='.repeat(60)}\n\n`;
+  out += `YOUR ANSWER\n${simTranscript}\n\n`;
+  out += `${'='.repeat(60)}\n\n`;
+  out += el.innerText || el.textContent;
+  const fname = (ivName.split(' ')[0] + '_feedback_' + Date.now() + '.txt').toLowerCase();
+  downloadText(fname, out.replace(/\n{3,}/g, '\n\n'));
+}
+
+// ===================================================================
+// INIT — restore state on load
+// ===================================================================
+(function init() {
+  const s = getState();
+  sv('s-company', s.company);
+  sv('s-role', s.role);
+  sv('s-date', s.date);
+  sv('s-format', s.format || 'single');
+  sv('resume-text', s.resumeText);
+  sv('jd-text', s.jdText);
+  if (s.apiKey) {
+    sv('api-key-input', s.apiKey);
+    document.getElementById('api-key-status').textContent = '✓ Key saved.';
+    document.getElementById('api-key-status').style.color = 'var(--green)';
+  }
+  if (s.aiProvider) sv('ai-provider', s.aiProvider);
+  if (s.schedule) { scheduleRows = s.schedule; renderSchedule(); }
+  toggleScheduleCard();
+  renderInterviewerList();
+  onProviderChange();
+})();
+</script>
+</body>
+</html>
