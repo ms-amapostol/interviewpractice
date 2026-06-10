@@ -875,6 +875,11 @@ a:hover { text-decoration: underline; }
           <label class="form-label">Background / Bio</label>
           <textarea class="form-textarea" id="iv-background" placeholder="Paste their LinkedIn bio, an intro email, or any notes about this person — career history, current role, what they care about, etc."></textarea>
         </div>
+
+        <div class="alert alert-info" style="margin-top:4px;">
+          <div class="alert-label">💡 Pro-tip</div>
+          If this interviewer is visible on LinkedIn, you can download their profile as a PDF (click <strong>More → Save to PDF</strong> on their profile page) and upload it here. The more context you give, the more accurate and personalized the AI-generated analysis will be.
+        </div>
       </div>
 
       <!-- STEP 2: Generate with AI (bridge) -->
@@ -931,8 +936,12 @@ a:hover { text-decoration: underline; }
       </div>
 
       <!-- Save -->
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-blue" onclick="saveInterviewer()">Save Interviewer</button>
+      <div id="iv-edit-banner" style="display:none;margin-top:16px;padding:10px 14px;background:var(--gold-light);border:1px solid var(--gold-border);border-radius:var(--radius-sm);">
+        <span style="font-size:0.78rem;color:#0a4545;font-weight:600;">✏️ Editing: <span id="iv-edit-name"></span></span>
+        <span style="font-size:0.74rem;color:var(--muted);margin-left:8px;">Make your changes and click Update to save.</span>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn btn-blue" id="iv-save-btn" onclick="saveInterviewer()">Save Interviewer</button>
         <button class="btn btn-ghost" onclick="clearInterviewerForm()">Clear Form</button>
         <span style="font-size:0.76rem;color:var(--subtle);">Saves to your browser and adds the card to the Interviewer Profiles tab.</span>
       </div>
@@ -1472,13 +1481,15 @@ async function handleDocFile(event, which) {
 // ===================================================================
 const COLORS = ['#1a8585','#2e6ea6','#2a8a5a','#c94c4c','#6666cc','#8a6acc','#7a50cc'];
 
+let editingInterviewerId = null;
+
 function saveInterviewer() {
   const name = document.getElementById('iv-name').value.trim();
   if (!name) { alert('Please enter a name.'); return; }
   const s = getState();
   const interviewers = s.interviewers || [];
   const iv = {
-    id: Date.now(),
+    id: editingInterviewerId || Date.now(),
     name,
     title: document.getElementById('iv-title').value.trim(),
     time: document.getElementById('iv-time').value.trim(),
@@ -1488,7 +1499,12 @@ function saveInterviewer() {
     wants: document.getElementById('iv-wants').value.trim(),
     angle: document.getElementById('iv-angle').value.trim(),
   };
-  interviewers.push(iv);
+  if (editingInterviewerId) {
+    const idx = interviewers.findIndex(i => i.id === editingInterviewerId);
+    if (idx !== -1) interviewers[idx] = iv; else interviewers.push(iv);
+  } else {
+    interviewers.push(iv);
+  }
   setState({ interviewers });
   clearInterviewerForm();
   renderInterviewerList();
@@ -1505,6 +1521,11 @@ function clearInterviewerForm() {
   document.getElementById('iv-ai-status').textContent = '';
   document.getElementById('iv-sources').style.display = 'none';
   document.getElementById('iv-sources-links').innerHTML = '';
+  editingInterviewerId = null;
+  const banner = document.getElementById('iv-edit-banner');
+  if (banner) banner.style.display = 'none';
+  const saveBtn = document.getElementById('iv-save-btn');
+  if (saveBtn) saveBtn.textContent = 'Save Interviewer';
 }
 
 function deleteInterviewer(id) {
@@ -1519,6 +1540,7 @@ function editInterviewer(id) {
   const s = getState();
   const iv = (s.interviewers || []).find(i => i.id === id);
   if (!iv) return;
+  showSettings('interviewers');
   sv('iv-name', iv.name);
   sv('iv-title', iv.title);
   sv('iv-time', iv.time);
@@ -1527,7 +1549,11 @@ function editInterviewer(id) {
   sv('iv-questions', (iv.questions || []).join('\n'));
   sv('iv-wants', iv.wants);
   sv('iv-angle', iv.angle);
-  deleteInterviewer(id);
+  editingInterviewerId = id;
+  const banner = document.getElementById('iv-edit-banner');
+  if (banner) { banner.style.display = 'block'; document.getElementById('iv-edit-name').textContent = iv.name; }
+  const saveBtn = document.getElementById('iv-save-btn');
+  if (saveBtn) saveBtn.textContent = 'Update Interviewer';
   window.scrollTo(0, 0);
 }
 
@@ -1833,7 +1859,12 @@ async function generateProfileWithAI() {
   const key = s.apiKey;
   const provider = s.aiProvider || 'anthropic';
   if (!key) {
-    document.getElementById('iv-ai-status').textContent = '⚠ Add an API key in Settings → AI & API first.';
+    document.getElementById('iv-ai-status').innerHTML =
+      '<div class="alert alert-warn" style="margin:0;">' +
+      '<div class="alert-label">No API Key Found</div>' +
+      'You need an API key to use AI generation. ' +
+      '<a href="#" onclick="showSettings(\'api\');return false;" style="color:var(--gold);font-weight:600;">Add one in AI &amp; API settings →</a>' +
+      '</div>';
     return;
   }
   const background = document.getElementById('iv-background').value.trim();
