@@ -2102,7 +2102,8 @@ async function renderFitAnalysis() {
       setState({ fitResult: result, fitResultDate: new Date().toISOString() });
       renderFitResult(result, true);
     } catch(e) {
-      content.innerHTML = renderFitRuleBased(resume, jd) + `<div class="alert alert-warn" style="margin-top:16px;">AI fit analysis failed (${esc(e.message)}). Showing keyword analysis instead.</div>`;
+      const notice = `<div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">AI Analysis Couldn't Run</div>Your API key is saved, but the AI request failed: <strong>${esc(e.message)}</strong>. Showing keyword match analysis instead. (Check that your key is valid and has credit, then use Re-run Analysis.)</div>`;
+      content.innerHTML = renderFitRuleBased(resume, jd, notice);
     }
   } else {
     content.innerHTML = renderFitRuleBased(resume, jd);
@@ -2191,7 +2192,7 @@ function renderFitResult(r, aiPowered) {
   `;
 }
 
-function renderFitRuleBased(resume, jd) {
+function renderFitRuleBased(resume, jd, noticeHtml) {
   const resumeLower = resume.toLowerCase();
   const words = jd.toLowerCase().match(/\b[a-z][a-z\-]{3,}\b/g) || [];
   const freq = {};
@@ -2203,8 +2204,10 @@ function renderFitRuleBased(resume, jd) {
   const color = pct >= 60 ? 'var(--green)' : pct >= 35 ? 'var(--gold)' : 'var(--red)';
   const label = pct >= 75 ? 'Strong keyword alignment' : pct >= 50 ? 'Moderate keyword alignment' : 'Low keyword alignment — gap to close';
 
+  const banner = noticeHtml || '<div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">Keyword Analysis Mode</div>No AI key detected — showing keyword match analysis. Add an API key for full AI-powered fit analysis.</div>';
+
   return `
-    <div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">Keyword Analysis Mode</div>No AI key detected — showing keyword match analysis. Add an API key for full AI-powered fit analysis.</div>
+    ${banner}
 
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
