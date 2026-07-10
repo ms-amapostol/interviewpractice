@@ -2119,20 +2119,58 @@ async function renderFitAnalysis() {
   }
 
   const key = s.apiKey;
-  const provider = s.aiProvider || 'anthropic';
 
+  // AI mode: reuse the saved analysis instead of calling the API on every visit.
+  // A fresh call only happens when the user clicks Generate / Re-run.
   if (key) {
-    content.innerHTML = '<div class="feedback-loading"><span class="spinner"></span>Analyzing your fit…</div>';
-    try {
-      const result = await runAIFitAnalysis(provider, key, resume, jd, s.role, s.company);
-      setState({ fitResult: result, fitResultDate: new Date().toISOString() });
-      renderFitResult(result, true);
-    } catch(e) {
-      const notice = `<div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">AI Analysis Couldn't Run</div>Your API key is saved, but the AI request failed: <strong>${esc(e.message)}</strong>. Showing keyword match analysis instead. (Check that your key is valid and has credit, then use Re-run Analysis.)</div>`;
-      content.innerHTML = renderFitRuleBased(resume, jd, notice);
+    if (s.fitResult) {
+      const stale = s.fitInputSig && s.fitInputSig !== fitInputSignature(resume, jd);
+      renderFitResult(s.fitResult, true, { date: s.fitResultDate, stale });
+    } else {
+      content.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🎯</div>
+          <div class="empty-state-title">Ready to analyze your fit</div>
+          <div class="empty-state-body">Compare your resume against the job description with AI-powered insights. This uses your API key, so it only runs when you ask.</div>
+          <button class="btn btn-gold" onclick="runFitAnalysis()">✨ Generate Fit Analysis</button>
+        </div>`;
     }
   } else {
+    // No key → local keyword analysis is free and instant, so just show it.
     content.innerHTML = renderFitRuleBased(resume, jd);
+  }
+}
+
+// Lightweight signature of the analyzed documents, so we can flag when the
+// resume or JD has changed since the last saved analysis.
+function fitInputSignature(resume, jd) {
+  const str = (resume || '') + '|' + (jd || '');
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return String(h);
+}
+
+// The only place that spends tokens — triggered by an explicit button click.
+async function runFitAnalysis() {
+  const s = getState();
+  const resume = s.resumeText || '';
+  const jd = s.jdText || '';
+  const content = document.getElementById('fit-content');
+  if (!resume || !jd) { renderFitAnalysis(); return; }
+
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  if (!key) { content.innerHTML = renderFitRuleBased(resume, jd); return; }
+
+  content.innerHTML = '<div class="feedback-loading"><span class="spinner"></span>Analyzing your fit…</div>';
+  try {
+    const result = await runAIFitAnalysis(provider, key, resume, jd, s.role, s.company);
+    const now = new Date().toISOString();
+    setState({ fitResult: result, fitResultDate: now, fitInputSig: fitInputSignature(resume, jd) });
+    renderFitResult(result, true, { date: now, stale: false });
+  } catch(e) {
+    const notice = `<div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">AI Analysis Couldn't Run</div>Your API key is saved, but the AI request failed: <strong>${esc(e.message)}</strong>. Showing keyword match analysis instead. (Check that your key is valid and has credit, then use Re-run Analysis.)</div>`;
+    content.innerHTML = renderFitRuleBased(resume, jd, notice);
   }
 }
 
@@ -2164,11 +2202,20 @@ Return ONLY valid JSON:
   return parseJSON(text);
 }
 
-function renderFitResult(r, aiPowered) {
+function renderFitResult(r, aiPowered, meta) {
   const content = document.getElementById('fit-content');
   const color = r.overallFit >= 75 ? 'var(--green)' : r.overallFit >= 50 ? 'var(--gold)' : 'var(--red)';
+  meta = meta || {};
+  const dateStr = meta.date ? new Date(meta.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const banner = aiPowered
+    ? `<div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">✨ AI-Powered Analysis</div>Saved from your last run${dateStr ? ' on <strong>' + esc(dateStr) + '</strong>' : ''}. It stays here until you re-run it — no tokens are spent just by opening this tab.</div>`
+    : '';
+  const staleBanner = meta.stale
+    ? `<div class="alert alert-warn" style="margin-bottom:16px;"><div class="alert-label">Documents Changed</div>Your resume or job description has changed since this analysis. Re-run to update it.</div>`
+    : '';
   content.innerHTML = `
-    ${aiPowered ? '<div class="alert alert-info" style="margin-bottom:16px;"><div class="alert-label">✨ AI-Powered Analysis</div>Powered by your connected AI provider.</div>' : ''}
+    ${banner}
+    ${staleBanner}
 
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
@@ -2214,7 +2261,7 @@ function renderFitResult(r, aiPowered) {
       <p style="font-size:0.82rem;line-height:1.62;color:#444458;margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">${esc(r.atsTips)}</p>
     </div>
 
-    <button class="btn btn-ghost btn-sm" onclick="renderFitAnalysis()">↺ Re-run Analysis</button>
+    <button class="btn btn-gold btn-sm" onclick="runFitAnalysis()">↺ Re-run Analysis</button>
   `;
 }
 
