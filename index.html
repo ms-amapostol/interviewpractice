@@ -1976,11 +1976,37 @@ async function callAI(provider, key, userPrompt, maxTokens=1500, systemPrompt=''
 }
 
 function parseJSON(text) {
-  try { return JSON.parse(text); } catch(e) {
-    const m = text.match(/\{[\s\S]*\}/);
-    if (m) return JSON.parse(m[0]);
-    throw new Error('Could not parse AI response as JSON.');
+  // Strip markdown code fences if present
+  let t = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try { return JSON.parse(t); } catch(e) {}
+  // Grab the largest {...} block
+  const m = t.match(/\{[\s\S]*\}/);
+  if (m) { try { return JSON.parse(m[0]); } catch(e) {} }
+  // Last resort: response was likely truncated — close open strings/brackets
+  const start = t.indexOf('{');
+  if (start !== -1) {
+    let s = t.slice(start);
+    const stack = [];
+    let inStr = false, esc = false;
+    for (const ch of s) {
+      if (esc) { esc = false; continue; }
+      if (ch === '\\') { esc = true; continue; }
+      if (ch === '"') { inStr = !inStr; continue; }
+      if (inStr) continue;
+      if (ch === '{' || ch === '[') stack.push(ch);
+      else if (ch === '}' || ch === ']') stack.pop();
+    }
+    let closed = s;
+    if (inStr) closed += '"';                        // close a dangling string
+    closed = closed.replace(/,?\s*"[^"]*"\s*:\s*$/, ''); // drop a key with no value
+    closed = closed.replace(/,\s*$/, '');            // drop a trailing comma
+    // Close any still-open containers, innermost first
+    for (let i = stack.length - 1; i >= 0; i--) {
+      closed += stack[i] === '{' ? '}' : ']';
+    }
+    try { return JSON.parse(closed); } catch(e) {}
   }
+  throw new Error('Could not parse AI response as JSON.');
 }
 
 // ===================================================================
@@ -2129,12 +2155,12 @@ Return ONLY valid JSON:
   "strengths": ["<strength 1>","<strength 2>","<strength 3>"],
   "gaps": ["<gap or risk 1>","<gap 2>"],
   "highlight": ["<experience/achievement to emphasize in interview 1>","<2>","<3>","<4>"],
-  "atsKeywordsMatched": ["<keyword from JD found in resume>"],
-  "atsKeywordsMissing": ["<important JD keyword NOT in resume>"],
+  "atsKeywordsMatched": ["<keyword from JD found in resume — list up to 12>"],
+  "atsKeywordsMissing": ["<important JD keyword NOT in resume — list up to 12>"],
   "atsTips": "<2-3 sentences of ATS and keyword optimization advice>"
 }`;
 
-  const text = await callAI(provider, key, prompt, 1200);
+  const text = await callAI(provider, key, prompt, 2500);
   return parseJSON(text);
 }
 
