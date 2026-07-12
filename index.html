@@ -65,6 +65,50 @@ a:hover { text-decoration: underline; }
   height: 42px;
   flex-shrink: 0;
 }
+.session-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.session-bar-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+}
+#session-select {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--white);
+  border: 1.5px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  max-width: 220px;
+  cursor: pointer;
+}
+.session-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.session-btn:hover { border-color: var(--gold); color: var(--gold); }
+.session-btn-danger:hover { border-color: var(--red); color: var(--red); }
+@media (max-width: 640px) {
+  .session-bar { margin-left: 0; width: 100%; margin-top: 8px; }
+}
 .app-title {
   font-family: 'DM Serif Display', serif;
   font-size: 1.45rem;
@@ -622,6 +666,44 @@ a:hover { text-decoration: underline; }
 }
 .settings-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
 .settings-nav-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; }
+.settings-nav-btn { display: inline-flex; align-items: center; gap: 7px; }
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold);
+  border: 1.5px solid var(--gold-border);
+  font-size: 0.66rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.settings-nav-btn.active .step-num {
+  background: #fff;
+  color: var(--gold);
+  border-color: #fff;
+}
+.settings-nav-btn-plain { margin-left: 4px; }
+.doc-save-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--gold-light);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.upload-hint {
+  font-size: 0.74rem;
+  color: var(--green);
+  font-weight: 600;
+  margin-top: 2px;
+}
 
 /* ========== EMPTY STATES ========== */
 .empty-state {
@@ -753,6 +835,13 @@ a:hover { text-decoration: underline; }
       <div class="app-title">Anastasia's Interview Practice</div>
       <div class="app-subtitle">Prep smarter. Walk in ready.</div>
     </div>
+    <div class="session-bar" id="session-bar">
+      <span class="session-bar-label">Interview session</span>
+      <select id="session-select" onchange="switchSession(this.value)" title="Switch interview session"></select>
+      <button class="session-btn" onclick="newSession()" title="Start a new interview session">+ New</button>
+      <button class="session-btn" onclick="renameSession()" title="Rename this session">Rename</button>
+      <button class="session-btn session-btn-danger" onclick="deleteSession()" title="Delete this session">Delete</button>
+    </div>
   </div>
   <div class="tab-nav">
     <button class="tab-btn active" onclick="showTab('settings')">📝 Interview Setup</button>
@@ -772,7 +861,7 @@ a:hover { text-decoration: underline; }
   <!-- How to Use This App -->
   <div class="alert alert-info" style="margin-bottom:20px;">
     <div class="alert-label">How to use this app</div>
-    Start here in <strong>Interview Setup</strong>: fill in your interview details, add interviewer profiles, upload your resume and job description, and optionally add an AI API key for personalized feedback. Then use <strong>Interviewer Profiles</strong> as your quick-reference cheat sheet during prep, <strong>Fit Analysis</strong> to understand your positioning and ATS alignment, and <strong>Practice</strong> to rehearse with real-time coaching.
+    Follow the numbered steps below: <strong>1)</strong> add your AI API key (Claude or ChatGPT) for personalized feedback, <strong>2)</strong> fill in your interview details, <strong>3)</strong> add interviewer profiles, and <strong>4)</strong> upload your resume and job description. Then use <strong>Interviewer Profiles</strong> as your quick-reference cheat sheet, <strong>Fit Analysis</strong> to understand your positioning and ATS alignment, and <strong>Practice</strong> to rehearse with real-time coaching. Use the <strong>session picker</strong> at the top right to keep separate prep for each interview.
   </div>
 
   <!-- Connected: Setup Steps nav + content sections -->
@@ -780,11 +869,11 @@ a:hover { text-decoration: underline; }
 
   <div class="settings-nav">
     <span class="settings-nav-label">Setup Steps</span>
-    <button class="settings-nav-btn active" onclick="showSettings('setup')">Interview Details</button>
-    <button class="settings-nav-btn" onclick="showSettings('interviewers')">Interviewers</button>
-    <button class="settings-nav-btn" onclick="showSettings('documents')">My Documents</button>
-    <button class="settings-nav-btn" onclick="showSettings('api')">AI & API</button>
-    <button class="settings-nav-btn" onclick="showSettings('privacy')">Privacy</button>
+    <button class="settings-nav-btn active" onclick="showSettings('api')"><span class="step-num">1</span>API Key</button>
+    <button class="settings-nav-btn" onclick="showSettings('setup')"><span class="step-num">2</span>Interview Details</button>
+    <button class="settings-nav-btn" onclick="showSettings('interviewers')"><span class="step-num">3</span>Interviewers</button>
+    <button class="settings-nav-btn" onclick="showSettings('documents')"><span class="step-num">4</span>My Documents</button>
+    <button class="settings-nav-btn settings-nav-btn-plain" onclick="showSettings('privacy')">🔒 Privacy</button>
   </div>
 
   <div style="padding:20px 20px 24px;">
@@ -970,6 +1059,13 @@ a:hover { text-decoration: underline; }
       <div class="alert-label">Why we need these documents</div>
       Your resume and the job description power two key features: the <strong>Fit Analysis</strong> tab, which scores how well your experience aligns with the role, and the <strong>Practice</strong> tab, which uses your background to generate more relevant, personalized feedback. Neither document leaves your device — they're stored locally in your browser and sent to the AI only when you explicitly run an analysis or request feedback.
     </div>
+    <!-- Master save (top) -->
+    <div class="doc-save-bar">
+      <button class="btn btn-gold btn-sm" onclick="saveAllDocs()">💾 Save documents</button>
+      <span id="doc-save-status-top" style="font-size:0.78rem;color:var(--muted);"></span>
+      <span style="font-size:0.74rem;color:var(--subtle);margin-left:auto;">Saves your resume <em>and</em> job description together.</span>
+    </div>
+
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
       <div class="section-label">Your Resume</div>
@@ -979,13 +1075,11 @@ a:hover { text-decoration: underline; }
         <div class="upload-text">Upload PDF, DOCX, or TXT</div>
         <div class="upload-filename" id="resume-filename" style="display:none;"></div>
       </div>
-      <div class="form-group">
+      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
+      <span id="resume-save-status" style="display:block;font-size:0.76rem;color:var(--muted);margin-top:4px;"></span>
+      <div class="form-group" style="margin-top:12px;">
         <label class="form-label">Or paste your resume text</label>
         <textarea class="form-textarea" id="resume-text" placeholder="Paste your resume content here..." style="min-height:200px;"></textarea>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
-          <button class="btn btn-gold btn-sm" onclick="saveDoc('resume')">Save Resume</button>
-          <span id="resume-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
-        </div>
       </div>
     </div>
 
@@ -998,14 +1092,18 @@ a:hover { text-decoration: underline; }
         <div class="upload-text">Upload PDF, DOCX, or TXT</div>
         <div class="upload-filename" id="jd-filename" style="display:none;"></div>
       </div>
-      <div class="form-group">
+      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
+      <span id="jd-save-status" style="display:block;font-size:0.76rem;color:var(--muted);margin-top:4px;"></span>
+      <div class="form-group" style="margin-top:12px;">
         <label class="form-label">Or paste the job description</label>
         <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:200px;"></textarea>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
-          <button class="btn btn-gold btn-sm" onclick="saveDoc('jd')">Save Job Description</button>
-          <span id="jd-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
-        </div>
       </div>
+    </div>
+
+    <!-- Master save (bottom) -->
+    <div class="doc-save-bar" style="margin-top:16px;">
+      <button class="btn btn-gold btn-sm" onclick="saveAllDocs()">💾 Save documents</button>
+      <span id="doc-save-status-bottom" style="font-size:0.78rem;color:var(--muted);"></span>
     </div>
   </div>
 
@@ -1013,7 +1111,7 @@ a:hover { text-decoration: underline; }
   <div class="settings-section" id="settings-api" style="display:none;">
     <div class="card">
       <div class="card-accent"></div>
-      <div class="section-label">AI Provider</div>
+      <div class="section-label">Step 1 · AI API Key (Claude or ChatGPT)</div>
       <p style="font-size:0.82rem;color:var(--muted);margin:8px 0 4px;">An API key unlocks personalized, AI-driven feedback written in the voice of your specific interviewers. Without one, you still get structured coaching — including the STARR framework, question-type tips, and best-practice guidance — it's just not customized to the people in your interview loop.</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px;">
         <div style="flex:1;min-width:160px;padding:12px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;">
@@ -1035,7 +1133,7 @@ a:hover { text-decoration: underline; }
       </div>
 
       <div class="form-group">
-        <label class="form-label" id="api-key-label">Anthropic API Key</label>
+        <label class="form-label" id="api-key-label">Claude (Anthropic) API Key</label>
         <div style="display:flex;gap:10px;">
           <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-..." style="font-family:monospace;">
           <button class="btn btn-gold" onclick="saveApiKey()">Save</button>
@@ -1292,18 +1390,179 @@ function dismissWelcome() {
 // GLOBAL STATE
 // ===================================================================
 const STORAGE_KEY = 'yns_interview_practice_v1';
+// Fields shared across ALL interview sessions (the candidate, not the role):
+const SHARED_KEYS = ['resumeText', 'apiKey', 'aiProvider'];
+// Everything else lives on the individual session.
+const SESSION_KEYS = ['company','role','date','format','interviewers','jdText','fitResult','fitResultDate','fitInputSig','schedule','feedbackHistory'];
 
-function loadState() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+function _newSession(name) {
+  return {
+    id: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    name: name || '',
+    autoName: true, // title auto-derives from Interview Details until the user renames it
+    company: '', role: '', date: '', format: 'single',
+    interviewers: [], jdText: '',
+    fitResult: null, fitResultDate: null, fitInputSig: null,
+    schedule: [], feedbackHistory: []
+  };
 }
-function saveState(s) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {}
+
+// Build a session title from its interview details.
+function derivedSessionName(sess) {
+  return (sess.company || '') + (sess.company && sess.role ? ' — ' : '') + (sess.role || '');
+}
+
+// Load the root store, migrating the old flat v1 shape into the v2 multi-session shape.
+function loadRoot() {
+  let root;
+  try { root = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) { root = null; }
+  if (!root || typeof root !== 'object') root = {};
+
+  if (!root.version) {
+    // Migrate legacy single-session data
+    const legacy = root;
+    const shared = {};
+    SHARED_KEYS.forEach(k => { if (legacy[k] !== undefined) shared[k] = legacy[k]; });
+    const label = legacy.company
+      ? legacy.company + (legacy.role ? ' — ' + legacy.role : '')
+      : '';
+    const sess = _newSession(label);
+    SESSION_KEYS.forEach(k => { if (legacy[k] !== undefined) sess[k] = legacy[k]; });
+    root = { version: 2, shared, sessions: [sess], activeId: sess.id };
+    saveRoot(root);
+  }
+
+  if (!root.shared || typeof root.shared !== 'object') root.shared = {};
+  if (!Array.isArray(root.sessions) || !root.sessions.length) {
+    const sess = _newSession('');
+    root.sessions = [sess];
+    root.activeId = sess.id;
+  }
+  if (!root.activeId || !root.sessions.some(x => x.id === root.activeId)) {
+    root.activeId = root.sessions[0].id;
+  }
+  return root;
+}
+function saveRoot(root) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(root)); } catch(e) {}
+}
+function activeSession(root) {
+  root = root || loadRoot();
+  return root.sessions.find(x => x.id === root.activeId) || root.sessions[0];
+}
+
+// Merged view: shared fields + the active session's fields. Keeps all existing s.<field> reads working.
+function loadState() {
+  const root = loadRoot();
+  return Object.assign({}, root.shared, activeSession(root));
 }
 function getState() { return loadState(); }
+
+// Route each key to shared vs. the active session (skips the session's own id/name).
 function setState(patch) {
-  const s = loadState();
-  Object.assign(s, patch);
-  saveState(s);
+  const root = loadRoot();
+  const sess = activeSession(root);
+  Object.keys(patch).forEach(k => {
+    if (SHARED_KEYS.indexOf(k) !== -1) root.shared[k] = patch[k];
+    else if (k !== 'id' && k !== 'name') sess[k] = patch[k];
+  });
+  saveRoot(root);
+}
+// Accepts a merged-style object (from getState) and routes all of its keys.
+function saveState(s) { setState(s); }
+
+// ===================================================================
+// SESSION MANAGEMENT (multiple interviews)
+// ===================================================================
+function sessionDisplayName(sess) {
+  if (sess.name) return sess.name;
+  const derived = derivedSessionName(sess);
+  return derived || 'New interview (unsaved)';
+}
+
+function renderSessionBar() {
+  const sel = document.getElementById('session-select');
+  if (!sel) return;
+  const root = loadRoot();
+  sel.innerHTML = root.sessions.map(s =>
+    `<option value="${s.id}"${s.id === root.activeId ? ' selected' : ''}>${esc(sessionDisplayName(s))}</option>`
+  ).join('');
+}
+
+function switchSession(id) {
+  const root = loadRoot();
+  if (!root.sessions.some(s => s.id === id)) return;
+  root.activeId = id;
+  saveRoot(root);
+  hydrateUI();
+  // Refresh whichever prep tab is currently open
+  const active = document.querySelector('.view.active');
+  if (active) {
+    if (active.id === 'view-cheatsheet') { csActiveIdx = 0; renderCheatSheet(); }
+    else if (active.id === 'view-fitanalysis') renderFitAnalysis();
+    else if (active.id === 'view-practice') initSimulator();
+  }
+}
+
+function newSession() {
+  // Create a blank, unnamed session — it gets its title when the user saves Interview Details.
+  const root = loadRoot();
+  const sess = _newSession('');
+  root.sessions.push(sess);
+  root.activeId = sess.id;
+  saveRoot(root);
+  hydrateUI();
+  showTab('settings');
+  showSettings('setup'); // Step 2 — Interview Details
+}
+
+function renameSession() {
+  const root = loadRoot();
+  const sess = activeSession(root);
+  const name = (prompt('Rename this interview session:', sessionDisplayName(sess)) || '').trim();
+  if (!name) return;
+  sess.name = name;
+  sess.autoName = false; // manual name sticks; won't be overwritten by Interview Details
+  saveRoot(root);
+  renderSessionBar();
+}
+
+function deleteSession() {
+  const root = loadRoot();
+  if (root.sessions.length <= 1) {
+    alert('This is your only session — start another before deleting this one.');
+    return;
+  }
+  const sess = activeSession(root);
+  if (!confirm('Delete the session "' + sessionDisplayName(sess) + '"? This removes its interviewers, job description, and practice history. Your resume and API key are kept.')) return;
+  root.sessions = root.sessions.filter(s => s.id !== sess.id);
+  root.activeId = root.sessions[0].id;
+  saveRoot(root);
+  hydrateUI();
+}
+
+// Repopulate every input/list from the active session — reused on load and on session switch.
+function hydrateUI() {
+  const s = getState();
+  sv('s-company', s.company || '');
+  sv('s-role', s.role || '');
+  sv('s-date', s.date || '');
+  sv('s-format', s.format || 'single');
+  sv('resume-text', s.resumeText || '');
+  sv('jd-text', s.jdText || '');
+  sv('api-key-input', s.apiKey || '');
+  const apiStatus = document.getElementById('api-key-status');
+  if (apiStatus) {
+    if (s.apiKey) { apiStatus.textContent = '✓ Key saved.'; apiStatus.style.color = 'var(--green)'; }
+    else { apiStatus.textContent = 'Key stays in your browser only — never sent anywhere except the AI provider you choose.'; apiStatus.style.color = 'var(--muted)'; }
+  }
+  if (s.aiProvider) sv('ai-provider', s.aiProvider);
+  scheduleRows = s.schedule || [];
+  renderSchedule();
+  toggleScheduleCard();
+  renderInterviewerList();
+  onProviderChange();
+  renderSessionBar();
 }
 
 // ===================================================================
@@ -1335,7 +1594,7 @@ function showSettings(section) {
   document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
   document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('settings-' + section).style.display = 'block';
-  const map = { setup: 0, interviewers: 1, documents: 2, api: 3, privacy: 4 };
+  const map = { api: 0, setup: 1, interviewers: 2, documents: 3, privacy: 4 };
   const btns = document.querySelectorAll('.settings-nav-btn');
   if (btns[map[section]]) btns[map[section]].classList.add('active');
   if (section === 'interviewers') renderInterviewerList();
@@ -1355,26 +1614,39 @@ function autosave() {
 }
 
 function saveInterviewDetails() {
-  autosave();
+  autosave(); // persists company/role/date/format to the active session
+  // Title the session from the interview details (unless the user manually renamed it)
+  const root = loadRoot();
+  const sess = activeSession(root);
+  if (sess.autoName !== false) {
+    sess.name = derivedSessionName(sess); // e.g. "Acme — Product Manager"
+    saveRoot(root);
+    renderSessionBar();
+  }
   const statusEl = document.getElementById('details-save-status');
-  statusEl.textContent = '✓ Saved';
+  const named = sess.name ? ' as “' + sess.name + '”' : '';
+  statusEl.textContent = '✓ Saved' + named;
   statusEl.style.color = 'var(--green)';
   setTimeout(() => { statusEl.textContent = ''; }, 3000);
 }
 
-function saveDoc(which) {
-  const key = which === 'resume' ? 'resumeText' : 'jdText';
-  const text = v(which === 'resume' ? 'resume-text' : 'jd-text').trim();
-  const statusEl = document.getElementById(which + '-save-status');
-  if (!text) {
-    statusEl.textContent = '⚠ Nothing to save — paste your text first.';
-    statusEl.style.color = 'var(--red)';
-    return;
-  }
-  setState({ [key]: text });
-  statusEl.textContent = '✓ Saved';
-  statusEl.style.color = 'var(--green)';
-  setTimeout(() => { statusEl.textContent = ''; }, 3000);
+// Master save — stores resume AND job description together.
+function saveAllDocs() {
+  const resume = v('resume-text').trim();
+  const jd = v('jd-text').trim();
+  setState({ resumeText: resume, jdText: jd });
+  const bits = [];
+  if (resume) bits.push('resume');
+  if (jd) bits.push('job description');
+  const msg = bits.length ? '✓ Saved ' + bits.join(' and ') : '✓ Saved (both fields are empty)';
+  ['doc-save-status-top', 'doc-save-status-bottom'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = msg;
+      el.style.color = 'var(--green)';
+      setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+  });
 }
 
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
@@ -1474,14 +1746,23 @@ async function handleDocFile(event, which) {
   const fnameEl = document.getElementById(which + '-filename');
   const areaEl = document.getElementById(which + '-upload-area');
   const textEl = document.getElementById(which + '-text');
+  const statusEl = document.getElementById(which + '-save-status');
   fnameEl.textContent = '⏳ Extracting…';
   fnameEl.style.display = 'block';
   try {
     const text = await extractTextFromFile(file);
+    if (!text || !text.trim()) throw new Error('No readable text found in that file.');
     textEl.value = text;
     areaEl.classList.add('has-file');
-    fnameEl.textContent = '✓ ' + file.name + ' — click Save below to confirm.';
-    // Don't autosave yet — let user click the Save button for explicit confirmation
+    fnameEl.textContent = '✓ ' + file.name;
+    // Auto-save on upload so either path works on its own — no separate Save click needed
+    const key = which === 'resume' ? 'resumeText' : 'jdText';
+    setState({ [key]: text });
+    if (statusEl) {
+      statusEl.textContent = '✓ Saved from ' + file.name;
+      statusEl.style.color = 'var(--green)';
+      setTimeout(() => { statusEl.textContent = ''; }, 4000);
+    }
   } catch(e) {
     fnameEl.textContent = '⚠ ' + e.message;
   }
@@ -1929,10 +2210,13 @@ function saveApiKey() {
 }
 
 function onProviderChange() {
-  const p = document.getElementById('ai-provider').value;
-  document.getElementById('api-key-label').textContent = p === 'openai' ? 'OpenAI API Key' : 'Anthropic API Key';
+  const sel = document.getElementById('ai-provider');
+  if (!sel) return;
+  const p = sel.value;
+  const label = document.getElementById('api-key-label');
+  if (label) label.textContent = p === 'openai' ? 'ChatGPT (OpenAI) API Key' : 'Claude (Anthropic) API Key';
   const input = document.getElementById('api-key-input');
-  input.placeholder = p === 'openai' ? 'sk-...' : 'sk-ant-...';
+  if (input) input.placeholder = p === 'openai' ? 'sk-...' : 'sk-ant-...';
 }
 
 // ===================================================================
@@ -2800,10 +3084,10 @@ function downloadJSON(filename, obj) {
 }
 
 function exportAllData() {
-  const s = getState();
-  const safe = Object.assign({}, s);
-  delete safe.apiKey; // don't export the key
-  downloadJSON('interview-practice-backup.json', safe);
+  // Back up ALL sessions + shared data (minus the API key)
+  const root = JSON.parse(JSON.stringify(loadRoot()));
+  if (root.shared) delete root.shared.apiKey;
+  downloadJSON('interview-practice-backup.json', root);
 }
 
 function importAllData(event) {
@@ -2813,9 +3097,18 @@ function importAllData(event) {
   r.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
-      const s = getState();
-      Object.assign(s, data);
-      saveState(s);
+      if (data && data.version >= 2 && Array.isArray(data.sessions)) {
+        // Full multi-session backup — restore wholesale, but keep the current API key if the backup omits it
+        const current = loadRoot();
+        if (!data.shared) data.shared = {};
+        if (!data.shared.apiKey && current.shared && current.shared.apiKey) data.shared.apiKey = current.shared.apiKey;
+        saveRoot(data);
+      } else {
+        // Legacy flat backup — merge into the active session
+        const s = getState();
+        Object.assign(s, data);
+        saveState(s);
+      }
       document.getElementById('import-status').textContent = '✓ Data imported. Reloading…';
       setTimeout(() => location.reload(), 800);
     } catch(err) {
@@ -2838,7 +3131,7 @@ function exportCheatSheet() {
       <div class="iv-accent" style="background:${iv.color};"></div>
       <div class="iv-name">${esc(iv.name)}</div>
       <div class="iv-title" style="color:${iv.color};">${esc(iv.title)}${iv.time ? ' &nbsp;·&nbsp; ' + esc(iv.time) : ''}</div>
-      ${iv.background ? `<div class="iv-section"><div class="iv-label">Background</div><div class="iv-body">${esc(iv.background)}</div></div>` : ''}
+      ${iv.background ? `<div class="iv-section"><div class="iv-label">Background</div><div class="iv-body">${esc(iv.background.substring(0, 600))}${iv.background.length > 600 ? '…' : ''}</div></div>` : ''}
       ${iv.wants ? `<div class="iv-section"><div class="iv-label">What They Want to See</div><div class="iv-body">${esc(iv.wants)}</div></div>` : ''}
       ${iv.angle ? `<div class="iv-angle"><div class="iv-angle-label">⚡ Your Angle &amp; Watch-Fors</div><div class="iv-body">${esc(iv.angle)}</div></div>` : ''}
       ${iv.questions && iv.questions.length ? `
@@ -3122,23 +3415,9 @@ function exportPracticeFeedback() {
 // INIT — restore state on load
 // ===================================================================
 (function init() {
-  const s = getState();
-  sv('s-company', s.company);
-  sv('s-role', s.role);
-  sv('s-date', s.date);
-  sv('s-format', s.format || 'single');
-  sv('resume-text', s.resumeText);
-  sv('jd-text', s.jdText);
-  if (s.apiKey) {
-    sv('api-key-input', s.apiKey);
-    document.getElementById('api-key-status').textContent = '✓ Key saved.';
-    document.getElementById('api-key-status').style.color = 'var(--green)';
-  }
-  if (s.aiProvider) sv('ai-provider', s.aiProvider);
-  if (s.schedule) { scheduleRows = s.schedule; renderSchedule(); }
-  toggleScheduleCard();
-  renderInterviewerList();
-  onProviderChange();
+  hydrateUI();
+  // Open the mini-map on Step 1 (API key) by default
+  showSettings('api');
 })();
 </script>
 </body>
