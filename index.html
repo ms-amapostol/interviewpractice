@@ -704,6 +704,61 @@ a:hover { text-decoration: underline; }
   font-weight: 600;
   margin-top: 2px;
 }
+.persist-note {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted);
+  background: var(--blue-light);
+  border: 1px solid var(--blue-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  margin: 8px 0 2px;
+}
+.support-examples {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+.support-examples li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--gold-light);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #444458;
+}
+.support-examples li span { font-size: 1rem; flex-shrink: 0; }
+.support-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.support-item-main { flex: 1; min-width: 0; }
+.support-item-label { font-weight: 600; font-size: 0.84rem; color: var(--text); }
+.support-item-meta { font-size: 0.72rem; color: var(--subtle); margin-top: 2px; }
+.support-item-remove {
+  background: none;
+  border: none;
+  color: var(--subtle);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+.support-item-remove:hover { color: var(--red); }
 
 /* ========== EMPTY STATES ========== */
 .empty-state {
@@ -798,7 +853,7 @@ a:hover { text-decoration: underline; }
     <!-- Body -->
     <div style="padding:24px 32px 28px;">
       <p style="font-size:0.9rem;line-height:1.72;color:#2a2a3e;margin-bottom:14px;">
-        <strong>Congratulations on landing the interview! I'm excited for you!</strong>
+        <strong>Congrats on choosing intentionality in your career search — that mindset is already a head start. I'm excited for you!</strong>
       </p>
       <p style="font-size:0.9rem;line-height:1.72;color:#2a2a3e;margin-bottom:14px;">
         I built this <strong>free Interview Practice tool</strong> for you, so I can be in your corner — even if I can't be there in person. It's built on everything I've learned over a decade of working alongside learners and institutions. My goal is to give you a space to practice, find your footing, and show up as your best self. You've got this — and I'm rooting for you!
@@ -1069,6 +1124,7 @@ a:hover { text-decoration: underline; }
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
       <div class="section-label">Your Resume</div>
+      <div class="persist-note">🔒 Your resume stays saved across every interview session and won't clear when you switch or start a new one — that's intentional, not a bug. It's part of <em>you</em>, not any single role.</div>
       <div class="file-upload-area" id="resume-upload-area" onclick="document.getElementById('resume-file').click()" style="margin:12px 0;">
         <input type="file" id="resume-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'resume')">
         <div class="upload-icon">📄</div>
@@ -1104,6 +1160,39 @@ a:hover { text-decoration: underline; }
     <div class="doc-save-bar" style="margin-top:16px;">
       <button class="btn btn-gold btn-sm" onclick="saveAllDocs()">💾 Save documents</button>
       <span id="doc-save-status-bottom" style="font-size:0.78rem;color:var(--muted);"></span>
+    </div>
+
+    <!-- Supporting materials -->
+    <div class="card" style="margin-top:24px;">
+      <div class="card-accent"></div>
+      <div class="section-label">Supporting Materials <span style="font-weight:600;color:var(--gold);text-transform:none;letter-spacing:0;">· optional, but powerful</span></div>
+      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin:8px 0 12px;">Your resume is just the headline. The more evidence you add about who you are, the sharper your fit analysis, practice feedback, and Candidate Profile become. Most people forget they have this gold lying around — here's what to gather:</p>
+      <ul class="support-examples">
+        <li><span>💬</span><div><strong>Testimonials &amp; recommendations</strong> — LinkedIn recs, customer or client quotes, praise from managers and peers.</div></li>
+        <li><span>📊</span><div><strong>Work samples &amp; presentations</strong> — decks you've delivered, reports, portfolios, project write-ups.</div></li>
+        <li><span>🤖</span><div><strong>AI or Slack highlight reels</strong> — ask ChatGPT to summarize your accomplishments, or pull a "brag doc" / highlight reel of your best moments from Slack.</div></li>
+        <li><span>🏆</span><div><strong>Wins &amp; metrics</strong> — performance reviews, awards, and concrete results you're proud of.</div></li>
+      </ul>
+
+      <div class="file-upload-area" id="support-upload-area" onclick="document.getElementById('support-file').click()" style="margin:14px 0 4px;">
+        <input type="file" id="support-file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleSupportingFile(event)">
+        <div class="upload-icon">➕</div>
+        <div class="upload-text">Upload one or more files (PDF, DOCX, TXT)</div>
+        <div class="upload-filename" id="support-filename" style="display:none;"></div>
+      </div>
+      <div class="upload-hint">✓ Added items save automatically and carry across every interview session.</div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">Or paste text (a testimonial, a ChatGPT summary, a win…)</label>
+        <input class="form-input" id="support-label" type="text" placeholder="Short label — e.g. “Customer testimonial · Jane at Acme”" style="margin-bottom:8px;">
+        <textarea class="form-textarea" id="support-text" placeholder="Paste the content here..." style="min-height:120px;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button class="btn btn-gold btn-sm" onclick="addSupportingText()">+ Add material</button>
+          <span id="support-add-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+      </div>
+
+      <div id="support-list" style="margin-top:8px;"></div>
     </div>
   </div>
 
@@ -1391,7 +1480,7 @@ function dismissWelcome() {
 // ===================================================================
 const STORAGE_KEY = 'yns_interview_practice_v1';
 // Fields shared across ALL interview sessions (the candidate, not the role):
-const SHARED_KEYS = ['resumeText', 'apiKey', 'aiProvider'];
+const SHARED_KEYS = ['resumeText', 'apiKey', 'aiProvider', 'supportingDocs'];
 // Everything else lives on the individual session.
 const SESSION_KEYS = ['company','role','date','format','interviewers','jdText','fitResult','fitResultDate','fitInputSig','schedule','feedbackHistory'];
 
@@ -1563,6 +1652,12 @@ function hydrateUI() {
   renderInterviewerList();
   onProviderChange();
   renderSessionBar();
+  // Supporting materials (shared) + reset their inputs
+  sv('support-label', '');
+  sv('support-text', '');
+  const supFn = document.getElementById('support-filename');
+  if (supFn) supFn.style.display = 'none';
+  renderSupportingDocs();
 }
 
 // ===================================================================
@@ -1647,6 +1742,94 @@ function saveAllDocs() {
       setTimeout(() => { el.textContent = ''; }, 4000);
     }
   });
+}
+
+// ===================================================================
+// SUPPORTING MATERIALS (shared across all sessions)
+// ===================================================================
+function getSupportingDocs() { return getState().supportingDocs || []; }
+
+function addSupportingDoc(label, text) {
+  const clean = (text || '').trim();
+  if (!clean) return false;
+  const docs = getSupportingDocs();
+  docs.push({
+    id: 'sup_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    label: (label || '').trim() || 'Untitled material',
+    text: clean,
+    added: new Date().toISOString()
+  });
+  setState({ supportingDocs: docs });
+  renderSupportingDocs();
+  return true;
+}
+
+function addSupportingText() {
+  const label = v('support-label');
+  const text = v('support-text');
+  const status = document.getElementById('support-add-status');
+  if (!text.trim()) {
+    if (status) { status.textContent = '⚠ Paste some text first.'; status.style.color = 'var(--red)'; }
+    return;
+  }
+  addSupportingDoc(label, text);
+  sv('support-label', '');
+  sv('support-text', '');
+  if (status) {
+    status.textContent = '✓ Added';
+    status.style.color = 'var(--green)';
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  }
+}
+
+async function handleSupportingFile(event) {
+  const files = Array.from(event.target.files || []);
+  if (!files.length) return;
+  const fnameEl = document.getElementById('support-filename');
+  const areaEl = document.getElementById('support-upload-area');
+  fnameEl.style.display = 'block';
+  let added = 0;
+  for (const file of files) {
+    fnameEl.textContent = '⏳ Reading ' + file.name + '…';
+    try {
+      const text = await extractTextFromFile(file);
+      if (text && text.trim()) {
+        addSupportingDoc(file.name.replace(/\.[^.]+$/, ''), text);
+        added++;
+      }
+    } catch(e) { /* skip unreadable file */ }
+  }
+  areaEl.classList.add('has-file');
+  fnameEl.textContent = added ? '✓ Added ' + added + ' item' + (added > 1 ? 's' : '') : '⚠ Nothing readable found.';
+  event.target.value = ''; // allow re-uploading the same file later
+  setTimeout(() => { fnameEl.style.display = 'none'; areaEl.classList.remove('has-file'); }, 4000);
+}
+
+function removeSupportingDoc(id) {
+  const docs = getSupportingDocs().filter(d => d.id !== id);
+  setState({ supportingDocs: docs });
+  renderSupportingDocs();
+}
+
+function renderSupportingDocs() {
+  const list = document.getElementById('support-list');
+  if (!list) return;
+  const docs = getSupportingDocs();
+  if (!docs.length) {
+    list.innerHTML = '<div style="font-size:0.78rem;color:var(--subtle);padding:6px 2px;">No supporting materials yet — add a few above to strengthen your prep.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="section-label" style="margin:6px 0 8px;">Added materials (' + docs.length + ')</div>' +
+    docs.map(d => {
+      const words = d.text.trim().split(/\s+/).length;
+      return `<div class="support-item">
+        <div class="support-item-main">
+          <div class="support-item-label">${esc(d.label)}</div>
+          <div class="support-item-meta">${words.toLocaleString()} words · ${esc(d.text.trim().slice(0, 90))}${d.text.trim().length > 90 ? '…' : ''}</div>
+        </div>
+        <button class="support-item-remove" title="Remove" onclick="removeSupportingDoc('${d.id}')">✕</button>
+      </div>`;
+    }).join('');
 }
 
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
