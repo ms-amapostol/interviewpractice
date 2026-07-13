@@ -805,8 +805,9 @@ a:hover { text-decoration: underline; }
 /* Read-only "published" field cards */
 .iv-vblock { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; }
 .iv-vlabel { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 6px; }
-.iv-vlist { margin: 0; padding-left: 18px; }
-.iv-vlist li { font-size: 0.84rem; line-height: 1.6; margin-bottom: 4px; color: var(--text); }
+.iv-vlist { margin: 0; padding-left: 2px; list-style: none; }
+.iv-vlist li { position: relative; padding-left: 18px; font-size: 0.84rem; line-height: 1.6; margin-bottom: 6px; color: var(--text); }
+.iv-vlist li:before { content: '▸'; position: absolute; left: 3px; color: var(--gold); font-weight: 700; }
 .iv-vtext { font-size: 0.84rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
 .iv-vempty { font-size: 0.82rem; color: var(--subtle); padding: 8px 2px; }
 .doc-readonly { white-space: pre-wrap; font-size: 0.84rem; line-height: 1.6; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; max-height: 380px; overflow-y: auto; }
@@ -2390,22 +2391,24 @@ async function generateCandidateProfileWithAI() {
   statusEl.innerHTML = '<span class="spinner"></span>Reading your materials and drafting your profile…';
   const prompt = `You are an expert career coach. Based on the candidate's resume and supporting materials, write a concise, role-independent Candidate Profile that captures who they are across ANY job — do not tailor it to a single posting.
 
+IMPORTANT: The resume below is complete. Do NOT comment on formatting, length, or any apparent "cut off" / "incomplete" / "truncated" text — those are never real concerns and must never appear in your output. Focus only on substance.
+
 RESUME:
-${resume.substring(0, 3500)}
+${resume.substring(0, 10000)}
 
 SUPPORTING MATERIALS:
-${support.substring(0, 2500)}
+${support.substring(0, 3500)}
 
-Return ONLY valid JSON with these string fields (use short line-separated lists where natural; no markdown):
+Return ONLY valid JSON with these string fields. For strengths, roles, companies, and watchouts, output each item on its OWN line (one point per line, no bullet characters). No markdown.
 {
-  "strengths": "<core strengths — skills, traits, the value they repeatedly deliver>",
-  "roles": "<types and titles of roles they're a strong match for>",
-  "companies": "<kinds of companies, cultures, and missions where they thrive>",
+  "strengths": "<core strengths — skills, traits, the value they repeatedly deliver; one per line>",
+  "roles": "<types and titles of roles they're a strong match for; one per line>",
+  "companies": "<kinds of companies, cultures, and missions where they thrive; one per line>",
   "positioning": "<1-2 sentence positioning statement / their superpower>",
-  "watchouts": "<honest growth edges or gaps to frame well in interviews>"
+  "watchouts": "<honest growth edges or gaps to frame well in interviews; one per line. Never mention resume formatting or truncation>"
 }`;
   try {
-    const text = await callAI(provider, key, prompt, 1200);
+    const text = await callAI(provider, key, prompt, 1400);
     const data = parseJSON(text);
     if (data.strengths) sv('cp-strengths', data.strengths);
     if (data.roles) sv('cp-roles', data.roles);
@@ -3154,20 +3157,26 @@ function toggleSection(name, saveFn, renderFn) {
   if (btn) btn.innerHTML = goEdit ? '💾 Save' : '✏️ Edit';
   if (!goEdit && renderFn) renderFn();
 }
-function _vblocks(pairs) {
-  let html = '';
-  pairs.forEach(([label, val]) => { if (val && val.trim()) html += '<div class="iv-vblock"><div class="iv-vlabel">' + label + '</div><div class="iv-vtext">' + esc(val.trim()) + '</div></div>'; });
-  return html;
+// Render a field body: multiple lines become a clean bulleted list; a single line stays as text.
+function _vbody(val) {
+  const lines = val.split('\n').map(s => s.replace(/^\s*[•▪▸\-*]\s*/, '').trim()).filter(Boolean);
+  if (lines.length > 1) return '<ul class="iv-vlist">' + lines.map(l => '<li>' + esc(l) + '</li>').join('') + '</ul>';
+  return '<div class="iv-vtext">' + esc(val.trim()) + '</div>';
 }
 function renderCpView() {
   const el = document.getElementById('cp-view'); if (!el) return;
-  const html = _vblocks([
-    ['Core strengths', v('cp-strengths')],
-    ["Roles you're a strong match for", v('cp-roles')],
-    ['Companies &amp; environments where you thrive', v('cp-companies')],
-    ['Your superpower / positioning', v('cp-positioning')],
-    ['Watch-outs &amp; growth edges', v('cp-watchouts')]
-  ]);
+  const fields = [
+    ['Core strengths', 'cp-strengths'],
+    ["Roles you're a strong match for", 'cp-roles'],
+    ['Companies &amp; environments where you thrive', 'cp-companies'],
+    ['Your superpower / positioning', 'cp-positioning'],
+    ['Watch-outs &amp; growth edges', 'cp-watchouts']
+  ];
+  let html = '';
+  fields.forEach(([label, id]) => {
+    const val = v(id).trim();
+    if (val) html += '<div class="iv-vblock"><div class="iv-vlabel">' + label + '</div>' + _vbody(val) + '</div>';
+  });
   el.innerHTML = html || '<div class="iv-vempty">No profile yet — click Edit to fill it in, or use ✨ Draft with AI above.</div>';
 }
 function renderDocView(name, textId, emptyMsg) {
