@@ -80,6 +80,20 @@ a:hover { text-decoration: underline; }
   color: var(--gold);
   white-space: nowrap;
 }
+.save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.save-indicator.saving { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+.save-indicator.saved { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+.save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); display: inline-block; animation: savepulse 0.8s infinite; }
+@keyframes savepulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 #session-select {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.82rem;
@@ -632,26 +646,45 @@ a:hover { text-decoration: underline; }
 .profile-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
 /* ========== SETTINGS NAV ========== */
+.settings-shell {
+  display: flex;
+  align-items: stretch;
+}
+.settings-content { flex: 1; min-width: 0; }
 .settings-nav {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 18px;
-  margin-bottom: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  min-width: 200px;
+  flex-shrink: 0;
 }
 .settings-nav-label {
+  display: block;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--gold);
   white-space: nowrap;
-  margin-right: 6px;
-  padding-right: 14px;
-  border-right: 1px solid var(--border);
+  margin: 2px 6px 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .settings-shell { flex-direction: column; }
+  .settings-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
+  }
+  .settings-nav-label { border-bottom: none; align-self: center; margin: 0 6px 0 0; }
 }
 .settings-nav-btn {
   padding: 7px 16px;
@@ -666,7 +699,10 @@ a:hover { text-decoration: underline; }
 }
 .settings-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
 .settings-nav-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; }
-.settings-nav-btn { display: inline-flex; align-items: center; gap: 7px; }
+.settings-nav-btn { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; justify-content: flex-start; }
+@media (max-width: 640px) {
+  .settings-nav-btn { width: auto; white-space: nowrap; }
+}
 .step-num {
   display: inline-flex;
   align-items: center;
@@ -714,6 +750,62 @@ a:hover { text-decoration: underline; }
   padding: 8px 11px;
   margin: 8px 0 2px;
 }
+.ai-key-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+/* Candidate hero */
+.hero-card {
+  background: linear-gradient(135deg, var(--gold-light), var(--white));
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.hero-badge {
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--white);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+}
+.hero-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 8px; }
+.hero-sub { font-size: 0.86rem; line-height: 1.6; color: var(--muted); max-width: 640px; margin-bottom: 18px; }
+.hero-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.hero-tile {
+  text-align: left;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hero-tile:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,133,133,0.1); }
+.hero-tile-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.hero-tile-title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 3px; }
+.hero-tile-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.45; }
+/* Job tracker table */
+.tracker-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 860px; }
+.tracker-table th {
+  text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--subtle); padding: 8px 8px; border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+.tracker-table td { padding: 8px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tracker-table tr.row-session { background: var(--gold-light); }
+.tracker-src { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
+.tracker-src.session { background: var(--gold); color: #fff; }
+.tracker-src.manual { background: var(--border); color: var(--muted); }
+.tracker-in { width: 100%; border: 1px solid var(--border); border-radius: 5px; padding: 5px 6px; font-family: inherit; font-size: 0.78rem; background: var(--white); }
+.tracker-signals { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+.tracker-cell-strong { font-weight: 600; color: var(--text); }
 .support-examples {
   list-style: none;
   display: grid;
@@ -891,6 +983,7 @@ a:hover { text-decoration: underline; }
       <div class="app-subtitle">Prep smarter. Walk in ready.</div>
     </div>
     <div class="session-bar" id="session-bar">
+      <span id="save-indicator" class="save-indicator" style="display:none;"></span>
       <span class="session-bar-label">Interview session</span>
       <select id="session-select" onchange="switchSession(this.value)" title="Switch interview session"></select>
       <button class="session-btn" onclick="newSession()" title="Start a new interview session">+ New</button>
@@ -899,10 +992,11 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
   <div class="tab-nav">
-    <button class="tab-btn active" onclick="showTab('settings')">📝 Interview Setup</button>
-    <button class="tab-btn" onclick="showTab('cheatsheet')">👥 Interviewer Profiles</button>
-    <button class="tab-btn" onclick="showTab('fitanalysis')">🎯 Fit Analysis</button>
-    <button class="tab-btn sim-btn" onclick="showTab('practice')">🎙 Practice</button>
+    <button class="tab-btn active" data-tab="candidate" onclick="showTab('candidate')">👤 Candidate</button>
+    <button class="tab-btn" data-tab="interview" onclick="showTab('interview')">🗒 Interview Setup</button>
+    <button class="tab-btn" data-tab="cheatsheet" onclick="showTab('cheatsheet')">👥 Interviewer Profiles</button>
+    <button class="tab-btn" data-tab="fitanalysis" onclick="showTab('fitanalysis')">🎯 Fit Analysis</button>
+    <button class="tab-btn sim-btn" data-tab="practice" onclick="showTab('practice')">🎙 Practice</button>
   </div>
 </div>
 
@@ -913,25 +1007,12 @@ a:hover { text-decoration: underline; }
      ================================================================ -->
 <div class="view active" id="view-settings">
 
-  <!-- How to Use This App -->
-  <div class="alert alert-info" style="margin-bottom:20px;">
-    <div class="alert-label">How to use this app</div>
-    Follow the numbered steps below: <strong>1)</strong> add your AI API key (Claude or ChatGPT) for personalized feedback, <strong>2)</strong> fill in your interview details, <strong>3)</strong> add interviewer profiles, and <strong>4)</strong> upload your resume and job description. Then use <strong>Interviewer Profiles</strong> as your quick-reference cheat sheet, <strong>Fit Analysis</strong> to understand your positioning and ATS alignment, and <strong>Practice</strong> to rehearse with real-time coaching. Use the <strong>session picker</strong> at the top right to keep separate prep for each interview.
-  </div>
+  <!-- Connected: dynamic side-nav + content sections -->
+  <div class="settings-shell" style="border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:20px;background:var(--white);">
 
-  <!-- Connected: Setup Steps nav + content sections -->
-  <div style="border:1px solid var(--border);border-left:4px solid var(--gold);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:20px;background:var(--white);">
+  <div class="settings-nav" id="settings-nav"><!-- filled by renderSubNav() --></div>
 
-  <div class="settings-nav">
-    <span class="settings-nav-label">Setup Steps</span>
-    <button class="settings-nav-btn active" onclick="showSettings('api')"><span class="step-num">1</span>API Key</button>
-    <button class="settings-nav-btn" onclick="showSettings('setup')"><span class="step-num">2</span>Interview Details</button>
-    <button class="settings-nav-btn" onclick="showSettings('interviewers')"><span class="step-num">3</span>Interviewers</button>
-    <button class="settings-nav-btn" onclick="showSettings('documents')"><span class="step-num">4</span>My Documents</button>
-    <button class="settings-nav-btn settings-nav-btn-plain" onclick="showSettings('privacy')">🔒 Privacy</button>
-  </div>
-
-  <div style="padding:20px 20px 24px;">
+  <div class="settings-content" style="padding:20px 20px 24px;">
 
   <!-- SETUP -->
   <div class="settings-section" id="settings-setup">
@@ -957,6 +1038,14 @@ a:hover { text-decoration: underline; }
             <option value="single">Single interview</option>
             <option value="panel">Panel / multiple rounds</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Salary</label>
+          <input class="form-input" id="s-salary" type="text" placeholder="e.g. $150k or $145k–$180k" oninput="autosave()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date applied</label>
+          <input class="form-input" id="s-applied" type="date" oninput="autosave()">
         </div>
       </div>
     </div>
@@ -1108,17 +1197,101 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
 
+  <!-- JOB DESCRIPTION (per interview) -->
+  <div class="settings-section" id="settings-jd" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">Job Description — specific to this interview</div>
+      Paste or upload the JD for <strong>this</strong> role. It's saved to the current interview session (see the picker, top right) and powers this session's Fit Analysis and Practice. Switching sessions swaps the JD.
+    </div>
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">Job Description</div>
+      <div class="file-upload-area" id="jd-upload-area" onclick="document.getElementById('jd-file').click()" style="margin:12px 0;">
+        <input type="file" id="jd-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'jd')">
+        <div class="upload-icon">📋</div>
+        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
+        <div class="upload-filename" id="jd-filename" style="display:none;"></div>
+      </div>
+      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
+      <div class="form-group" style="margin-top:12px;">
+        <label class="form-label">Or paste the job description</label>
+        <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:220px;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
+          <button class="btn btn-gold btn-sm" onclick="saveJdDoc()">💾 Save job description</button>
+          <span id="jd-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAILORED RESUME (per interview) -->
+  <div class="settings-section" id="settings-tailored" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">✨ Tailored Resume — for this specific job</div>
+      Generate a resume tuned to <strong>this</strong> role, drawn from your <strong>base resume</strong> (Candidate → Resume &amp; Inputs), your supporting materials, and your Candidate Profile — matched to this session's job description. Pick a seniority level; we'll recommend one from your base resume. Your real experience stays intact — nothing is fabricated. The result is saved to this interview session.
+    </div>
+
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="section-label">Generate</div>
+      <div id="tailored-preflight" style="font-size:0.8rem;margin:8px 0 12px;"></div>
+      <div class="grid-2" style="margin-top:4px;">
+        <div class="form-group">
+          <label class="form-label">Seniority level</label>
+          <select class="form-select" id="tailored-level">
+            <option value="entry">Entry-level</option>
+            <option value="experienced">Experienced / Mid</option>
+            <option value="director">Director-level</option>
+            <option value="vp">VP / Executive</option>
+          </select>
+          <div id="tailored-level-rec" style="font-size:0.72rem;color:var(--gold);margin-top:5px;"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Extra materials for <em>this</em> job <span style="font-weight:400;color:var(--subtle);">(optional)</span></label>
+        <textarea class="form-textarea" id="tailored-extra" placeholder="Anything specific to this role that isn't in your shared materials — e.g. a referral's note, a project that maps perfectly to this JD, or points the hiring manager cares about. This stays with this session." style="min-height:90px;"></textarea>
+        <div class="persist-note" style="margin-top:8px;">
+          📎 Have reusable supporting materials — testimonials, work samples, wins? Add them once under <a href="#" onclick="showSettings('documents');return false;" style="color:var(--gold);font-weight:600;">Candidate → Resume &amp; Inputs</a> and they'll strengthen every tailored resume you generate.
+        </div>
+      </div>
+      <label id="tailored-useothers-label" style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--muted);margin:2px 0 10px;cursor:pointer;">
+        <input type="checkbox" id="tailored-useothers"> Also mine my <strong>other tailored resumes</strong> for strong phrasing to reuse <span style="color:var(--gold);font-weight:600;">(✨ API-powered only)</span>
+      </label>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:2px;flex-wrap:wrap;">
+        <button class="btn btn-gold btn-sm" onclick="generateTailoredResume()">✨ Generate tailored resume</button>
+      </div>
+      <div id="tailored-status" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-accent"></div>
+      <div class="section-label">Your tailored resume</div>
+      <p style="font-size:0.8rem;color:var(--muted);margin:8px 0 4px;">Generate one with ✨ above, <strong>upload</strong> an existing resume, or <strong>type / paste</strong> your own — all three land in the same editable box and save to this session.</p>
+      <div class="file-upload-area" id="tailored-upload-area" onclick="document.getElementById('tailored-file').click()" style="margin:10px 0;">
+        <input type="file" id="tailored-file" accept=".pdf,.docx,.doc,.txt" onchange="handleTailoredFile(event)">
+        <div class="upload-icon">📄</div>
+        <div class="upload-text">Upload a resume (PDF, DOCX, or TXT)</div>
+        <div class="upload-filename" id="tailored-filename" style="display:none;"></div>
+      </div>
+      <div class="upload-hint">✓ Uploaded files fill the box below and save to this session automatically.</div>
+      <div class="form-group" style="margin-top:12px;margin-bottom:0;">
+        <label class="form-label">Or type / paste / edit</label>
+        <textarea class="form-textarea" id="tailored-text" placeholder="Your generated or uploaded resume appears here — fully editable. You can also type or paste one in and save it to this session." style="min-height:340px;font-family:'DM Sans',sans-serif;"></textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-gold btn-sm" onclick="saveTailoredResume()">💾 Save to this session</button>
+          <button class="btn btn-ghost btn-sm" onclick="printTailoredResume()">🖨 Print / Save as PDF</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyTailoredResume()">📋 Copy</button>
+          <span id="tailored-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DOCUMENTS -->
   <div class="settings-section" id="settings-documents" style="display:none;">
     <div class="alert alert-info" style="margin-bottom:16px;">
-      <div class="alert-label">Why we need these documents</div>
-      Your resume and the job description power two key features: the <strong>Fit Analysis</strong> tab, which scores how well your experience aligns with the role, and the <strong>Practice</strong> tab, which uses your background to generate more relevant, personalized feedback. Neither document leaves your device — they're stored locally in your browser and sent to the AI only when you explicitly run an analysis or request feedback.
-    </div>
-    <!-- Master save (top) -->
-    <div class="doc-save-bar">
-      <button class="btn btn-gold btn-sm" onclick="saveAllDocs()">💾 Save documents</button>
-      <span id="doc-save-status-top" style="font-size:0.78rem;color:var(--muted);"></span>
-      <span style="font-size:0.74rem;color:var(--subtle);margin-left:auto;">Saves your resume <em>and</em> job description together.</span>
+      <div class="alert-label">Resume &amp; Inputs — the raw material of you</div>
+      These live with <em>you</em> and travel across every interview session. Your <strong>resume</strong> and <strong>supporting materials</strong> power your Candidate Profile, Fit Analysis, and Practice feedback. Nothing leaves your device — it's stored locally and only sent to the AI when you explicitly ask. (A job's description is role-specific — you'll find it under <strong>Interview Setup → Job Description</strong>.)
     </div>
 
     <div class="card" style="margin-bottom:16px;">
@@ -1132,49 +1305,28 @@ a:hover { text-decoration: underline; }
         <div class="upload-filename" id="resume-filename" style="display:none;"></div>
       </div>
       <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
-      <span id="resume-save-status" style="display:block;font-size:0.76rem;color:var(--muted);margin-top:4px;"></span>
+      <div class="persist-note" style="background:var(--gold-light);border-color:var(--gold-border);">
+        <strong>No resume yet?</strong> Add some supporting materials below, then let AI draft a base resume for you. Already have one? Upload or paste it above — that becomes your master.
+      </div>
       <div class="form-group" style="margin-top:12px;">
         <label class="form-label">Or paste your resume text</label>
         <textarea class="form-textarea" id="resume-text" placeholder="Paste your resume content here..." style="min-height:200px;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+          <button class="btn btn-gold btn-sm" onclick="saveResumeDoc()">💾 Save resume</button>
+          <button class="btn btn-ghost btn-sm" onclick="generateBaseResume()">✨ Draft base resume from my materials</button>
+          <span id="resume-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+        </div>
+        <div id="base-resume-status" style="margin-top:8px;"></div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-accent"></div>
-      <div class="section-label">Job Description</div>
-      <div class="file-upload-area" id="jd-upload-area" onclick="document.getElementById('jd-file').click()" style="margin:12px 0;">
-        <input type="file" id="jd-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'jd')">
-        <div class="upload-icon">📋</div>
-        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
-        <div class="upload-filename" id="jd-filename" style="display:none;"></div>
-      </div>
-      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
-      <span id="jd-save-status" style="display:block;font-size:0.76rem;color:var(--muted);margin-top:4px;"></span>
-      <div class="form-group" style="margin-top:12px;">
-        <label class="form-label">Or paste the job description</label>
-        <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:200px;"></textarea>
-      </div>
-    </div>
-
-    <!-- Master save (bottom) -->
-    <div class="doc-save-bar" style="margin-top:16px;">
-      <button class="btn btn-gold btn-sm" onclick="saveAllDocs()">💾 Save documents</button>
-      <span id="doc-save-status-bottom" style="font-size:0.78rem;color:var(--muted);"></span>
     </div>
 
     <!-- Supporting materials -->
     <div class="card" style="margin-top:24px;">
       <div class="card-accent"></div>
       <div class="section-label">Supporting Materials <span style="font-weight:600;color:var(--gold);text-transform:none;letter-spacing:0;">· optional, but powerful</span></div>
-      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin:8px 0 12px;">Your resume is just the headline. The more evidence you add about who you are, the sharper your fit analysis, practice feedback, and Candidate Profile become. Most people forget they have this gold lying around — here's what to gather:</p>
-      <ul class="support-examples">
-        <li><span>💬</span><div><strong>Testimonials &amp; recommendations</strong> — LinkedIn recs, customer or client quotes, praise from managers and peers.</div></li>
-        <li><span>📊</span><div><strong>Work samples &amp; presentations</strong> — decks you've delivered, reports, portfolios, project write-ups.</div></li>
-        <li><span>🤖</span><div><strong>AI or Slack highlight reels</strong> — ask ChatGPT to summarize your accomplishments, or pull a "brag doc" / highlight reel of your best moments from Slack.</div></li>
-        <li><span>🏆</span><div><strong>Wins &amp; metrics</strong> — performance reviews, awards, and concrete results you're proud of.</div></li>
-      </ul>
+      <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin:8px 0 12px;">Your resume is just the headline. The more evidence you add about who you are, the sharper your fit analysis, practice feedback, and Candidate Profile become.</p>
 
-      <div class="file-upload-area" id="support-upload-area" onclick="document.getElementById('support-file').click()" style="margin:14px 0 4px;">
+      <div class="file-upload-area" id="support-upload-area" onclick="document.getElementById('support-file').click()" style="margin:4px 0;">
         <input type="file" id="support-file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleSupportingFile(event)">
         <div class="upload-icon">➕</div>
         <div class="upload-text">Upload one or more files (PDF, DOCX, TXT)</div>
@@ -1183,7 +1335,7 @@ a:hover { text-decoration: underline; }
       <div class="upload-hint">✓ Added items save automatically and carry across every interview session.</div>
 
       <div class="form-group" style="margin-top:14px;">
-        <label class="form-label">Or paste text (a testimonial, a ChatGPT summary, a win…)</label>
+        <label class="form-label">Or paste text (a testimonial, an AI or Slack summary, a win…)</label>
         <input class="form-input" id="support-label" type="text" placeholder="Short label — e.g. “Customer testimonial · Jane at Acme”" style="margin-bottom:8px;">
         <textarea class="form-textarea" id="support-text" placeholder="Paste the content here..." style="min-height:120px;"></textarea>
         <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
@@ -1193,6 +1345,112 @@ a:hover { text-decoration: underline; }
       </div>
 
       <div id="support-list" style="margin-top:8px;"></div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--subtle);margin-bottom:8px;">Not sure what counts? Ideas to gather</div>
+        <ul class="support-examples">
+          <li><span>💬</span><div><strong>Testimonials &amp; recommendations</strong> — LinkedIn recs, customer or client quotes, praise from managers and peers.</div></li>
+          <li><span>📊</span><div><strong>Work samples &amp; presentations</strong> — decks you've delivered, reports, portfolios, project write-ups.</div></li>
+          <li><span>🤖</span><div><strong>AI or Slack highlight reels</strong> — ask AI to summarize your accomplishments, or pull a "brag doc" / highlight reel of your best moments from Slack.</div></li>
+          <li><span>🏆</span><div><strong>Wins &amp; metrics</strong> — performance reviews, awards, and concrete results you're proud of.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANDIDATE HOME (hero) -->
+  <div class="settings-section" id="settings-home" style="display:none;">
+    <div class="hero-card">
+      <div class="hero-badge">👤 Your Candidate Space</div>
+      <h2 class="hero-title">All About <em>You</em></h2>
+      <p class="hero-sub">Everything here carries across every interview you prep for. Build it once, and it strengthens all your applications. Your job-specific prep (interviewers, fit, practice) lives under <strong>Interview Setup</strong>, switchable with the session picker up top.</p>
+      <div class="hero-grid">
+        <button class="hero-tile" onclick="showSettings('api')"><div class="hero-tile-icon">🔑</div><div class="hero-tile-title">API Key</div><div class="hero-tile-desc">Add Claude or ChatGPT to unlock the ✨ AI features.</div></button>
+        <button class="hero-tile" onclick="showSettings('documents')"><div class="hero-tile-icon">📄</div><div class="hero-tile-title">Resume &amp; Inputs</div><div class="hero-tile-desc">Your resume, testimonials, decks, and highlight reels.</div></button>
+        <button class="hero-tile" onclick="showSettings('profile')"><div class="hero-tile-icon">🧬</div><div class="hero-tile-title">Candidate Profile</div><div class="hero-tile-desc">Your strengths, ideal roles, and how you position yourself.</div></button>
+        <button class="hero-tile" onclick="showSettings('resumegen')"><div class="hero-tile-icon">✨</div><div class="hero-tile-title">Resume Generator</div><div class="hero-tile-desc">Tailor a resume to a specific job and seniority level.</div></button>
+        <button class="hero-tile" onclick="showSettings('tracker')"><div class="hero-tile-icon">📊</div><div class="hero-tile-title">Job Tracker</div><div class="hero-tile-desc">Every application in one view — auto-filled from your sessions.</div></button>
+        <button class="hero-tile" onclick="showSettings('privacy')"><div class="hero-tile-icon">🔒</div><div class="hero-tile-title">Privacy</div><div class="hero-tile-desc">Everything stays on your device. Here's exactly how.</div></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUME GENERATOR (overview) -->
+  <div class="settings-section" id="settings-resumegen" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">✨ Resume Generator — two steps, two homes</div>
+      Resumes come in two flavors, so the generator lives in two places: your <strong>base resume</strong> (about you, one master) and a <strong>tailored resume</strong> for each specific job.
+    </div>
+    <div class="hero-grid">
+      <button class="hero-tile" onclick="showSettings('documents')">
+        <div class="hero-tile-icon">📄</div>
+        <div class="hero-tile-title">1 · Base resume</div>
+        <div class="hero-tile-desc">In <strong>Resume &amp; Inputs</strong>: upload your existing resume, or ✨ draft one from your supporting materials. This is your reusable master.</div>
+      </button>
+      <button class="hero-tile" onclick="showSettings('tailored')">
+        <div class="hero-tile-icon">🎯</div>
+        <div class="hero-tile-title">2 · Tailored resume</div>
+        <div class="hero-tile-desc">In <strong>Interview Setup → Tailored Resume</strong>: ✨ generate a job-specific version at a level you pick. Saved to that interview session.</div>
+      </button>
+    </div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:14px;">Both keep your real experience intact — nothing is fabricated. Tailored resumes use impact statements (action verb + what + quantified outcome) in the style of strong executive resumes.</p>
+  </div>
+
+  <!-- JOB TRACKER -->
+  <div class="settings-section" id="settings-tracker" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">📊 Job Application Tracker</div>
+      Every interview session shows up here automatically — company, role, date, and salary flow from your Interview Details, and each row enriches itself as you add interviewers, run a fit analysis, or practice. Set the response and jot notes inline. Add standalone rows for jobs you applied to but haven't fully prepped.
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+      <button class="btn btn-gold btn-sm" onclick="addManualRow()">+ Add manual row</button>
+      <span style="font-size:0.74rem;color:var(--subtle);">Session rows are auto-managed; manual rows are yours to edit freely. <strong>Prep progress</strong> = 👥 interviewers · 🎯 fit analysis · 🎙 practice answers.</span>
+    </div>
+    <div id="tracker-wrap" style="overflow-x:auto;"></div>
+  </div>
+
+  <!-- CANDIDATE PROFILE -->
+  <div class="settings-section" id="settings-profile" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      <div class="alert-label">Your Candidate Profile — who you are, above any single role</div>
+      This sits above every job. It captures your strengths, the roles and companies where you thrive, and how to position yourself — and it travels across all your interview sessions. Write it yourself, or let AI draft it from your resume and supporting materials, then edit freely.
+    </div>
+
+    <div class="doc-save-bar">
+      <button class="btn btn-gold btn-sm" onclick="generateCandidateProfileWithAI()">✨ Draft with AI</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveCandidateProfile()">💾 Save profile</button>
+      <span id="profile-save-status" style="font-size:0.78rem;color:var(--muted);"></span>
+      <span class="ai-key-hint" style="margin-left:auto;">✨ uses your API key (Step 1)</span>
+    </div>
+    <div id="profile-ai-status" style="margin-bottom:12px;"></div>
+
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="form-group">
+        <label class="form-label">Core strengths</label>
+        <textarea class="form-textarea" id="cp-strengths" placeholder="What you're genuinely great at — skills, traits, and the value you repeatedly deliver. One per line works well." style="min-height:110px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Roles you're a strong match for</label>
+        <textarea class="form-textarea" id="cp-roles" placeholder="Titles and types of roles that fit your strengths and trajectory (e.g. Director of Enrollment Strategy, VP of Online Programs)." style="min-height:90px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Companies &amp; environments where you thrive</label>
+        <textarea class="form-textarea" id="cp-companies" placeholder="The kinds of organizations, cultures, and missions that bring out your best (e.g. mission-driven EdTech, growth-stage, values access & outcomes)." style="min-height:90px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your superpower / positioning statement</label>
+        <textarea class="form-textarea" id="cp-positioning" placeholder="In a sentence or two: the distinctive thing you bring that sets you apart." style="min-height:80px;"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Watch-outs &amp; growth edges</label>
+        <textarea class="form-textarea" id="cp-watchouts" placeholder="Honest areas to be mindful of or frame well in interviews (e.g. less traditional-campus experience)." style="min-height:80px;"></textarea>
+      </div>
+    </div>
+
+    <div class="doc-save-bar" style="margin-top:16px;">
+      <button class="btn btn-gold btn-sm" onclick="saveCandidateProfile()">💾 Save profile</button>
+      <span id="profile-save-status-bottom" style="font-size:0.78rem;color:var(--muted);"></span>
     </div>
   </div>
 
@@ -1228,6 +1486,16 @@ a:hover { text-decoration: underline; }
           <button class="btn btn-gold" onclick="saveApiKey()">Save</button>
         </div>
         <div id="api-key-status" style="font-size:0.74rem;margin-top:6px;color:var(--muted);">Key stays in your browser only — never sent anywhere except the AI provider you choose.</div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:8px;">
+        <div class="alert-label">✨ Look for the sparkle</div>
+        Any button marked with a <strong>✨ sparkle</strong> uses AI and needs the API key you add here — for example <em>Generate with AI</em>, <em>Generate Fit Analysis</em>, and <em>Draft with AI</em>. Buttons without a sparkle work with no key.
+      </div>
+
+      <div class="alert alert-success" style="margin-top:8px;">
+        <div class="alert-label">💡 It costs less than you'd think</div>
+        Each ✨ action is a single API call — usually <strong>a fraction of a cent</strong> (ChatGPT / cheaper models) up to <strong>a few cents</strong> (Claude). Generating a full tailored resume is typically well under 5¢. A few dollars of credit usually covers an entire job search, and you only pay your provider for what you use — there's no subscription here.
       </div>
 
       <div class="alert alert-info" style="margin-top:8px;">
@@ -1332,7 +1600,7 @@ a:hover { text-decoration: underline; }
 <div class="view" id="view-fitanalysis">
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;margin-bottom:20px;">
     <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">About This Analysis</div>
-    <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">This tab compares your resume against the job description to surface where you're a strong fit, where there are gaps, and which keywords to emphasize in your answers. To generate an analysis, make sure you've added both your resume and the job description in <strong>Interview Setup → My Documents</strong>, then use the button below. If you have an API key, the analysis will be AI-powered and more nuanced. Without one, you'll get a keyword-based comparison.</p>
+    <p style="font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0;">This tab compares your resume against the job description to surface where you're a strong fit, where there are gaps, and which keywords to emphasize in your answers. To generate an analysis, make sure you've added your resume in <strong>Candidate → Resume &amp; Inputs</strong> and the job description in <strong>Interview Setup → Job Description</strong>, then use the button below. If you have an API key, the analysis will be AI-powered and more nuanced. Without one, you'll get a keyword-based comparison.</p>
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
     <button class="btn btn-ghost btn-sm" onclick="exportFitAnalysis()" title="Export as PDF">⬇ Export PDF</button>
@@ -1343,7 +1611,7 @@ a:hover { text-decoration: underline; }
       <div class="empty-state-icon">🎯</div>
       <div class="empty-state-title">Add your resume &amp; JD first</div>
       <div class="empty-state-body">Go to Settings → My Documents to paste or upload your resume and the job description. Then come back here for your personalized fit analysis.</div>
-      <button class="btn btn-gold" onclick="showTab('settings');showSettings('documents')">Go to Documents</button>
+      <button class="btn btn-gold" onclick="showSettings('documents')">Go to Documents</button>
     </div>
   </div>
 </div>
@@ -1398,7 +1666,7 @@ a:hover { text-decoration: underline; }
       </select>
       <div id="sim-api-note" class="alert alert-warn" style="display:none;margin-top:8px;">
         <div class="alert-label">No API key detected</div>
-        You'll receive built-in coaching based on best-practice frameworks (STARR method, question-type tips). Add an API key in Settings → AI &amp; API for personalized, persona-driven feedback.
+        You'll receive built-in coaching based on best-practice frameworks (STARR method, question-type tips). Add an API key in Candidate → API Key for personalized, persona-driven feedback.
       </div>
     </div>
 
@@ -1480,19 +1748,20 @@ function dismissWelcome() {
 // ===================================================================
 const STORAGE_KEY = 'yns_interview_practice_v1';
 // Fields shared across ALL interview sessions (the candidate, not the role):
-const SHARED_KEYS = ['resumeText', 'apiKey', 'aiProvider', 'supportingDocs'];
+const SHARED_KEYS = ['resumeText', 'apiKey', 'aiProvider', 'supportingDocs', 'candidateProfile', 'trackerRows'];
 // Everything else lives on the individual session.
-const SESSION_KEYS = ['company','role','date','format','interviewers','jdText','fitResult','fitResultDate','fitInputSig','schedule','feedbackHistory'];
+const SESSION_KEYS = ['company','role','date','format','salary','applied','interviewers','jdText','fitResult','fitResultDate','fitInputSig','schedule','feedbackHistory','tracker','tailoredResume','tailoredLevel','tailoredExtra'];
 
 function _newSession(name) {
   return {
     id: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     name: name || '',
     autoName: true, // title auto-derives from Interview Details until the user renames it
-    company: '', role: '', date: '', format: 'single',
+    company: '', role: '', date: '', format: 'single', salary: '', applied: '',
     interviewers: [], jdText: '',
     fitResult: null, fitResultDate: null, fitInputSig: null,
-    schedule: [], feedbackHistory: []
+    schedule: [], feedbackHistory: [], tracker: {},
+    tailoredResume: '', tailoredLevel: '', tailoredExtra: ''
   };
 }
 
@@ -1556,6 +1825,24 @@ function setState(patch) {
     else if (k !== 'id' && k !== 'name') sess[k] = patch[k];
   });
   saveRoot(root);
+  flashSaved();
+}
+
+// Small global "Saving… / ✓ Saved" indicator so autosaves are visible and reassuring.
+let _saveFlashTimer = null, _saveClearTimer = null;
+function flashSaved() {
+  const el = document.getElementById('save-indicator');
+  if (!el) return;
+  el.style.display = 'inline-flex';
+  el.className = 'save-indicator saving';
+  el.innerHTML = '<span class="save-dot"></span>Saving…';
+  clearTimeout(_saveFlashTimer);
+  clearTimeout(_saveClearTimer);
+  _saveFlashTimer = setTimeout(() => {
+    el.className = 'save-indicator saved';
+    el.innerHTML = '✓ Saved';
+    _saveClearTimer = setTimeout(() => { el.style.display = 'none'; }, 1800);
+  }, 450);
 }
 // Accepts a merged-style object (from getState) and routes all of its keys.
 function saveState(s) { setState(s); }
@@ -1578,11 +1865,41 @@ function renderSessionBar() {
   ).join('');
 }
 
+// Persist any visible, unsaved edits to the CURRENT active session/shared before we switch away,
+// so switching sessions never loses typed-but-unsaved content.
+function flushOpenEdits() {
+  const el = id => document.getElementById(id);
+  const patch = {};
+  if (el('resume-text')) patch.resumeText = el('resume-text').value.trim();
+  if (el('jd-text')) patch.jdText = el('jd-text').value.trim();
+  if (el('tailored-text')) patch.tailoredResume = el('tailored-text').value.trim();
+  if (el('tailored-extra')) patch.tailoredExtra = el('tailored-extra').value.trim();
+  if (el('tailored-level')) patch.tailoredLevel = el('tailored-level').value;
+  if (el('cp-strengths')) patch.candidateProfile = {
+    strengths: el('cp-strengths').value.trim(),
+    roles: el('cp-roles').value.trim(),
+    companies: el('cp-companies').value.trim(),
+    positioning: el('cp-positioning').value.trim(),
+    watchouts: el('cp-watchouts').value.trim()
+  };
+  if (el('s-company')) {
+    patch.company = el('s-company').value;
+    patch.role = el('s-role').value;
+    patch.date = el('s-date').value;
+    patch.format = el('s-format').value;
+    patch.salary = el('s-salary').value;
+    patch.applied = el('s-applied').value;
+  }
+  setState(patch); // routes to the CURRENT active session + shared
+}
+
 function switchSession(id) {
   const root = loadRoot();
   if (!root.sessions.some(s => s.id === id)) return;
-  root.activeId = id;
-  saveRoot(root);
+  flushOpenEdits(); // save current edits to the outgoing session first
+  const fresh = loadRoot();
+  fresh.activeId = id;
+  saveRoot(fresh);
   hydrateUI();
   // Refresh whichever prep tab is currently open
   const active = document.querySelector('.view.active');
@@ -1595,14 +1912,14 @@ function switchSession(id) {
 
 function newSession() {
   // Create a blank, unnamed session — it gets its title when the user saves Interview Details.
+  flushOpenEdits(); // preserve edits in the current session before creating a new one
   const root = loadRoot();
   const sess = _newSession('');
   root.sessions.push(sess);
   root.activeId = sess.id;
   saveRoot(root);
   hydrateUI();
-  showTab('settings');
-  showSettings('setup'); // Step 2 — Interview Details
+  showSettings('setup'); // land on Interview Details for the new session
 }
 
 function renameSession() {
@@ -1637,6 +1954,8 @@ function hydrateUI() {
   sv('s-role', s.role || '');
   sv('s-date', s.date || '');
   sv('s-format', s.format || 'single');
+  sv('s-salary', s.salary || '');
+  sv('s-applied', s.applied || '');
   sv('resume-text', s.resumeText || '');
   sv('jd-text', s.jdText || '');
   sv('api-key-input', s.apiKey || '');
@@ -1658,6 +1977,18 @@ function hydrateUI() {
   const supFn = document.getElementById('support-filename');
   if (supFn) supFn.style.display = 'none';
   renderSupportingDocs();
+  // Candidate profile (shared)
+  const cp = s.candidateProfile || {};
+  sv('cp-strengths', cp.strengths || '');
+  sv('cp-roles', cp.roles || '');
+  sv('cp-companies', cp.companies || '');
+  sv('cp-positioning', cp.positioning || '');
+  sv('cp-watchouts', cp.watchouts || '');
+  const pai = document.getElementById('profile-ai-status');
+  if (pai) pai.innerHTML = '';
+  // Resume generator (base status + per-session tailored)
+  ['base-resume-status', 'tailored-status'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ''; });
+  if (document.getElementById('tailored-text')) renderTailored();
 }
 
 // ===================================================================
@@ -1670,29 +2001,79 @@ if (typeof pdfjsLib !== 'undefined') {
 // ===================================================================
 // TAB NAVIGATION
 // ===================================================================
+// Two-tier navigation:
+//  - Top tabs "candidate" and "interview" both render inside #view-settings, with different sub-navs.
+//  - "candidate" = things that transcend every interview; "interview" = the active session only.
+const SUBNAV = {
+  candidate: {
+    label: 'Your Career Space',
+    items: [
+      { sec: 'home',      label: '🏠 Home' },
+      { sec: 'api',       label: 'API Key', num: 1 },
+      { sec: 'documents', label: 'Resume & Inputs', num: 2 },
+      { sec: 'profile',   label: 'Candidate Profile', num: 3 },
+      { sec: 'resumegen', label: '✨ Resume Generator' },
+      { sec: 'tracker',   label: '📊 Job Tracker' },
+      { sec: 'privacy',   label: '🔒 Privacy', plain: true }
+    ]
+  },
+  interview: {
+    label: 'This Interview',
+    items: [
+      { sec: 'setup',        label: 'Interview Details', num: 1 },
+      { sec: 'jd',           label: 'Job Description', num: 2 },
+      { sec: 'tailored',     label: '✨ Tailored Resume', num: 3 },
+      { sec: 'interviewers', label: 'Interviewers', num: 4 }
+    ]
+  }
+};
+
+function sectionGroup(section) {
+  for (const g in SUBNAV) {
+    if (SUBNAV[g].items.some(i => i.sec === section)) return g;
+  }
+  return 'candidate';
+}
+
+function setActiveTopTab(key) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+}
+
+function renderSubNav(group) {
+  const nav = document.getElementById('settings-nav');
+  if (!nav) return;
+  const cfg = SUBNAV[group];
+  nav.innerHTML = '<span class="settings-nav-label">' + cfg.label + '</span>' +
+    cfg.items.map(i =>
+      '<button class="settings-nav-btn' + (i.plain ? ' settings-nav-btn-plain' : '') + '" data-sec="' + i.sec + '" onclick="showSettings(\'' + i.sec + '\')">' +
+      (i.num ? '<span class="step-num">' + i.num + '</span>' : '') + i.label + '</button>'
+    ).join('');
+}
+
 function showTab(name) {
+  if (name === 'candidate') { showSettings('home'); return; }
+  if (name === 'interview') { showSettings('setup'); return; }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
-  const btns = document.querySelectorAll('.tab-btn');
-  const map = { settings: 0, cheatsheet: 1, fitanalysis: 2, practice: 3 };
-  if (btns[map[name]]) btns[map[name]].classList.add('active');
+  setActiveTopTab(name);
   if (name === 'cheatsheet') renderCheatSheet();
   if (name === 'fitanalysis') renderFitAnalysis();
   if (name === 'practice') initSimulator();
 }
 
-// ===================================================================
-// SETTINGS NAV
-// ===================================================================
 function showSettings(section) {
+  const group = sectionGroup(section);
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-settings').classList.add('active');
+  setActiveTopTab(group);
+  renderSubNav(group);
   document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('settings-' + section).style.display = 'block';
-  const map = { api: 0, setup: 1, interviewers: 2, documents: 3, privacy: 4 };
-  const btns = document.querySelectorAll('.settings-nav-btn');
-  if (btns[map[section]]) btns[map[section]].classList.add('active');
+  const el = document.getElementById('settings-' + section);
+  if (el) el.style.display = 'block';
+  document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.sec === section));
   if (section === 'interviewers') renderInterviewerList();
+  if (section === 'tracker') renderTracker();
+  if (section === 'tailored') renderTailored();
 }
 
 // ===================================================================
@@ -1704,6 +2085,8 @@ function autosave() {
     role: v('s-role'),
     date: v('s-date'),
     format: v('s-format'),
+    salary: v('s-salary'),
+    applied: v('s-applied'),
   });
   toggleScheduleCard();
 }
@@ -1725,23 +2108,16 @@ function saveInterviewDetails() {
   setTimeout(() => { statusEl.textContent = ''; }, 3000);
 }
 
-// Master save — stores resume AND job description together.
-function saveAllDocs() {
-  const resume = v('resume-text').trim();
-  const jd = v('jd-text').trim();
-  setState({ resumeText: resume, jdText: jd });
-  const bits = [];
-  if (resume) bits.push('resume');
-  if (jd) bits.push('job description');
-  const msg = bits.length ? '✓ Saved ' + bits.join(' and ') : '✓ Saved (both fields are empty)';
-  ['doc-save-status-top', 'doc-save-status-bottom'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.textContent = msg;
-      el.style.color = 'var(--green)';
-      setTimeout(() => { el.textContent = ''; }, 4000);
-    }
-  });
+// Resume is shared across sessions; JD is per-session. Saved separately.
+function saveResumeDoc() {
+  setState({ resumeText: v('resume-text').trim() });
+  const el = document.getElementById('resume-save-status');
+  if (el) { el.textContent = '✓ Resume saved'; el.style.color = 'var(--green)'; setTimeout(() => { el.textContent = ''; }, 4000); }
+}
+function saveJdDoc() {
+  setState({ jdText: v('jd-text').trim() });
+  const el = document.getElementById('jd-save-status');
+  if (el) { el.textContent = '✓ Job description saved (this session)'; el.style.color = 'var(--green)'; setTimeout(() => { el.textContent = ''; }, 4000); }
 }
 
 // ===================================================================
@@ -1830,6 +2206,363 @@ function renderSupportingDocs() {
         <button class="support-item-remove" title="Remove" onclick="removeSupportingDoc('${d.id}')">✕</button>
       </div>`;
     }).join('');
+}
+
+// ===================================================================
+// CANDIDATE PROFILE (shared across all sessions)
+// ===================================================================
+function getCandidateProfile() { return getState().candidateProfile || {}; }
+
+function saveCandidateProfile() {
+  const cp = {
+    strengths: v('cp-strengths').trim(),
+    roles: v('cp-roles').trim(),
+    companies: v('cp-companies').trim(),
+    positioning: v('cp-positioning').trim(),
+    watchouts: v('cp-watchouts').trim()
+  };
+  setState({ candidateProfile: cp });
+  ['profile-save-status', 'profile-save-status-bottom'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = '✓ Profile saved';
+      el.style.color = 'var(--green)';
+      setTimeout(() => { el.textContent = ''; }, 4000);
+    }
+  });
+}
+
+async function generateCandidateProfileWithAI() {
+  const s = getState();
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  const statusEl = document.getElementById('profile-ai-status');
+  if (!key) {
+    statusEl.innerHTML = '<div class="alert alert-warn" style="margin:0;"><div class="alert-label">No API key found</div>Add your API key in Step 1 to draft with AI — or just fill the fields in yourself below. <a href="#" onclick="showSettings(\'api\');return false;" style="color:var(--gold);font-weight:600;">Go to Step 1 →</a></div>';
+    return;
+  }
+  const resume = s.resumeText || '';
+  const support = (s.supportingDocs || []).map(d => '• ' + d.label + ': ' + d.text).join('\n\n');
+  if (!resume.trim() && !support.trim()) {
+    statusEl.innerHTML = '<div class="alert alert-warn" style="margin:0;">Add your resume or some supporting materials first (Step 4) so AI has something to work from.</div>';
+    return;
+  }
+  statusEl.innerHTML = '<span class="spinner"></span>Reading your materials and drafting your profile…';
+  const prompt = `You are an expert career coach. Based on the candidate's resume and supporting materials, write a concise, role-independent Candidate Profile that captures who they are across ANY job — do not tailor it to a single posting.
+
+RESUME:
+${resume.substring(0, 3500)}
+
+SUPPORTING MATERIALS:
+${support.substring(0, 2500)}
+
+Return ONLY valid JSON with these string fields (use short line-separated lists where natural; no markdown):
+{
+  "strengths": "<core strengths — skills, traits, the value they repeatedly deliver>",
+  "roles": "<types and titles of roles they're a strong match for>",
+  "companies": "<kinds of companies, cultures, and missions where they thrive>",
+  "positioning": "<1-2 sentence positioning statement / their superpower>",
+  "watchouts": "<honest growth edges or gaps to frame well in interviews>"
+}`;
+  try {
+    const text = await callAI(provider, key, prompt, 1200);
+    const data = parseJSON(text);
+    if (data.strengths) sv('cp-strengths', data.strengths);
+    if (data.roles) sv('cp-roles', data.roles);
+    if (data.companies) sv('cp-companies', data.companies);
+    if (data.positioning) sv('cp-positioning', data.positioning);
+    if (data.watchouts) sv('cp-watchouts', data.watchouts);
+    saveCandidateProfile();
+    statusEl.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Draft created and saved — review and edit anything below to make it yours.</div>';
+  } catch(e) {
+    statusEl.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>';
+  }
+}
+
+// ===================================================================
+// JOB APPLICATION TRACKER
+//  - one auto row per interview session (company/role/date/salary flow from the session)
+//  - plus standalone manual rows stored in shared trackerRows
+// ===================================================================
+const TRACKER_STATUSES = ['—', 'Applied', 'No response yet', 'Phone screen', 'Interviewing', 'Final round', 'Offer', 'Rejected', 'Withdrew', 'Not applied yet'];
+
+function trackerStatusOptions(sel) {
+  return TRACKER_STATUSES.map(s => '<option' + (s === (sel || '—') ? ' selected' : '') + '>' + s + '</option>').join('');
+}
+
+// Switch to a session and jump to one of its prep views.
+function openSessionView(sessionId, tab) {
+  switchSession(sessionId);
+  showTab(tab);
+}
+
+// Clickable prep signals that deep-link into that session's prep.
+function sessionSignalsLinks(sess) {
+  const iv = (sess.interviewers || []).length;
+  const fb = (sess.feedbackHistory || []).length;
+  const link = (tab, label, title) =>
+    '<a href="#" title="' + title + '" onclick="openSessionView(\'' + sess.id + '\',\'' + tab + '\');return false;" style="color:var(--gold);text-decoration:none;white-space:nowrap;">' + label + '</a>';
+  return [
+    link('cheatsheet', '👥 ' + iv, 'Open this session\'s Interviewer Profiles'),
+    link('fitanalysis', '🎯 ' + (sess.fitResult ? 'fit ✓' : '—'), 'Open this session\'s Fit Analysis'),
+    link('practice', '🎙 ' + fb, 'Open this session\'s Practice')
+  ].join(' · ');
+}
+
+function renderTracker() {
+  const wrap = document.getElementById('tracker-wrap');
+  if (!wrap) return;
+  const root = loadRoot();
+  const manual = getState().trackerRows || [];
+  let rows = '';
+  root.sessions.forEach(sess => {
+    const t = sess.tracker || {};
+    rows += '<tr class="row-session">' +
+      '<td><a href="#" title="Open this interview session" onclick="openSessionView(\'' + sess.id + '\',\'interview\');return false;" class="tracker-src session" style="text-decoration:none;">Session ↗</a></td>' +
+      '<td class="tracker-cell-strong">' + esc(sess.company || '—') + '</td>' +
+      '<td>' + esc(sess.role || '—') + '</td>' +
+      '<td>' + esc(sess.applied || '—') + '</td>' +
+      '<td>' + esc(sess.salary || '—') + '</td>' +
+      '<td><select class="tracker-in" onchange="setSessionTracker(\'' + sess.id + '\',\'response\',this.value)">' + trackerStatusOptions(t.response) + '</select></td>' +
+      '<td><input class="tracker-in" value="' + esc(t.thoughts || '') + '" placeholder="Why / why not?" onchange="setSessionTracker(\'' + sess.id + '\',\'thoughts\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(t.notes || '') + '" placeholder="Notes" onchange="setSessionTracker(\'' + sess.id + '\',\'notes\',this.value)"></td>' +
+      '<td class="tracker-signals">' + sessionSignalsLinks(sess) + '</td>' +
+      '<td></td></tr>';
+  });
+  manual.forEach(r => {
+    rows += '<tr>' +
+      '<td><span class="tracker-src manual">Manual</span></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.company || '') + '" placeholder="Company" onchange="updateManualRow(\'' + r.id + '\',\'company\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.role || '') + '" placeholder="Role" onchange="updateManualRow(\'' + r.id + '\',\'role\',this.value)"></td>' +
+      '<td><input class="tracker-in" type="date" value="' + esc(r.applied || '') + '" onchange="updateManualRow(\'' + r.id + '\',\'applied\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.salary || '') + '" placeholder="$" onchange="updateManualRow(\'' + r.id + '\',\'salary\',this.value)"></td>' +
+      '<td><select class="tracker-in" onchange="updateManualRow(\'' + r.id + '\',\'response\',this.value)">' + trackerStatusOptions(r.response) + '</select></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.thoughts || '') + '" placeholder="Why / why not?" onchange="updateManualRow(\'' + r.id + '\',\'thoughts\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.notes || '') + '" placeholder="Notes" onchange="updateManualRow(\'' + r.id + '\',\'notes\',this.value)"></td>' +
+      '<td class="tracker-signals">—</td>' +
+      '<td><button class="support-item-remove" title="Delete row" onclick="deleteManualRow(\'' + r.id + '\')">✕</button></td></tr>';
+  });
+  if (!rows) rows = '<tr><td colspan="10" style="text-align:center;color:var(--subtle);padding:16px;">No applications yet. Create an interview session or add a manual row.</td></tr>';
+  wrap.innerHTML = '<table class="tracker-table"><thead><tr>' +
+    '<th>Source</th><th>Company</th><th>Role</th><th>Date applied</th><th>Salary</th>' +
+    '<th>Response</th><th>Thoughts on why?</th><th>Notes</th>' +
+    '<th title="How far along your prep is for this session: 👥 interviewers added · 🎯 fit analysis run · 🎙 practice answers given">Prep progress</th><th></th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function setSessionTracker(sessionId, field, value) {
+  const root = loadRoot();
+  const sess = root.sessions.find(s => s.id === sessionId);
+  if (!sess) return;
+  sess.tracker = sess.tracker || {};
+  sess.tracker[field] = value;
+  saveRoot(root);
+  flashSaved();
+}
+
+function addManualRow() {
+  const rows = getState().trackerRows || [];
+  rows.push({ id: 'trk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), company: '', role: '', applied: '', salary: '', response: '—', thoughts: '', notes: '' });
+  setState({ trackerRows: rows });
+  renderTracker();
+}
+function updateManualRow(id, field, value) {
+  const rows = getState().trackerRows || [];
+  const r = rows.find(x => x.id === id);
+  if (!r) return;
+  r[field] = value;
+  setState({ trackerRows: rows });
+}
+function deleteManualRow(id) {
+  if (!confirm('Delete this row?')) return;
+  const rows = (getState().trackerRows || []).filter(x => x.id !== id);
+  setState({ trackerRows: rows });
+  renderTracker();
+}
+
+// ===================================================================
+// RESUME GENERATOR — base (shared) + tailored (per session)
+// ===================================================================
+const LEVEL_LABEL = { entry: 'Entry-level', experienced: 'Experienced / Mid', director: 'Director-level', vp: 'VP / Executive' };
+const LEVEL_GUIDE = {
+  entry: 'Entry-level: brief objective, education prominent, duty-focused bullets, minimal metrics.',
+  experienced: 'Experienced/Mid: a short professional summary and achievement-oriented bullets with some quantified results.',
+  director: 'Director-level: an Executive Profile summary, a Core Competencies list, and quantified impact bullets (action verb + what + measurable outcome).',
+  vp: 'VP/Executive: an Executive Profile with strategic scope, Core Competencies, and portfolio-scale impact statements emphasizing leadership, growth, and cross-functional influence.'
+};
+
+function recommendLevel(resume) {
+  const t = (resume || '').toLowerCase();
+  if (/\b(vp|vice president|chief|c-suite|cxo|avp|executive director)\b/.test(t)) return 'vp';
+  if (/\b(director|head of|principal|senior manager)\b/.test(t)) return 'director';
+  if (/\b(manager|team lead|senior|lead)\b/.test(t)) return 'experienced';
+  return 'entry';
+}
+
+function warnKey(where) {
+  return '<div class="alert alert-warn" style="margin:0;"><div class="alert-label">No API key found</div>Add your API key (' + where + ') to use ✨ AI features.</div>';
+}
+
+async function generateBaseResume() {
+  const s = getState();
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  const status = document.getElementById('base-resume-status');
+  if (!key) { status.innerHTML = warnKey('Candidate → API Key'); return; }
+  const support = (s.supportingDocs || []).map(d => '• ' + d.label + ': ' + d.text).join('\n\n');
+  const seed = (s.resumeText || '').trim();
+  const cp = s.candidateProfile || {};
+  if (!support.trim() && !seed) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">Add some supporting materials (or paste an existing resume) first — AI needs raw material to work from.</div>'; return; }
+  status.innerHTML = '<span class="spinner"></span>Drafting your base resume…';
+  const prompt = `You are an expert resume writer. Write a strong, general-purpose BASE resume for this candidate — NOT tailored to any single job. Use only real information from the inputs; never invent experience, employers, dates, titles, or metrics.
+
+${seed ? 'EXISTING RESUME (improve and reformat, keep the facts):\n' + seed.substring(0, 3500) + '\n\n' : ''}SUPPORTING MATERIALS:
+${support.substring(0, 3000)}
+
+CANDIDATE PROFILE:
+Strengths: ${cp.strengths || ''}
+Positioning: ${cp.positioning || ''}
+
+Format as clean plain text with clear sections: a name/contact placeholder line, Professional Summary, Core Competencies, Professional Experience (each role: company, title, dates if known, then impact bullets), and Education. Return ONLY the resume text.`;
+  try {
+    const text = await callAI(provider, key, prompt, 2600);
+    sv('resume-text', text.trim());
+    setState({ resumeText: text.trim() });
+    status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Base resume drafted and saved. Review and edit above — this is your master resume.</div>';
+  } catch(e) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>'; }
+}
+
+function renderTailored() {
+  const s = getState();
+  const rec = recommendLevel(s.resumeText || '');
+  sv('tailored-level', s.tailoredLevel || rec);
+  sv('tailored-text', s.tailoredResume || '');
+  sv('tailored-extra', s.tailoredExtra || '');
+  const tfn = document.getElementById('tailored-filename');
+  if (tfn) tfn.style.display = 'none';
+  const tua = document.getElementById('tailored-upload-area');
+  if (tua) tua.classList.remove('has-file');
+  const recEl = document.getElementById('tailored-level-rec');
+  if (recEl) recEl.textContent = '★ Recommended from your base resume: ' + LEVEL_LABEL[rec];
+  // The "mine my other resumes" option only works with an API key — disable it otherwise
+  const hasKey = !!(s.apiKey || '').trim();
+  const useOthers = document.getElementById('tailored-useothers');
+  const useOthersLabel = document.getElementById('tailored-useothers-label');
+  if (useOthers) {
+    useOthers.disabled = !hasKey;
+    if (!hasKey) useOthers.checked = false;
+  }
+  if (useOthersLabel) {
+    useOthersLabel.style.opacity = hasKey ? '1' : '0.5';
+    useOthersLabel.style.cursor = hasKey ? 'pointer' : 'not-allowed';
+    useOthersLabel.title = hasKey ? '' : 'Add an API key (Candidate → API Key) to use this.';
+  }
+  const pf = document.getElementById('tailored-preflight');
+  if (pf) {
+    const haveBase = !!(s.resumeText || '').trim();
+    const haveJd = !!(s.jdText || '').trim();
+    const chip = (ok, label) => '<strong style="color:' + (ok ? 'var(--green)' : 'var(--red)') + ';margin-right:12px;">' + (ok ? '✓' : '✗') + ' ' + label + '</strong>';
+    const missing = [];
+    if (!haveBase) missing.push('add a base resume in Candidate → Resume & Inputs');
+    if (!haveJd) missing.push("add this job's description under Job Description");
+    pf.innerHTML = '<span style="color:var(--muted);">Inputs: </span>' + chip(haveBase, 'Base resume') + chip(haveJd, 'Job description') +
+      (missing.length ? '<div style="color:var(--muted);margin-top:4px;">Before generating: ' + missing.join('; ') + '.</div>' : '');
+  }
+}
+
+async function generateTailoredResume() {
+  const s = getState();
+  const key = s.apiKey;
+  const provider = s.aiProvider || 'anthropic';
+  const status = document.getElementById('tailored-status');
+  if (!key) { status.innerHTML = warnKey('Candidate → API Key'); return; }
+  const base = (s.resumeText || '').trim();
+  const jd = (s.jdText || '').trim();
+  if (!base) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">Add a base resume first (Candidate → Resume & Inputs).</div>'; return; }
+  if (!jd) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">Add this job\'s description first (Job Description step).</div>'; return; }
+  const level = v('tailored-level') || 'experienced';
+  const extra = v('tailored-extra').trim();
+  const support = (s.supportingDocs || []).map(d => '• ' + d.label + ': ' + d.text).join('\n\n');
+  const cp = s.candidateProfile || {};
+  // Optionally mine other sessions' tailored resumes for strong, reusable phrasing
+  let others = '';
+  if (document.getElementById('tailored-useothers') && document.getElementById('tailored-useothers').checked) {
+    const root = loadRoot();
+    others = root.sessions
+      .filter(x => x.id !== root.activeId && (x.tailoredResume || '').trim())
+      .map(x => '--- ' + (x.company || 'A role') + (x.role ? ' / ' + x.role : '') + ' ---\n' + x.tailoredResume)
+      .join('\n\n')
+      .substring(0, 2500);
+  }
+  status.innerHTML = '<span class="spinner"></span>Tailoring your resume to this job…';
+  const prompt = `You are an expert resume writer. Tailor the candidate's BASE resume to the target JOB DESCRIPTION at ${LEVEL_LABEL[level]} level. Match the keywords and priorities from the JD, lead with the most relevant experience, and use impact statements (action verb + what + quantified outcome). Keep every fact truthful — never invent experience, employers, dates, titles, or metrics. If the base lacks something the JD wants, emphasize the closest real experience instead of fabricating.
+
+LEVEL STYLE — ${LEVEL_GUIDE[level]}
+
+BASE RESUME:
+${base.substring(0, 4000)}
+
+TARGET JOB DESCRIPTION:
+${jd.substring(0, 2500)}
+
+${support ? 'SUPPORTING MATERIALS (extra real evidence to draw on):\n' + support.substring(0, 1500) + '\n\n' : ''}${extra ? 'EXTRA MATERIALS SPECIFIC TO THIS JOB:\n' + extra.substring(0, 1500) + '\n\n' : ''}${others ? 'PHRASING FROM MY OTHER TAILORED RESUMES (reuse strong, TRUE wording only — do not import facts that are not in the base resume):\n' + others + '\n\n' : ''}${cp.positioning ? 'CANDIDATE POSITIONING: ' + cp.positioning + '\n' : ''}
+Return ONLY the tailored resume as clean plain text with clear sections.`;
+  try {
+    const text = await callAI(provider, key, prompt, 3000);
+    sv('tailored-text', text.trim());
+    setState({ tailoredResume: text.trim(), tailoredLevel: level, tailoredExtra: extra });
+    status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Tailored resume generated at ' + LEVEL_LABEL[level] + ' level and saved to this session. Review and edit below.</div>';
+  } catch(e) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>'; }
+}
+
+async function handleTailoredFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const fnameEl = document.getElementById('tailored-filename');
+  const areaEl = document.getElementById('tailored-upload-area');
+  fnameEl.style.display = 'block';
+  fnameEl.textContent = '⏳ Reading ' + file.name + '…';
+  try {
+    const text = await extractTextFromFile(file);
+    if (!text || !text.trim()) throw new Error('No readable text found in that file.');
+    sv('tailored-text', text.trim());
+    setState({ tailoredResume: text.trim(), tailoredLevel: v('tailored-level') });
+    areaEl.classList.add('has-file');
+    fnameEl.textContent = '✓ ' + file.name + ' — loaded and saved to this session.';
+  } catch(e) {
+    fnameEl.textContent = '⚠ ' + e.message;
+    areaEl.classList.remove('has-file');
+  }
+  event.target.value = ''; // allow re-uploading the same file
+}
+
+function saveTailoredResume() {
+  setState({ tailoredResume: v('tailored-text').trim(), tailoredLevel: v('tailored-level'), tailoredExtra: v('tailored-extra').trim() });
+  const el = document.getElementById('tailored-save-status');
+  if (el) { el.textContent = '✓ Saved to this session'; el.style.color = 'var(--green)'; setTimeout(() => { el.textContent = ''; }, 4000); }
+}
+
+function copyTailoredResume() {
+  const text = v('tailored-text');
+  if (!text.trim()) return;
+  const el = document.getElementById('tailored-save-status');
+  navigator.clipboard.writeText(text).then(() => {
+    if (el) { el.textContent = '✓ Copied to clipboard'; el.style.color = 'var(--green)'; setTimeout(() => { el.textContent = ''; }, 3000); }
+  });
+}
+
+function printTailoredResume() {
+  const s = getState();
+  const text = v('tailored-text').trim();
+  if (!text) { alert('Generate or paste a resume first.'); return; }
+  const title = (s.company || 'Resume') + (s.role ? ' — ' + s.role : '');
+  const html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + ' — Tailored Resume</title>' +
+    '<style>@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");' +
+    '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Inter",sans-serif;color:#1a1a2e;padding:40px 48px;font-size:12.5px;line-height:1.5;}' +
+    'pre{white-space:pre-wrap;font-family:"Inter",sans-serif;}@media print{body{padding:0;}}</style></head>' +
+    '<body onload="window.print()"><pre>' + esc(text) + '</pre></body></html>';
+  const w = window.open('', '_blank');
+  w.document.write(html); w.document.close();
 }
 
 function v(id) { const el = document.getElementById(id); return el ? el.value : ''; }
@@ -2088,6 +2821,52 @@ function classifyRole(title) {
   return { tier, fn };
 }
 
+// The seniority of the ROLE THE CANDIDATE is applying for (from the session role).
+// This calibrates questions so early-career / front-line candidates don't get executive-style questions.
+function classifyCandidateLevel(role) {
+  const t = (role || '').toLowerCase();
+  if (!t.trim()) return null;
+  if (/\b(vp|vice president|chief|c-suite|cxo|director|head of|principal|senior manager|avp|executive|dean|provost|superintendent|president)\b/.test(t)) return 'senior';
+  if (/\b(intern|trainee|entry[- ]?level|junior|jr\.?|associate|assistant|coordinator|representative|\brep\b|clerk|cashier|server|barista|crew|attendant|agent|apprentice|aide|host|teller|receptionist|warehouse|driver|technician i\b|help ?desk|front desk|hourly|part[- ]?time)\b/.test(t)) return 'frontline';
+  if (/\b(manager|supervisor|team lead|\blead\b|senior|sr\.?|specialist|analyst|engineer|consultant|officer)\b/.test(t)) return 'mid';
+  return 'mid'; // default to mid-level rather than managerial/executive
+}
+
+// Question sets calibrated to the CANDIDATE'S level (used when the interviewer isn't HR/faculty).
+const CANDIDATE_LEVEL_BANKS = {
+  frontline: {
+    label: 'Early-career / Front-line',
+    wants: 'Reliability, a positive attitude, and willingness to learn. They want to know you will show up on time, treat customers and teammates well, follow procedures, and stay calm under pressure. Attitude and dependability matter as much as prior experience.',
+    angle: 'Be warm, specific, and enthusiastic. Use real examples from any job, school, sports, or volunteering. Emphasize dependability, a positive attitude, and eagerness to learn. Being newer is fine — show that you are coachable and genuinely interested.',
+    questions: [
+      'Tell me about yourself and why this role interests you.',
+      'Describe a time you gave great customer or client service.',
+      'Tell me about a time you dealt with a difficult customer or coworker — what did you do?',
+      'How do you stay reliable and on time when things get busy?',
+      'Walk me through how you would juggle several tasks or customers at once.',
+      'Tell me about a time you made a mistake at work or school — how did you handle it?',
+      'How do you learn a new task or system quickly?',
+      'What does good teamwork look like to you?',
+      'Are you comfortable with the schedule and hours this role needs?',
+    ],
+  },
+  mid: {
+    label: 'Mid-level / Experienced',
+    wants: 'Solid craft, dependability, and the ability to own work with limited oversight. They want proof you can execute well, collaborate across a team, handle ambiguity, and grow into more responsibility.',
+    angle: 'Lead with concrete examples and results from recent work. Show ownership, reliability, and collaboration. Quantify outcomes where you can, and signal that you are ready to take on more scope.',
+    questions: [
+      'Walk me through a recent project or responsibility you owned end to end.',
+      'Tell me about a time you improved a process or made something more efficient.',
+      'How do you prioritize when you have competing deadlines?',
+      'Describe a time you handled a conflict with a coworker or stakeholder.',
+      'Tell me about a time you had to learn a new skill or tool quickly for the job.',
+      'How do you handle critical feedback on your work?',
+      'Give an example of a goal or metric you owned and how you performed against it.',
+      'Tell me about a time you took initiative beyond your core responsibilities.',
+    ],
+  },
+};
+
 const ROLE_BANKS = {
   csuite: {
     wants: 'Strategic clarity, executive presence, and cultural fit at the leadership level. They want to know you can operate with autonomy, make decisions with incomplete information, and represent the organization externally. They\'re assessing whether you think in terms of the whole system, not just your function.',
@@ -2294,15 +3073,28 @@ function generateFromRole() {
 
   const { tier, fn } = classifyRole(title);
   const bank = ROLE_BANKS[tier] || ROLE_BANKS.manager;
-
-  // Combine base questions with up to 2 function-specific ones
   const fnQs = FUNCTION_QUESTIONS[fn] || [];
-  const questions = [...bank.questions, ...fnQs.slice(0, 2)];
+
+  // Calibrate to the level of the role the CANDIDATE is applying for.
+  // HR and faculty interviewers keep their own screening style regardless.
+  const candLevel = classifyCandidateLevel(getState().role);
+  let questions, wants, angle, genLabel;
+  if (tier === 'hr' || tier === 'faculty') {
+    questions = [...bank.questions, ...fnQs.slice(0, 2)];
+    wants = bank.wants; angle = bank.angle; genLabel = tier === 'hr' ? 'HR / Recruiter' : 'Faculty / Academic';
+  } else if (candLevel === 'frontline' || candLevel === 'mid') {
+    const cb = CANDIDATE_LEVEL_BANKS[candLevel];
+    questions = [...cb.questions, ...fnQs.slice(0, 1)];
+    wants = cb.wants; angle = cb.angle; genLabel = cb.label;
+  } else {
+    questions = [...bank.questions, ...fnQs.slice(0, 2)];
+    wants = bank.wants; angle = bank.angle; genLabel = null;
+  }
 
   // Populate the fields
   sv('iv-questions', questions.join('\n'));
-  sv('iv-wants', bank.wants);
-  sv('iv-angle', bank.angle);
+  sv('iv-wants', wants);
+  sv('iv-angle', angle);
 
   // Build and show citations
   const tierSources = ROLE_SOURCES[tier] || [];
@@ -2321,8 +3113,9 @@ function generateFromRole() {
   document.getElementById('iv-sources').style.display = 'block';
 
   const tierLabels = { csuite: 'C-Suite / Executive', vp: 'VP / Senior Leader', director: 'Director / AVP', manager: 'Manager / Team Lead', peer: 'Peer / Individual Contributor', hr: 'HR / Recruiter', faculty: 'Faculty / Academic' };
+  const label = genLabel || tierLabels[tier];
   const fnLabel = fn !== 'general' ? ` · ${fn.charAt(0).toUpperCase() + fn.slice(1)} function detected` : '';
-  statusEl.textContent = `✓ Generated for: ${tierLabels[tier]}${fnLabel}. Review and personalize before saving.`;
+  statusEl.textContent = `✓ Calibrated to: ${label}${fnLabel}. Review and personalize before saving.`;
   statusEl.style.color = 'var(--green)';
 }
 
@@ -2352,7 +3145,15 @@ async function generateProfileWithAI() {
   document.getElementById('iv-sources').style.display = 'none';
   document.getElementById('iv-sources-links').innerHTML = '';
 
-  const prompt = `You are helping someone prepare for a job interview. Here is a profile or bio of one of their interviewers. The candidate is interviewing for: "${role}".
+  const candLevel = classifyCandidateLevel(role);
+  const levelGuidance = {
+    frontline: 'This is an EARLY-CAREER / FRONT-LINE role (e.g. associate, coordinator, representative, hourly, entry-level). Keep questions grounded and practical — reliability, customer/teammate interactions, following process, learning quickly, availability, handling busy moments. AVOID strategic, executive, or "org-wide change" questions.',
+    mid: 'This is a MID-LEVEL / EXPERIENCED individual-contributor role. Focus questions on ownership of work, craft, collaboration, prioritization, handling ambiguity, and measurable results — not executive strategy.',
+    senior: 'This is a SENIOR / LEADERSHIP role. Strategic, leadership, and cross-functional-influence questions are appropriate.'
+  };
+  const calibration = candLevel ? '\n\nIMPORTANT — calibrate every question to the level of the role the candidate is applying for. ' + levelGuidance[candLevel] : '';
+
+  const prompt = `You are helping someone prepare for a job interview. Here is a profile or bio of one of their interviewers. The candidate is interviewing for: "${role}".${calibration}
 
 Interviewer background text:
 ${background}
@@ -2496,7 +3297,7 @@ function renderCheatSheet() {
         <div class="empty-state-icon">📋</div>
         <div class="empty-state-title">No interviewers added yet</div>
         <div class="empty-state-body">Go to Settings → Interviewers to add the people you'll be meeting with.</div>
-        <button class="btn btn-gold" onclick="showTab('settings');showSettings('interviewers')">Add Interviewers</button>
+        <button class="btn btn-gold" onclick="showSettings('interviewers')">Add Interviewers</button>
       </div>`;
     return;
   }
@@ -2580,7 +3381,7 @@ async function renderFitAnalysis() {
         <div class="empty-state-icon">🎯</div>
         <div class="empty-state-title">Add your resume &amp; JD first</div>
         <div class="empty-state-body">Go to Settings → My Documents and paste or upload both documents.</div>
-        <button class="btn btn-gold" onclick="showTab('settings');showSettings('documents')">Go to Documents</button>
+        <button class="btn btn-gold" onclick="showSettings('documents')">Go to Documents</button>
       </div>`;
     return;
   }
@@ -2728,7 +3529,7 @@ function renderFitResult(r, aiPowered, meta) {
       <p style="font-size:0.82rem;line-height:1.62;color:#444458;margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">${esc(r.atsTips)}</p>
     </div>
 
-    <button class="btn btn-gold btn-sm" onclick="runFitAnalysis()">↺ Re-run Analysis</button>
+    <button class="btn btn-gold btn-sm" onclick="runFitAnalysis()">✨ Re-run Analysis</button>
   `;
 }
 
@@ -3599,8 +4400,8 @@ function exportPracticeFeedback() {
 // ===================================================================
 (function init() {
   hydrateUI();
-  // Open the mini-map on Step 1 (API key) by default
-  showSettings('api');
+  // Land on the Candidate home hero by default
+  showSettings('home');
 })();
 </script>
 </body>
