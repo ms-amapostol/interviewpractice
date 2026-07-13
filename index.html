@@ -2391,6 +2391,85 @@ const LEVEL_GUIDE = {
   vp: 'VP/Executive: an Executive Profile with strategic scope, Core Competencies, and portfolio-scale impact statements emphasizing leadership, growth, and cross-functional influence.'
 };
 
+// Structural skeletons per level, modeled on the sample resumes provided (entry / director / VP).
+// These are format templates only — no personal data — so the AI mirrors the right shape for each level.
+const LEVEL_TEMPLATES = {
+  entry:
+`[FULL NAME]
+[City, State • phone • email • LinkedIn]
+
+OBJECTIVE
+[One sentence: the role you want and the value you bring]
+
+EDUCATION
+[Degree, Major (Minor) — School | graduation date | GPA if strong]
+
+PROFESSIONAL EXPERIENCE
+[Company | dates]
+[Title]
+• [Concrete responsibility or accomplishment, plain language]
+
+SKILLS
+[Relevant tools, software, languages, certifications]`,
+
+  experienced:
+`[FULL NAME]
+[City, State • phone • email • LinkedIn]
+
+PROFESSIONAL SUMMARY
+[2-3 sentences: experience, focus areas, and core strengths]
+
+CORE SKILLS
+[8-10 short skill phrases]
+
+PROFESSIONAL EXPERIENCE
+[Title — Company | Location | dates]
+• [Achievement bullet: action verb + what + result, quantified where possible]
+
+EDUCATION
+[Degree — School | year]`,
+
+  director:
+`[FULL NAME]
+[City, State • phone • email • LinkedIn]
+
+EXECUTIVE PROFILE
+[3-4 sentences: scope, domains of expertise, and a track record referencing scale and metrics]
+
+CORE COMPETENCIES
+[10-12 competency phrases]
+
+PROFESSIONAL EXPERIENCE
+[Title — Company | Location | dates]
+• [Quantified impact bullet: action verb + what + measurable outcome]
+
+EDUCATION
+[Degree — School | year]
+
+CERTIFICATIONS
+[Credentials]`,
+
+  vp:
+`[FULL NAME, credentials]
+[City, State • phone • email • LinkedIn]
+
+EXECUTIVE PROFILE
+[4-5 sentences: strategic scope, organization-level impact, leadership approach, and proof of scale]
+
+CORE COMPETENCIES
+[10-12 leadership and strategy competency phrases]
+
+PROFESSIONAL EXPERIENCE
+[Title — Company | Location | dates]
+• [Portfolio-scale impact statement: leadership + cross-functional influence + quantified outcome]
+
+EDUCATION
+[Degree — School | year]
+
+CERTIFICATIONS
+[Credentials]`
+};
+
 function recommendLevel(resume) {
   const t = (resume || '').toLowerCase();
   if (/\b(vp|vice president|chief|c-suite|cxo|avp|executive director)\b/.test(t)) return 'vp';
@@ -2414,18 +2493,23 @@ async function generateBaseResume() {
   const cp = s.candidateProfile || {};
   if (!support.trim() && !seed) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">Add some supporting materials (or paste an existing resume) first — AI needs raw material to work from.</div>'; return; }
   status.innerHTML = '<span class="spinner"></span>Drafting your base resume…';
-  const prompt = `You are an expert resume writer. Write a strong, general-purpose BASE resume for this candidate — NOT tailored to any single job. Use only real information from the inputs; never invent experience, employers, dates, titles, or metrics.
+  const prompt = `You are an expert resume writer. Write a strong, general-purpose BASE resume for this candidate — NOT tailored to any single job. Use only real information from the inputs; never invent experience, employers, dates, titles, degrees, or metrics.
 
-${seed ? 'EXISTING RESUME (improve and reformat, keep the facts):\n' + seed.substring(0, 3500) + '\n\n' : ''}SUPPORTING MATERIALS:
-${support.substring(0, 3000)}
+IMPORTANT: Include every real section the inputs support — Professional Experience (all roles) AND Education, Certifications, and Credentials, written out in full with real names, degrees, institutions, and dates. NEVER use placeholders or brackets like "[Degree, Institution, Year]" or "to be added"; if a detail exists in the inputs, write it out; if it genuinely does not exist, omit it.
+
+${seed ? 'EXISTING RESUME (improve and reformat, keep ALL facts including education and certifications):\n' + seed.substring(0, 9000) + '\n\n' : ''}SUPPORTING MATERIALS:
+${support.substring(0, 4000)}
 
 CANDIDATE PROFILE:
 Strengths: ${cp.strengths || ''}
 Positioning: ${cp.positioning || ''}
 
-Format as clean plain text with clear sections: a name/contact placeholder line, Professional Summary, Core Competencies, Professional Experience (each role: company, title, dates if known, then impact bullets), and Education. Return ONLY the resume text.`;
+STRUCTURE TO FOLLOW (mirror these sections and order, filled with the candidate's REAL content; drop bracketed hints):
+${LEVEL_TEMPLATES[recommendLevel(seed || support)]}
+
+Return ONLY the resume as clean plain text, using CAPS section headers each on their own line and "• " for bullets. Include a section only if there is real content for it.`;
   try {
-    const text = await callAI(provider, key, prompt, 2600);
+    const text = await callAI(provider, key, prompt, 3500);
     sv('resume-text', text.trim());
     setState({ resumeText: text.trim() });
     status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Base resume drafted and saved. Review and edit above — this is your master resume.</div>';
@@ -2495,20 +2579,29 @@ async function generateTailoredResume() {
       .substring(0, 2500);
   }
   status.innerHTML = '<span class="spinner"></span>Tailoring your resume to this job…';
-  const prompt = `You are an expert resume writer. Tailor the candidate's BASE resume to the target JOB DESCRIPTION at ${LEVEL_LABEL[level]} level. Match the keywords and priorities from the JD, lead with the most relevant experience, and use impact statements (action verb + what + quantified outcome). Keep every fact truthful — never invent experience, employers, dates, titles, or metrics. If the base lacks something the JD wants, emphasize the closest real experience instead of fabricating.
+  const prompt = `You are an expert resume writer. Produce a COMPLETE, ready-to-send resume tailored to the target JOB DESCRIPTION at ${LEVEL_LABEL[level]} level, based on the candidate's BASE resume.
+
+CRITICAL RULES:
+- Include EVERY section that exists in the base resume — especially the full Professional Experience (all roles, employers, and dates) AND the complete Education, Certifications, and Credentials. Carry these forward using the REAL names, degrees, institutions, dates, and credentials from the base resume.
+- NEVER use placeholders, brackets, or notes-to-self such as "[Prior roles to be incorporated...]", "[Degree, Institution, Year]", or "to be added". If a detail exists in the base resume, write it out in full. If a detail genuinely is not in the base resume, simply omit it — do not leave a placeholder.
+- Keep every fact truthful — never invent experience, employers, dates, titles, degrees, or metrics.
+- Tailor by matching the JD's keywords and priorities, reordering to lead with the most relevant experience, and sharpening bullets into impact statements (action verb + what + quantified outcome). Do NOT drop real content just because it is less relevant — keep it, just position it lower.
 
 LEVEL STYLE — ${LEVEL_GUIDE[level]}
 
-BASE RESUME:
-${base.substring(0, 4000)}
+STRUCTURE TO FOLLOW (${LEVEL_LABEL[level]} format — mirror these sections and order, filled entirely with the candidate's REAL content; drop bracketed hints):
+${LEVEL_TEMPLATES[level]}
+
+BASE RESUME (use ALL of this — do not truncate education or older roles):
+${base.substring(0, 12000)}
 
 TARGET JOB DESCRIPTION:
-${jd.substring(0, 2500)}
+${jd.substring(0, 3500)}
 
-${support ? 'SUPPORTING MATERIALS (extra real evidence to draw on):\n' + support.substring(0, 1500) + '\n\n' : ''}${extra ? 'EXTRA MATERIALS SPECIFIC TO THIS JOB:\n' + extra.substring(0, 1500) + '\n\n' : ''}${others ? 'PHRASING FROM MY OTHER TAILORED RESUMES (reuse strong, TRUE wording only — do not import facts that are not in the base resume):\n' + others + '\n\n' : ''}${cp.positioning ? 'CANDIDATE POSITIONING: ' + cp.positioning + '\n' : ''}
-Return ONLY the tailored resume as clean plain text with clear sections.`;
+${support ? 'SUPPORTING MATERIALS (extra real evidence to draw on):\n' + support.substring(0, 2000) + '\n\n' : ''}${extra ? 'EXTRA MATERIALS SPECIFIC TO THIS JOB:\n' + extra.substring(0, 1500) + '\n\n' : ''}${others ? 'PHRASING FROM MY OTHER TAILORED RESUMES (reuse strong, TRUE wording only — do not import facts that are not in the base resume):\n' + others + '\n\n' : ''}${cp.positioning ? 'CANDIDATE POSITIONING: ' + cp.positioning + '\n' : ''}
+Return ONLY the finished resume as clean plain text. Use these section headers in CAPS on their own line: the candidate's name first, then a contact line, then PROFESSIONAL SUMMARY, CORE COMPETENCIES, PROFESSIONAL EXPERIENCE, EDUCATION, and CERTIFICATIONS (include each section only if there is real content for it). Use "• " for bullet points.`;
   try {
-    const text = await callAI(provider, key, prompt, 3000);
+    const text = await callAI(provider, key, prompt, 4000);
     sv('tailored-text', text.trim());
     setState({ tailoredResume: text.trim(), tailoredLevel: level, tailoredExtra: extra });
     status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Tailored resume generated at ' + LEVEL_LABEL[level] + ' level and saved to this session. Review and edit below.</div>';
@@ -2551,16 +2644,52 @@ function copyTailoredResume() {
   });
 }
 
+// Turn a plain-text resume into a clean, formatted HTML resume for printing/PDF.
+function resumeToHTML(text) {
+  const lines = text.replace(/\r/g, '').split('\n');
+  const isHeader = (l) => {
+    const t = l.replace(/[:\s]+$/, '');
+    // ALL-CAPS-ish section header, short, mostly letters
+    return t.length >= 3 && t.length <= 46 && t === t.toUpperCase() && /[A-Z]/.test(t) && !/^[•▪▸\-*]/.test(t) && (t.match(/[A-Z]/g) || []).length >= 2;
+  };
+  const isContact = (l) => /(@|https?:|linkedin|·|\|)/i.test(l) || /\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}/.test(l);
+  let out = '';
+  let firstDone = false, contactDone = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) { out += '<div class="sp"></div>'; continue; }
+    if (!firstDone) { out += '<div class="rname">' + esc(line) + '</div>'; firstDone = true; continue; }
+    if (!contactDone) {
+      contactDone = true;
+      if (isContact(line)) { out += '<div class="rcontact">' + esc(line) + '</div>'; continue; }
+    }
+    if (isHeader(line)) { out += '<div class="rsec">' + esc(line.replace(/[:\s]+$/, '')) + '</div>'; continue; }
+    if (/^[•▪▸]/.test(line)) { out += '<div class="rbul">' + esc(line.replace(/^[•▪▸]\s*/, '')) + '</div>'; continue; }
+    if (/^[-*]\s+/.test(line)) { out += '<div class="rbul">' + esc(line.replace(/^[-*]\s+/, '')) + '</div>'; continue; }
+    out += '<div class="rline">' + esc(line) + '</div>';
+  }
+  return out;
+}
+
 function printTailoredResume() {
   const s = getState();
   const text = v('tailored-text').trim();
   if (!text) { alert('Generate or paste a resume first.'); return; }
   const title = (s.company || 'Resume') + (s.role ? ' — ' + s.role : '');
-  const html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + ' — Tailored Resume</title>' +
-    '<style>@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");' +
-    '*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Inter",sans-serif;color:#1a1a2e;padding:40px 48px;font-size:12.5px;line-height:1.5;}' +
-    'pre{white-space:pre-wrap;font-family:"Inter",sans-serif;}@media print{body{padding:0;}}</style></head>' +
-    '<body onload="window.print()"><pre>' + esc(text) + '</pre></body></html>';
+  const css =
+    '@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap");' +
+    '*{box-sizing:border-box;margin:0;padding:0;}' +
+    'body{font-family:"Inter",Arial,sans-serif;color:#1f2430;font-size:10.8pt;line-height:1.42;padding:0.6in 0.7in;max-width:8.5in;margin:0 auto;}' +
+    '.rname{font-family:"EB Garamond",Georgia,serif;font-size:22pt;font-weight:600;letter-spacing:0.02em;text-align:center;color:#12283a;}' +
+    '.rcontact{text-align:center;font-size:9.2pt;color:#55606f;margin-top:3px;margin-bottom:6px;}' +
+    '.rsec{font-size:10pt;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#12283a;border-bottom:1.5px solid #c9d2dc;padding-bottom:2px;margin:14px 0 7px;}' +
+    '.rline{margin:2px 0;}' +
+    '.rbul{position:relative;padding-left:14px;margin:3px 0;}' +
+    '.rbul:before{content:"•";position:absolute;left:2px;color:#1a8585;}' +
+    '.sp{height:5px;}' +
+    '@media print{body{padding:0.5in 0.6in;}}';
+  const html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + ' — Resume</title>' +
+    '<style>' + css + '</style></head><body onload="window.print()">' + resumeToHTML(text) + '</body></html>';
   const w = window.open('', '_blank');
   w.document.write(html); w.document.close();
 }
