@@ -802,6 +802,15 @@ a:hover { text-decoration: underline; }
 .wiz-dot.done .wiz-dnum { background: var(--gold-light); border-color: var(--gold-border); color: var(--gold); }
 .wiz-line { flex: 1; height: 1.5px; background: var(--border); min-width: 12px; }
 .wiz-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+/* Read-only "published" field cards */
+.iv-vblock { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; }
+.iv-vlabel { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 6px; }
+.iv-vlist { margin: 0; padding-left: 18px; }
+.iv-vlist li { font-size: 0.84rem; line-height: 1.6; margin-bottom: 4px; color: var(--text); }
+.iv-vtext { font-size: 0.84rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
+.iv-vempty { font-size: 0.82rem; color: var(--subtle); padding: 8px 2px; }
+.doc-readonly { white-space: pre-wrap; font-size: 0.84rem; line-height: 1.6; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; max-height: 380px; overflow-y: auto; }
+.section-editbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
 .hero-top { display: flex; align-items: center; gap: 20px; }
 .hero-copy { flex: 1; min-width: 0; }
 .hero-art { width: 190px; height: auto; flex-shrink: 0; }
@@ -823,19 +832,28 @@ a:hover { text-decoration: underline; }
 .hero-tile-title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 3px; }
 .hero-tile-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.45; }
 /* Job tracker table */
-.tracker-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 860px; }
+.tracker-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 1180px; }
 .tracker-table th {
   text-align: left; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--subtle); padding: 8px 8px; border-bottom: 2px solid var(--border); white-space: nowrap;
+  color: var(--subtle); padding: 8px 10px; border-bottom: 2px solid var(--border); white-space: nowrap;
 }
-.tracker-table td { padding: 8px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tracker-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tracker-table td:nth-child(1) { white-space: nowrap; }
+.tracker-table td:nth-child(2) { min-width: 120px; }
+.tracker-table td:nth-child(3) { min-width: 175px; }
+.tracker-table td:nth-child(4), .tracker-table td:nth-child(5) { white-space: nowrap; }
+.tracker-table td:nth-child(6) { min-width: 145px; }
+.tracker-table td:nth-child(7) { min-width: 175px; }
+.tracker-table td:nth-child(8) { min-width: 135px; }
+.tracker-table td:nth-child(9) { white-space: nowrap; }
 .tracker-table tr.row-session { background: var(--gold-light); }
 .tracker-src { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
 .tracker-src.session { background: var(--gold); color: #fff; }
 .tracker-src.manual { background: var(--border); color: var(--muted); }
-.tracker-in { width: 100%; border: 1px solid var(--border); border-radius: 5px; padding: 5px 6px; font-family: inherit; font-size: 0.78rem; background: var(--white); }
+.tracker-in { width: 100%; min-width: 110px; border: 1px solid var(--border); border-radius: 5px; padding: 5px 6px; font-family: inherit; font-size: 0.78rem; background: var(--white); }
 .tracker-signals { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
 .tracker-cell-strong { font-weight: 600; color: var(--text); }
+#tracker-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); }
 .support-examples {
   list-style: none;
   display: grid;
@@ -1177,21 +1195,30 @@ Congrats on being intentional about your career search — I'm excited for you!
 
       <!-- STEP 3 -->
       <div class="wiz-step" data-step="3" style="display:none;">
-        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">These fields are auto-filled by AI if you ran the previous step — but you can always write or edit them yourself. They power the Interviewer Profiles tab and the Practice simulator.</p>
-
-        <div class="form-group">
-          <label class="form-label">Questions they're likely to ask</label>
-          <textarea class="form-textarea" id="iv-questions" placeholder="One question per line — AI will generate these, or write your own based on their role and what you'd expect them to probe on." style="min-height:110px;"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;">
+          <p style="font-size:0.8rem;color:var(--muted);margin:0;flex:1;">Auto-filled by AI if you ran the previous step. Read it over, then click <strong>Edit</strong> to tweak anything. These power the Interviewer Profiles tab and the Practice simulator.</p>
+          <button class="btn btn-ghost btn-sm" id="iv-edit-toggle" onclick="ivToggleEdit()" style="white-space:nowrap;">✏️ Edit</button>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">What they want to see in a candidate</label>
-          <textarea class="form-textarea" id="iv-wants" placeholder="What matters most to this person? What lens are they using to evaluate you?" style="min-height:80px;"></textarea>
-        </div>
+        <!-- Read-only view -->
+        <div id="iv-view-fields"></div>
 
-        <div class="form-group">
-          <label class="form-label">Your angle &amp; watch-fors</label>
-          <textarea class="form-textarea" id="iv-angle" placeholder="How should you frame yourself with this specific person? Any landmines to avoid or dynamics to navigate?" style="min-height:80px;"></textarea>
+        <!-- Editable fields -->
+        <div id="iv-edit-fields" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Questions they're likely to ask</label>
+            <textarea class="form-textarea" id="iv-questions" placeholder="One question per line — AI will generate these, or write your own based on their role and what you'd expect them to probe on." style="min-height:110px;"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">What they want to see in a candidate</label>
+            <textarea class="form-textarea" id="iv-wants" placeholder="What matters most to this person? What lens are they using to evaluate you?" style="min-height:80px;"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your angle &amp; watch-fors</label>
+            <textarea class="form-textarea" id="iv-angle" placeholder="How should you frame yourself with this specific person? Any landmines to avoid or dynamics to navigate?" style="min-height:80px;"></textarea>
+          </div>
         </div>
 
         <div id="iv-sources" style="display:none;margin-top:6px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);">
@@ -1232,20 +1259,23 @@ Congrats on being intentional about your career search — I'm excited for you!
     </div>
     <div class="card">
       <div class="card-accent"></div>
-      <div class="section-label">Job Description</div>
-      <div class="file-upload-area" id="jd-upload-area" onclick="document.getElementById('jd-file').click()" style="margin:12px 0;">
-        <input type="file" id="jd-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'jd')">
-        <div class="upload-icon">📋</div>
-        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
-        <div class="upload-filename" id="jd-filename" style="display:none;"></div>
+      <div class="section-editbar">
+        <div class="section-label" style="margin:0;">Job Description</div>
+        <button class="btn btn-ghost btn-sm" id="jd-toggle" onclick="toggleSection('jd', saveJdDoc, renderJdView)">✏️ Edit</button>
       </div>
-      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
-      <div class="form-group" style="margin-top:12px;">
-        <label class="form-label">Or paste the job description</label>
-        <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:220px;"></textarea>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
-          <button class="btn btn-gold btn-sm" onclick="saveJdDoc()">💾 Save job description</button>
-          <span id="jd-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+      <div id="jd-view"></div>
+      <div id="jd-edit" style="display:none;">
+        <div class="file-upload-area" id="jd-upload-area" onclick="document.getElementById('jd-file').click()" style="margin:12px 0;">
+          <input type="file" id="jd-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'jd')">
+          <div class="upload-icon">📋</div>
+          <div class="upload-text">Upload PDF, DOCX, or TXT</div>
+          <div class="upload-filename" id="jd-filename" style="display:none;"></div>
+        </div>
+        <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
+        <div class="form-group" style="margin-top:12px;margin-bottom:0;">
+          <label class="form-label">Or paste the job description</label>
+          <textarea class="form-textarea" id="jd-text" placeholder="Paste the full job description here..." style="min-height:220px;"></textarea>
+          <span id="jd-save-status" style="display:block;font-size:0.76rem;color:var(--muted);margin-top:8px;"></span>
         </div>
       </div>
     </div>
@@ -1296,25 +1326,30 @@ Congrats on being intentional about your career search — I'm excited for you!
 
     <div class="card" style="margin-top:16px;">
       <div class="card-accent"></div>
-      <div class="section-label">Your tailored resume</div>
-      <p style="font-size:0.8rem;color:var(--muted);margin:8px 0 4px;">Generate one with ✨ above, <strong>upload</strong> an existing resume, or <strong>type / paste</strong> your own — all three land in the same editable box and save to this session.</p>
-      <div class="file-upload-area" id="tailored-upload-area" onclick="document.getElementById('tailored-file').click()" style="margin:10px 0;">
-        <input type="file" id="tailored-file" accept=".pdf,.docx,.doc,.txt" onchange="handleTailoredFile(event)">
-        <div class="upload-icon">📄</div>
-        <div class="upload-text">Upload a resume (PDF, DOCX, or TXT)</div>
-        <div class="upload-filename" id="tailored-filename" style="display:none;"></div>
+      <div class="section-editbar">
+        <div class="section-label" style="margin:0;">Your tailored resume</div>
+        <button class="btn btn-ghost btn-sm" id="tailored-toggle" onclick="toggleSection('tailored', saveTailoredResume, renderTailoredView)">✏️ Edit</button>
       </div>
-      <div class="upload-hint">✓ Uploaded files fill the box below and save to this session automatically.</div>
-      <div class="form-group" style="margin-top:12px;margin-bottom:0;">
-        <label class="form-label">Or type / paste / edit</label>
-        <textarea class="form-textarea" id="tailored-text" placeholder="Your generated or uploaded resume appears here — fully editable. You can also type or paste one in and save it to this session." style="min-height:340px;font-family:'DM Sans',sans-serif;"></textarea>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
-          <button class="btn btn-gold btn-sm" onclick="saveTailoredResume()">💾 Save to this session</button>
-          <button class="btn btn-ghost btn-sm" onclick="exportResume('pdf')">⬇ PDF</button>
-          <button class="btn btn-ghost btn-sm" onclick="exportResume('word')">⬇ Word</button>
-          <button class="btn btn-ghost btn-sm" onclick="copyTailoredResume()">📋 Copy</button>
-          <span id="tailored-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+      <div id="tailored-view"></div>
+      <div id="tailored-edit" style="display:none;">
+        <p style="font-size:0.8rem;color:var(--muted);margin:0 0 8px;">Generate one with ✨ above, <strong>upload</strong> an existing resume, or <strong>type / paste</strong> your own.</p>
+        <div class="file-upload-area" id="tailored-upload-area" onclick="document.getElementById('tailored-file').click()" style="margin:10px 0;">
+          <input type="file" id="tailored-file" accept=".pdf,.docx,.doc,.txt" onchange="handleTailoredFile(event)">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Upload a resume (PDF, DOCX, or TXT)</div>
+          <div class="upload-filename" id="tailored-filename" style="display:none;"></div>
         </div>
+        <div class="upload-hint">✓ Uploaded files fill the box below and save to this session automatically.</div>
+        <div class="form-group" style="margin-top:12px;margin-bottom:0;">
+          <label class="form-label">Or type / paste / edit</label>
+          <textarea class="form-textarea" id="tailored-text" placeholder="Your generated or uploaded resume appears here — fully editable." style="min-height:340px;font-family:'DM Sans',sans-serif;"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="exportResume('pdf')">⬇ PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportResume('word')">⬇ Word</button>
+        <button class="btn btn-ghost btn-sm" onclick="copyTailoredResume()">📋 Copy</button>
+        <span id="tailored-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
       </div>
     </div>
   </div>
@@ -1328,27 +1363,32 @@ Congrats on being intentional about your career search — I'm excited for you!
 
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
-      <div class="section-label">Your Resume</div>
+      <div class="section-editbar">
+        <div class="section-label" style="margin:0;">Your Resume</div>
+        <button class="btn btn-ghost btn-sm" id="resume-toggle" onclick="toggleSection('resume', saveResumeDoc, renderResumeView)">✏️ Edit</button>
+      </div>
       <div class="persist-note">🔒 Your resume stays saved across every interview session and won't clear when you switch or start a new one — that's intentional, not a bug. It's part of <em>you</em>, not any single role.</div>
-      <div class="file-upload-area" id="resume-upload-area" onclick="document.getElementById('resume-file').click()" style="margin:12px 0;">
-        <input type="file" id="resume-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'resume')">
-        <div class="upload-icon">📄</div>
-        <div class="upload-text">Upload PDF, DOCX, or TXT</div>
-        <div class="upload-filename" id="resume-filename" style="display:none;"></div>
-      </div>
-      <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
-      <div class="persist-note" style="background:var(--gold-light);border-color:var(--gold-border);">
-        <strong>No resume yet?</strong> Add some supporting materials below, then let AI draft a base resume for you. Already have one? Upload or paste it above — that becomes your master.
-      </div>
-      <div class="form-group" style="margin-top:12px;">
-        <label class="form-label">Or paste your resume text</label>
-        <textarea class="form-textarea" id="resume-text" placeholder="Paste your resume content here..." style="min-height:200px;"></textarea>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
-          <button class="btn btn-gold btn-sm" onclick="saveResumeDoc()">💾 Save resume</button>
-          <button class="btn btn-ghost btn-sm" onclick="generateBaseResume()">✨ Draft base resume from my materials</button>
-          <span id="resume-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+      <div id="resume-view"></div>
+      <div id="resume-edit" style="display:none;">
+        <div class="file-upload-area" id="resume-upload-area" onclick="document.getElementById('resume-file').click()" style="margin:12px 0;">
+          <input type="file" id="resume-file" accept=".pdf,.docx,.doc,.txt" onchange="handleDocFile(event,'resume')">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Upload PDF, DOCX, or TXT</div>
+          <div class="upload-filename" id="resume-filename" style="display:none;"></div>
         </div>
-        <div id="base-resume-status" style="margin-top:8px;"></div>
+        <div class="upload-hint">✓ Uploaded files save automatically — no need to click Save.</div>
+        <div class="persist-note" style="background:var(--gold-light);border-color:var(--gold-border);">
+          <strong>No resume yet?</strong> Add some supporting materials below, then let AI draft a base resume for you. Already have one? Upload or paste it above — that becomes your master.
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Or paste your resume text</label>
+          <textarea class="form-textarea" id="resume-text" placeholder="Paste your resume content here..." style="min-height:200px;"></textarea>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="generateBaseResume()">✨ Draft base resume from my materials</button>
+            <span id="resume-save-status" style="font-size:0.76rem;color:var(--muted);"></span>
+          </div>
+          <div id="base-resume-status" style="margin-top:8px;"></div>
+        </div>
       </div>
     </div>
 
@@ -1467,7 +1507,6 @@ Congrats on being intentional about your career search — I'm excited for you!
 
     <div class="doc-save-bar">
       <button class="btn btn-gold btn-sm" onclick="generateCandidateProfileWithAI()">✨ Draft with AI</button>
-      <button class="btn btn-ghost btn-sm" onclick="saveCandidateProfile()">💾 Save profile</button>
       <span id="profile-save-status" style="font-size:0.78rem;color:var(--muted);"></span>
       <span class="ai-key-hint" style="margin-left:auto;">✨ uses your API key (Step 1)</span>
     </div>
@@ -1475,31 +1514,33 @@ Congrats on being intentional about your career search — I'm excited for you!
 
     <div class="card">
       <div class="card-accent"></div>
-      <div class="form-group">
-        <label class="form-label">Core strengths</label>
-        <textarea class="form-textarea" id="cp-strengths" placeholder="What you're genuinely great at — skills, traits, and the value you repeatedly deliver. One per line works well." style="min-height:110px;"></textarea>
+      <div class="section-editbar">
+        <div class="section-label" style="margin:0;">Your profile</div>
+        <button class="btn btn-ghost btn-sm" id="cp-toggle" onclick="toggleSection('cp', saveCandidateProfile, renderCpView)">✏️ Edit</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Roles you're a strong match for</label>
-        <textarea class="form-textarea" id="cp-roles" placeholder="Titles and types of roles that fit your strengths and trajectory (e.g. Director of Enrollment Strategy, VP of Online Programs)." style="min-height:90px;"></textarea>
+      <div id="cp-view"></div>
+      <div id="cp-edit" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Core strengths</label>
+          <textarea class="form-textarea" id="cp-strengths" placeholder="What you're genuinely great at — skills, traits, and the value you repeatedly deliver. One per line works well." style="min-height:110px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Roles you're a strong match for</label>
+          <textarea class="form-textarea" id="cp-roles" placeholder="Titles and types of roles that fit your strengths and trajectory (e.g. Director of Enrollment Strategy, VP of Online Programs)." style="min-height:90px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Companies &amp; environments where you thrive</label>
+          <textarea class="form-textarea" id="cp-companies" placeholder="The kinds of organizations, cultures, and missions that bring out your best (e.g. mission-driven EdTech, growth-stage, values access & outcomes)." style="min-height:90px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your superpower / positioning statement</label>
+          <textarea class="form-textarea" id="cp-positioning" placeholder="In a sentence or two: the distinctive thing you bring that sets you apart." style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Watch-outs &amp; growth edges</label>
+          <textarea class="form-textarea" id="cp-watchouts" placeholder="Honest areas to be mindful of or frame well in interviews (e.g. less traditional-campus experience)." style="min-height:80px;"></textarea>
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Companies &amp; environments where you thrive</label>
-        <textarea class="form-textarea" id="cp-companies" placeholder="The kinds of organizations, cultures, and missions that bring out your best (e.g. mission-driven EdTech, growth-stage, values access & outcomes)." style="min-height:90px;"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Your superpower / positioning statement</label>
-        <textarea class="form-textarea" id="cp-positioning" placeholder="In a sentence or two: the distinctive thing you bring that sets you apart." style="min-height:80px;"></textarea>
-      </div>
-      <div class="form-group" style="margin-bottom:0;">
-        <label class="form-label">Watch-outs &amp; growth edges</label>
-        <textarea class="form-textarea" id="cp-watchouts" placeholder="Honest areas to be mindful of or frame well in interviews (e.g. less traditional-campus experience)." style="min-height:80px;"></textarea>
-      </div>
-    </div>
-
-    <div class="doc-save-bar" style="margin-top:16px;">
-      <button class="btn btn-gold btn-sm" onclick="saveCandidateProfile()">💾 Save profile</button>
-      <span id="profile-save-status-bottom" style="font-size:0.78rem;color:var(--muted);"></span>
     </div>
   </div>
 
@@ -2078,6 +2119,10 @@ function hydrateUI() {
   sv('cp-watchouts', cp.watchouts || '');
   const pai = document.getElementById('profile-ai-status');
   if (pai) pai.innerHTML = '';
+  // Read-only "card + Edit" sections
+  if (document.getElementById('cp-view')) initSection('cp', renderCpView);
+  if (document.getElementById('resume-view')) initSection('resume', renderResumeView);
+  if (document.getElementById('jd-view')) initSection('jd', renderJdView);
   // Resume generator (base status + per-session tailored)
   ['base-resume-status', 'tailored-status'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ''; });
   if (document.getElementById('tailored-text')) renderTailored();
@@ -2368,6 +2413,7 @@ Return ONLY valid JSON with these string fields (use short line-separated lists 
     if (data.positioning) sv('cp-positioning', data.positioning);
     if (data.watchouts) sv('cp-watchouts', data.watchouts);
     saveCandidateProfile();
+    if (document.getElementById('cp-view')) initSection('cp', renderCpView);
     statusEl.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Draft created and saved — review and edit anything below to make it yours.</div>';
   } catch(e) {
     statusEl.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>';
@@ -2607,6 +2653,7 @@ Return ONLY the resume as clean plain text, using CAPS section headers each on t
     const text = await callAI(provider, key, prompt, 3500);
     sv('resume-text', text.trim());
     setState({ resumeText: text.trim() });
+    renderResumeView();
     status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Base resume drafted and saved. Review and edit above — this is your master resume.</div>';
   } catch(e) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>'; }
 }
@@ -2617,6 +2664,7 @@ function renderTailored() {
   sv('tailored-level', s.tailoredLevel || rec);
   sv('tailored-text', s.tailoredResume || '');
   sv('tailored-extra', s.tailoredExtra || '');
+  if (document.getElementById('tailored-view')) initSection('tailored', renderTailoredView);
   const tfn = document.getElementById('tailored-filename');
   if (tfn) tfn.style.display = 'none';
   const tua = document.getElementById('tailored-upload-area');
@@ -2699,6 +2747,7 @@ Return ONLY the finished resume as clean plain text. Use these section headers i
     const text = await callAI(provider, key, prompt, 4000);
     sv('tailored-text', text.trim());
     setState({ tailoredResume: text.trim(), tailoredLevel: level, tailoredExtra: extra });
+    renderTailoredView();
     status.innerHTML = '<div class="alert alert-success" style="margin:0;">✓ Tailored resume generated at ' + LEVEL_LABEL[level] + ' level and saved to this session. Review and edit below.</div>';
   } catch(e) { status.innerHTML = '<div class="alert alert-warn" style="margin:0;">⚠ ' + e.message + '</div>'; }
 }
@@ -2715,6 +2764,7 @@ async function handleTailoredFile(event) {
     if (!text || !text.trim()) throw new Error('No readable text found in that file.');
     sv('tailored-text', text.trim());
     setState({ tailoredResume: text.trim(), tailoredLevel: v('tailored-level') });
+    renderTailoredView();
     areaEl.classList.add('has-file');
     fnameEl.textContent = '✓ ' + file.name + ' — loaded and saved to this session.';
   } catch(e) {
@@ -2988,6 +3038,7 @@ async function handleDocFile(event, which) {
     // Auto-save on upload so either path works on its own — no separate Save click needed
     const key = which === 'resume' ? 'resumeText' : 'jdText';
     setState({ [key]: text });
+    if (which === 'resume') renderResumeView(); else renderJdView();
     if (statusEl) {
       statusEl.textContent = '✓ Saved from ' + file.name;
       statusEl.style.color = 'var(--green)';
@@ -3043,6 +3094,7 @@ function ivShowStep(n) {
   const back = document.getElementById('iv-back'); if (back) back.style.visibility = ivCurStep === 1 ? 'hidden' : 'visible';
   const next = document.getElementById('iv-next'); if (next) next.style.display = ivCurStep === 3 ? 'none' : 'inline-flex';
   const ind = document.getElementById('iv-stepind'); if (ind) ind.textContent = 'Step ' + ivCurStep + ' of 3';
+  if (ivCurStep === 3) ivSetEdit(false); // land on the read-only card
   const prog = document.getElementById('iv-wiz-prog');
   if (prog) {
     prog.innerHTML = IV_STEP_TITLES.map((t, i) => {
@@ -3053,6 +3105,79 @@ function ivShowStep(n) {
   }
 }
 function ivStep(d) { ivShowStep(ivCurStep + d); }
+
+// Step 3 shows a read-only "published" card by default; Edit toggles the textareas.
+let ivEditing = false;
+function renderIvView() {
+  const el = document.getElementById('iv-view-fields');
+  if (!el) return;
+  const qs = (v('iv-questions') || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const wants = v('iv-wants').trim();
+  const angle = v('iv-angle').trim();
+  const block = (label, body) => '<div class="iv-vblock"><div class="iv-vlabel">' + label + '</div>' + body + '</div>';
+  let html = '';
+  if (qs.length) html += block("Questions they're likely to ask", '<ul class="iv-vlist">' + qs.map(q => '<li>' + esc(q) + '</li>').join('') + '</ul>');
+  if (wants) html += block('What they want to see in a candidate', '<div class="iv-vtext">' + esc(wants) + '</div>');
+  if (angle) html += block('Your angle &amp; watch-fors', '<div class="iv-vtext">' + esc(angle) + '</div>');
+  if (!html) html = '<div class="iv-vempty">Nothing here yet — run a generate step above, or click Edit to write your own.</div>';
+  el.innerHTML = html;
+}
+function ivSetEdit(on) {
+  ivEditing = on;
+  const view = document.getElementById('iv-view-fields');
+  const edit = document.getElementById('iv-edit-fields');
+  const btn = document.getElementById('iv-edit-toggle');
+  if (view) view.style.display = on ? 'none' : 'block';
+  if (edit) edit.style.display = on ? 'block' : 'none';
+  if (btn) btn.innerHTML = on ? '✓ Done' : '✏️ Edit';
+  if (!on) renderIvView();
+}
+function ivToggleEdit() { ivSetEdit(!ivEditing); }
+
+// Generic "read-only card + Edit/Save button" for standalone sections.
+const _sectionEdit = {};
+function initSection(name, renderFn) {
+  _sectionEdit[name] = false;
+  const view = document.getElementById(name + '-view'), edit = document.getElementById(name + '-edit'), btn = document.getElementById(name + '-toggle');
+  if (view) view.style.display = 'block';
+  if (edit) edit.style.display = 'none';
+  if (btn) btn.innerHTML = '✏️ Edit';
+  if (renderFn) renderFn();
+}
+function toggleSection(name, saveFn, renderFn) {
+  const goEdit = !_sectionEdit[name];
+  if (!goEdit && saveFn) saveFn();       // collapsing edit → save
+  _sectionEdit[name] = goEdit;
+  const view = document.getElementById(name + '-view'), edit = document.getElementById(name + '-edit'), btn = document.getElementById(name + '-toggle');
+  if (view) view.style.display = goEdit ? 'none' : 'block';
+  if (edit) edit.style.display = goEdit ? 'block' : 'none';
+  if (btn) btn.innerHTML = goEdit ? '💾 Save' : '✏️ Edit';
+  if (!goEdit && renderFn) renderFn();
+}
+function _vblocks(pairs) {
+  let html = '';
+  pairs.forEach(([label, val]) => { if (val && val.trim()) html += '<div class="iv-vblock"><div class="iv-vlabel">' + label + '</div><div class="iv-vtext">' + esc(val.trim()) + '</div></div>'; });
+  return html;
+}
+function renderCpView() {
+  const el = document.getElementById('cp-view'); if (!el) return;
+  const html = _vblocks([
+    ['Core strengths', v('cp-strengths')],
+    ["Roles you're a strong match for", v('cp-roles')],
+    ['Companies &amp; environments where you thrive', v('cp-companies')],
+    ['Your superpower / positioning', v('cp-positioning')],
+    ['Watch-outs &amp; growth edges', v('cp-watchouts')]
+  ]);
+  el.innerHTML = html || '<div class="iv-vempty">No profile yet — click Edit to fill it in, or use ✨ Draft with AI above.</div>';
+}
+function renderDocView(name, textId, emptyMsg) {
+  const el = document.getElementById(name + '-view'); if (!el) return;
+  const val = v(textId).trim();
+  el.innerHTML = val ? '<div class="doc-readonly">' + esc(val) + '</div>' : '<div class="iv-vempty">' + emptyMsg + '</div>';
+}
+function renderResumeView() { renderDocView('resume', 'resume-text', 'No resume saved yet — click Edit to upload or paste it.'); }
+function renderJdView() { renderDocView('jd', 'jd-text', 'No job description yet — click Edit to upload or paste it.'); }
+function renderTailoredView() { renderDocView('tailored', 'tailored-text', 'No tailored resume yet — generate one above, or click Edit to paste your own.'); }
 
 function clearInterviewerForm() {
   ['iv-name','iv-title','iv-time','iv-background','iv-questions','iv-wants','iv-angle'].forEach(id => {
