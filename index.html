@@ -90,6 +90,10 @@ a:hover { text-decoration: underline; }
   padding: 3px 10px;
   white-space: nowrap;
 }
+.ai-indicator { margin-left: auto; align-self: center; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 20px; padding: 5px 13px; cursor: pointer; border: 1.5px solid var(--border); white-space: nowrap; transition: all 0.15s; }
+.ai-indicator.ai-on { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+.ai-indicator.ai-off { background: var(--bg); color: var(--subtle); }
+.ai-indicator:hover { filter: brightness(0.97); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .save-indicator.saving { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
 .save-indicator.saved { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
 .save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); display: inline-block; animation: savepulse 0.8s infinite; }
@@ -812,6 +816,19 @@ a:hover { text-decoration: underline; }
 .iv-vempty { font-size: 0.82rem; color: var(--subtle); padding: 8px 2px; }
 .doc-readonly { white-space: pre-wrap; font-size: 0.84rem; line-height: 1.6; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; max-height: 380px; overflow-y: auto; }
 .section-editbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+/* Guided tour */
+#tour-highlight { position: fixed; z-index: 10000; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(15, 25, 35, 0.55); pointer-events: none; display: none; transition: top 0.2s, left 0.2s, width 0.2s, height 0.2s; }
+#tour-pop { position: fixed; z-index: 10001; width: 320px; max-width: calc(100vw - 24px); background: #fff; border-radius: 12px; box-shadow: 0 16px 44px rgba(0,0,0,0.28); padding: 16px 18px; display: none; }
+.tour-title { font-family: 'DM Serif Display', serif; font-size: 1.05rem; color: var(--text); margin-bottom: 6px; }
+.tour-body { font-size: 0.84rem; line-height: 1.55; color: var(--muted); margin-bottom: 14px; }
+.tour-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tour-count { font-size: 0.72rem; color: var(--subtle); font-weight: 600; }
+.tour-btns { display: flex; gap: 6px; }
+.tour-btns button { font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; border: 1.5px solid var(--border); background: #fff; color: var(--muted); }
+.tour-btns button.tour-next2 { background: var(--gold); border-color: var(--gold); color: #fff; }
+.tour-btns button.tour-skip { border: none; color: var(--subtle); }
+.tour-btns button:hover { border-color: var(--gold); color: var(--gold); }
+.tour-btns button.tour-next2:hover { color: #fff; background: #156a6a; }
 .hero-top { display: flex; align-items: center; gap: 20px; }
 .hero-copy { flex: 1; min-width: 0; }
 .hero-art { width: 190px; height: auto; flex-shrink: 0; }
@@ -1046,6 +1063,7 @@ Congrats on being intentional about your career search — I'm excited for you!
     <button class="tab-btn" data-tab="cheatsheet" onclick="showTab('cheatsheet')">👥 Interviewer Profiles</button>
     <button class="tab-btn" data-tab="fitanalysis" onclick="showTab('fitanalysis')">🎯 Fit Analysis</button>
     <button class="tab-btn sim-btn" data-tab="practice" onclick="showTab('practice')">🎙 Practice</button>
+    <button id="ai-indicator" class="ai-indicator" onclick="showSettings('api')" title="Manage your API key"></button>
   </div>
 </div>
 
@@ -1068,7 +1086,10 @@ Congrats on being intentional about your career search — I'm excited for you!
   <div class="settings-section" id="settings-setup">
     <div class="card">
       <div class="card-accent"></div>
-      <div class="section-label">Interview Details</div>
+      <div class="section-editbar">
+        <div class="section-label" style="margin:0;">Interview Details</div>
+        <button class="btn btn-ghost btn-sm" onclick="tourStart()">🎓 Take a tour</button>
+      </div>
       <div class="grid-2" style="margin-top:8px;">
         <div class="form-group">
           <label class="form-label">Company / Organization</label>
@@ -1439,6 +1460,7 @@ Congrats on being intentional about your career search — I'm excited for you!
           <div class="hero-badge">👤 Your Candidate Space</div>
           <h2 class="hero-title">All About <em>You</em></h2>
           <p class="hero-sub">Everything here carries across every interview you prep for. Build it once, and it strengthens all your applications. Your job-specific prep (interviewers, fit, practice) lives under <strong>Interview Setup</strong>, switchable with the session picker up top.</p>
+          <button class="btn btn-gold btn-sm" onclick="tourStart()">🎓 Take a quick tour</button>
         </div>
         <svg class="hero-art" viewBox="0 0 220 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="150" cy="60" r="52" fill="#ffffff" opacity="0.6"/>
@@ -1861,6 +1883,7 @@ Congrats on being intentional about your career search — I'm excited for you!
 function dismissWelcome() {
   document.getElementById('welcome-overlay').style.display = 'none';
   try { localStorage.setItem('yns_welcome_seen', '1'); } catch(e) {}
+  setTimeout(function(){ if (typeof maybeStartTour === 'function') maybeStartTour(); }, 350);
 }
 
 (function initWelcome() {
@@ -2124,6 +2147,7 @@ function hydrateUI() {
   if (document.getElementById('cp-view')) initSection('cp', renderCpView);
   if (document.getElementById('resume-view')) initSection('resume', renderResumeView);
   if (document.getElementById('jd-view')) initSection('jd', renderJdView);
+  renderAiIndicator();
   // Resume generator (base status + per-session tailored)
   ['base-resume-status', 'tailored-status'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ''; });
   if (document.getElementById('tailored-text')) renderTailored();
@@ -3137,6 +3161,18 @@ function ivSetEdit(on) {
 }
 function ivToggleEdit() { ivSetEdit(!ivEditing); }
 
+// Header AI ON/OFF status — reflects whether an API key is set.
+function renderAiIndicator() {
+  const el = document.getElementById('ai-indicator');
+  if (!el) return;
+  const on = !!(getState().apiKey || '').trim();
+  el.className = 'ai-indicator ' + (on ? 'ai-on' : 'ai-off');
+  el.innerHTML = on ? '✨ AI ON' : '○ AI OFF';
+  el.title = on
+    ? 'AI features are on. Click to manage your API key.'
+    : 'AI is off — add an API key for a personalized experience. Click to set it up.';
+}
+
 // Generic "read-only card + Edit/Save button" for standalone sections.
 const _sectionEdit = {};
 function initSection(name, renderFn) {
@@ -3665,6 +3701,8 @@ function saveApiKey() {
   setState({ apiKey: key, aiProvider: provider });
   document.getElementById('api-key-status').textContent = '✓ Key saved locally. Never sent to any server — only to the AI provider.';
   document.getElementById('api-key-status').style.color = 'var(--green)';
+  renderAiIndicator();
+  renderTailored && document.getElementById('tailored-useothers') && renderTailored();
 }
 
 function onProviderChange() {
@@ -4872,12 +4910,94 @@ function exportPracticeFeedback(mode) {
 // ===================================================================
 // INIT — restore state on load
 // ===================================================================
+// ===================================================================
+// GUIDED TOUR (first run + replayable)
+// ===================================================================
+const TOUR_STEPS = [
+  { title: 'Welcome! 👋', body: 'Quick tour of how everything fits together. You can skip anytime — and replay it later from the Candidate home.', before: () => showTab('candidate') },
+  { title: '🧭 Candidate — all about <em>you</em>', body: 'This space carries across every interview you prep for: your API key, resume, profile, and tools all live here.', target: '[data-tab="candidate"]', before: () => showTab('candidate') },
+  { title: 'One session per job', body: 'Each job you prep for is a <strong>session</strong>. Switch or start new ones here — your resume and profile stay shared across all of them.', target: '#session-bar' },
+  { title: 'Step 1 · Add your API key', body: 'We really encourage adding a Claude or ChatGPT key — it makes the whole experience personalized to <em>you</em> (AI drafting, fit analysis, and interview coaching). <strong>The app still works without one</strong>, you\'ll just get solid general guidance instead of a tailored experience.', target: '[data-sec="api"]', before: () => showSettings('api') },
+  { title: 'Step 2 · Resume & Inputs', body: 'Add your resume and any supporting materials — testimonials, wins, highlight reels. These power your fit analysis and coaching.', target: '[data-sec="documents"]', before: () => showSettings('documents') },
+  { title: 'Step 3 · Candidate Profile', body: 'Capture your strengths and the roles you\'re a match for — or let AI draft it from your materials in one click.', target: '[data-sec="profile"]', before: () => showSettings('profile') },
+  { title: '🗒 Interview Setup', body: 'For each specific job: the interview details, the job description, and a resume tailored to that role.', target: '[data-tab="interview"]', before: () => showTab('interview') },
+  { title: '👥 Interviewer Profiles', body: 'Analysis of the people you\'ll meet: who they are, the questions they\'re likely to ask, and what you\'ll want to make sure you address with each of them.', target: '[data-tab="cheatsheet"]', before: () => showTab('cheatsheet') },
+  { title: '🎯 Fit Analysis', body: 'A clear read on how you fit this role — your strengths for it, the gaps, and the keywords to emphasize in your answers.', target: '[data-tab="fitanalysis"]', before: () => showTab('fitanalysis') },
+  { title: '🎙 Practice — the main event', body: 'This is the heart of it: a personalized mock interview that pulls together everything above — your resume, the role, and each interviewer — so you can rehearse out loud and get real-time coaching on your answers.', target: '[data-tab="practice"]', before: () => showTab('practice') },
+  { title: "You're all set! 🎉", body: 'Replay this tour anytime with <strong>🎓 Take a tour</strong> on the Candidate home. Good luck — you\'ve got this!', before: () => showTab('candidate') }
+];
+let _tourStep = 0;
+function tourStart() { _tourStep = 0; tourShow(0); }
+function tourEnd() {
+  const hl = document.getElementById('tour-highlight'), pop = document.getElementById('tour-pop');
+  if (hl) hl.style.display = 'none';
+  if (pop) pop.style.display = 'none';
+  try { localStorage.setItem('yns_tour_seen', '1'); } catch(e) {}
+}
+function tourNext() { if (_tourStep >= TOUR_STEPS.length - 1) tourEnd(); else tourShow(++_tourStep); }
+function tourPrev() { if (_tourStep > 0) tourShow(--_tourStep); }
+function tourShow(i) {
+  _tourStep = i;
+  const step = TOUR_STEPS[i];
+  if (step.before) { try { step.before(); } catch(e) {} }
+  const hl = document.getElementById('tour-highlight');
+  const pop = document.getElementById('tour-pop');
+  document.getElementById('tour-pop-title').innerHTML = step.title;
+  document.getElementById('tour-pop-body').innerHTML = step.body;
+  document.getElementById('tour-pop-count').textContent = (i + 1) + ' / ' + TOUR_STEPS.length;
+  document.getElementById('tour-back').style.visibility = i === 0 ? 'hidden' : 'visible';
+  document.getElementById('tour-next').textContent = i === TOUR_STEPS.length - 1 ? 'Done' : 'Next →';
+  pop.style.display = 'block';
+  const target = step.target ? document.querySelector(step.target) : null;
+  if (target) {
+    target.scrollIntoView({ block: 'center', inline: 'nearest' });
+    requestAnimationFrame(() => {
+      const r = target.getBoundingClientRect();
+      hl.style.display = 'block';
+      hl.style.top = (r.top - 6) + 'px'; hl.style.left = (r.left - 6) + 'px';
+      hl.style.width = (r.width + 12) + 'px'; hl.style.height = (r.height + 12) + 'px';
+      const popW = 320, popH = pop.offsetHeight || 170;
+      let top = r.bottom + 12, left = r.left;
+      if (top + popH > window.innerHeight - 10) top = Math.max(10, r.top - popH - 12);
+      if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
+      if (left < 10) left = 10;
+      pop.style.top = top + 'px'; pop.style.left = left + 'px'; pop.style.transform = 'none';
+    });
+  } else {
+    hl.style.display = 'none';
+    pop.style.top = '50%'; pop.style.left = '50%'; pop.style.transform = 'translate(-50%, -50%)';
+  }
+}
+function maybeStartTour() {
+  try { if (localStorage.getItem('yns_tour_seen')) return; } catch(e) { return; }
+  const wel = document.getElementById('welcome-overlay');
+  if (wel && wel.style.display !== 'none') return; // wait until the welcome note is dismissed
+  tourStart();
+}
+window.addEventListener('resize', () => { if (document.getElementById('tour-pop') && document.getElementById('tour-pop').style.display === 'block') tourShow(_tourStep); });
+
 (function init() {
   hydrateUI();
   ivShowStep(1); // initialize the interviewer wizard progress
   // Land on the Candidate home hero by default
   showSettings('home');
+  setTimeout(maybeStartTour, 400); // first-run tour (after any welcome note)
 })();
 </script>
+
+<!-- Guided tour overlay -->
+<div id="tour-highlight"></div>
+<div id="tour-pop">
+  <div id="tour-pop-title" class="tour-title"></div>
+  <div id="tour-pop-body" class="tour-body"></div>
+  <div class="tour-foot">
+    <span id="tour-pop-count" class="tour-count"></span>
+    <div class="tour-btns">
+      <button class="tour-skip" onclick="tourEnd()">Skip</button>
+      <button id="tour-back" onclick="tourPrev()">Back</button>
+      <button id="tour-next" class="tour-next2" onclick="tourNext()">Next →</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
