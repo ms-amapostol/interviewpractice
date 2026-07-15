@@ -817,6 +817,10 @@ a:hover { text-decoration: underline; }
 .iv-vtext { font-size: 0.84rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; }
 .iv-vempty { font-size: 0.82rem; color: var(--subtle); padding: 8px 2px; }
 .doc-readonly { white-space: pre-wrap; font-size: 0.84rem; line-height: 1.6; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; max-height: 380px; overflow-y: auto; }
+.ph-item { display: flex; align-items: flex-start; gap: 10px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
+.ph-main { flex: 1; min-width: 0; }
+.ph-q { font-size: 0.84rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.ph-meta { font-size: 0.72rem; color: var(--subtle); margin-top: 3px; }
 .section-editbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
 /* Guided tour */
 #tour-highlight { position: fixed; z-index: 10000; border-radius: 8px; box-shadow: 0 0 0 9999px rgba(15, 25, 35, 0.55); pointer-events: none; display: none; transition: top 0.2s, left 0.2s, width 0.2s, height 0.2s; }
@@ -1242,6 +1246,11 @@ Congrats on being intentional about your career search — I'm excited for you!
           <div class="form-group">
             <label class="form-label">Your angle &amp; watch-fors</label>
             <textarea class="form-textarea" id="iv-angle" placeholder="How should you frame yourself with this specific person? Any landmines to avoid or dynamics to navigate?" style="min-height:80px;"></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Smart questions to ask <em>them</em></label>
+            <textarea class="form-textarea" id="iv-askthem" placeholder="One per line — thoughtful questions you could ask this person, based on their role and background. AI can generate these, or write your own." style="min-height:90px;"></textarea>
           </div>
         </div>
 
@@ -1865,6 +1874,8 @@ Congrats on being intentional about your career search — I'm excited for you!
       <button class="btn btn-ghost btn-sm" onclick="exportPracticeFeedback('word')">⬇ Session Word</button>
       <span style="font-size:0.74rem;color:var(--subtle);margin-left:10px;">Or use <strong>Export Full Report</strong> at the top to download all saved sessions (up to 20).</span>
     </div>
+
+    <div id="practice-history-wrap" style="margin-top:24px;"></div>
   </div>
 </div>
 
@@ -2128,6 +2139,7 @@ function hydrateUI() {
   renderSchedule();
   toggleScheduleCard();
   renderInterviewerList();
+  clearInterviewerForm(); // drop any in-progress interviewer draft so it can't leak into another session
   onProviderChange();
   renderSessionBar();
   // Supporting materials (shared) + reset their inputs
@@ -3100,6 +3112,7 @@ function saveInterviewer() {
     questions: document.getElementById('iv-questions').value.trim().split('\n').filter(q => q.trim()),
     wants: document.getElementById('iv-wants').value.trim(),
     angle: document.getElementById('iv-angle').value.trim(),
+    askThem: document.getElementById('iv-askthem').value.trim().split('\n').map(q => q.replace(/^\s*[•▪▸\-*]\s*/, '').trim()).filter(Boolean),
   };
   if (editingInterviewerId) {
     const idx = interviewers.findIndex(i => i.id === editingInterviewerId);
@@ -3143,11 +3156,14 @@ function renderIvView() {
   const qs = (v('iv-questions') || '').split('\n').map(s => s.trim()).filter(Boolean);
   const wants = v('iv-wants').trim();
   const angle = v('iv-angle').trim();
+  const ask = (v('iv-askthem') || '').split('\n').map(s => s.replace(/^\s*[•▪▸\-*]\s*/, '').trim()).filter(Boolean);
   const block = (label, body) => '<div class="iv-vblock"><div class="iv-vlabel">' + label + '</div>' + body + '</div>';
+  const listHtml = arr => '<ul class="iv-vlist">' + arr.map(q => '<li>' + esc(q) + '</li>').join('') + '</ul>';
   let html = '';
-  if (qs.length) html += block("Questions they're likely to ask", '<ul class="iv-vlist">' + qs.map(q => '<li>' + esc(q) + '</li>').join('') + '</ul>');
+  if (qs.length) html += block("Questions they're likely to ask", listHtml(qs));
   if (wants) html += block('What they want to see in a candidate', '<div class="iv-vtext">' + esc(wants) + '</div>');
   if (angle) html += block('Your angle &amp; watch-fors', '<div class="iv-vtext">' + esc(angle) + '</div>');
+  if (ask.length) html += block('Smart questions to ask them', listHtml(ask));
   if (!html) html = '<div class="iv-vempty">Nothing here yet — run a generate step above, or click Edit to write your own.</div>';
   el.innerHTML = html;
 }
@@ -3227,7 +3243,7 @@ function renderJdView() { renderDocView('jd', 'jd-text', 'No job description yet
 function renderTailoredView() { renderDocView('tailored', 'tailored-text', 'No tailored resume yet — generate one above, or click Edit to paste your own.'); }
 
 function clearInterviewerForm() {
-  ['iv-name','iv-title','iv-time','iv-background','iv-questions','iv-wants','iv-angle'].forEach(id => {
+  ['iv-name','iv-title','iv-time','iv-background','iv-questions','iv-wants','iv-angle','iv-askthem'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -3246,11 +3262,13 @@ function clearInterviewerForm() {
 }
 
 function deleteInterviewer(id) {
-  if (!confirm('Remove this interviewer?')) return;
+  if (!confirm('Remove this interviewer? This only affects the current interview session.')) return;
   const s = getState();
   s.interviewers = (s.interviewers || []).filter(iv => iv.id !== id);
   saveState(s);
   renderInterviewerList();
+  csActiveIdx = 0;
+  renderCheatSheet();
 }
 
 function editInterviewer(id) {
@@ -3266,6 +3284,7 @@ function editInterviewer(id) {
   sv('iv-questions', (iv.questions || []).join('\n'));
   sv('iv-wants', iv.wants);
   sv('iv-angle', iv.angle);
+  sv('iv-askthem', (iv.askThem || []).join('\n'));
   editingInterviewerId = id;
   const banner = document.getElementById('iv-edit-banner');
   if (banner) { banner.style.display = 'block'; document.getElementById('iv-edit-name').textContent = iv.name; }
@@ -3571,6 +3590,17 @@ const BASE_SOURCES = [
   { label: 'Indeed — STAR Interview Method', url: 'https://www.indeed.com/career-advice/interviewing/how-to-use-the-star-interview-response-technique' },
 ];
 
+// Smart questions the CANDIDATE could ask, by interviewer seniority/type.
+const ASK_BANK = {
+  csuite: ['What does success in this role look like to you a year from now?', 'What\'s the most important strategic priority for this team right now?', 'How do you see this role evolving as the organization grows?', 'What would make you say, a year from now, that this hire was a great decision?'],
+  vp: ['What are the top priorities you\'d want this person to drive in the first 90 days?', 'How does this team\'s work ladder up to the broader organizational goals?', 'What does a standout performer in this role do differently?', 'What are the biggest challenges facing the team right now?'],
+  director: ['How is success measured in this role?', 'What are the team\'s biggest priorities this quarter?', 'What does ramp-up look like in the first 90 days?', 'What\'s one thing you\'d want this person to own or improve quickly?'],
+  manager: ['What does a typical week look like in this role?', 'How does the team collaborate day to day?', 'What are you most hoping this person brings to the team?', 'How does the team give and receive feedback?'],
+  peer: ['What do you enjoy most about working here?', 'What does great collaboration on this team look like?', 'What\'s something you wish you\'d known when you started?', 'How does the team support each other when things get busy?'],
+  hr: ['What are the next steps and the timeline from here?', 'What qualities make someone successful in this role and on this team?', 'How would you describe the culture here?', 'What growth or development opportunities come with this role?'],
+  faculty: ['How do faculty and this role typically partner together?', 'What shared goals matter most to the department right now?', 'How are decisions made across academic and administrative lines?', 'What would a strong working partnership look like from your perspective?']
+};
+
 function generateFromRole() {
   const title = document.getElementById('iv-title').value.trim();
   const statusEl = document.getElementById('iv-ai-status');
@@ -3605,6 +3635,7 @@ function generateFromRole() {
   sv('iv-questions', questions.join('\n'));
   sv('iv-wants', wants);
   sv('iv-angle', angle);
+  sv('iv-askthem', (ASK_BANK[tier] || ASK_BANK.manager).join('\n'));
 
   // Build and show citations
   const tierSources = ROLE_SOURCES[tier] || [];
@@ -3664,7 +3695,11 @@ async function generateProfileWithAI() {
   };
   const calibration = candLevel ? '\n\nIMPORTANT — calibrate every question to the level of the role the candidate is applying for. ' + levelGuidance[candLevel] : '';
 
-  const prompt = `You are helping someone prepare for a job interview. Here is a profile or bio of one of their interviewers. The candidate is interviewing for: "${role}".${calibration}
+  const cp = getState().candidateProfile || {};
+  const candCtx = (cp.positioning || cp.strengths)
+    ? '\n\nAbout the CANDIDATE (use this to tailor the questions they could ask this interviewer): ' + [cp.positioning, cp.strengths].filter(Boolean).join(' | ')
+    : '';
+  const prompt = `You are helping someone prepare for a job interview. Here is a profile or bio of one of their interviewers. The candidate is interviewing for: "${role}".${calibration}${candCtx}
 
 Interviewer background text:
 ${background}
@@ -3675,17 +3710,19 @@ Extract and generate the following. Return ONLY valid JSON:
   "title": "<their current title and company>",
   "wants": "<2-3 sentences: what this person likely cares about and evaluates candidates on, based on their background>",
   "angle": "<2-3 sentences: how the candidate should frame themselves and what to watch out for with this specific person>",
-  "questions": ["<likely interview question 1>","<likely question 2>","<likely question 3>","<likely question 4>","<likely question 5>"]
+  "questions": ["<likely interview question 1>","<likely question 2>","<likely question 3>","<likely question 4>","<likely question 5>"],
+  "askThem": ["<a thoughtful question the CANDIDATE could ask THIS interviewer, tailored to the interviewer's role/background and the candidate>","<question 2>","<question 3>","<question 4>"]
 }`;
 
   try {
-    const text = await callAI(provider, key, prompt, 800);
+    const text = await callAI(provider, key, prompt, 1000);
     const data = parseJSON(text);
     if (data.name && !document.getElementById('iv-name').value) sv('iv-name', data.name);
     if (data.title && !document.getElementById('iv-title').value) sv('iv-title', data.title);
     if (data.wants) sv('iv-wants', data.wants);
     if (data.angle) sv('iv-angle', data.angle);
     if (data.questions && data.questions.length) sv('iv-questions', data.questions.join('\n'));
+    if (data.askThem && data.askThem.length) sv('iv-askthem', data.askThem.join('\n'));
     document.getElementById('iv-ai-status').textContent = '✓ Fields generated — review and edit before saving.';
     ivShowStep(3);
   } catch(e) {
@@ -3857,8 +3894,16 @@ function renderCSCard(iv) {
   content.innerHTML = `
     <div class="cs-card" style="--accent-color:${iv.color};">
       <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${iv.color};"></div>
-      <div style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:3px;">${esc(iv.name)}</div>
-      <div style="font-size:0.7rem;color:${iv.color};font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;">${esc(iv.title)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div>
+          <div style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:3px;">${esc(iv.name)}</div>
+          <div style="font-size:0.7rem;color:${iv.color};font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;">${esc(iv.title)}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${iv.id})" title="Edit this interviewer">✏️ Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteInterviewer(${iv.id})" title="Delete this interviewer" style="color:var(--red);border-color:var(--red);">✕</button>
+        </div>
+      </div>
 
       ${iv.background ? `
         <div class="cs-row">
@@ -3883,6 +3928,14 @@ function renderCSCard(iv) {
           <div class="cs-q-label">Questions They May Ask</div>
           ${iv.questions.map(q => '<div class="cs-q-item">' + esc(q) + '</div>').join('')}
         </div>` : ''}
+
+      <div class="cs-questions" style="background:var(--gold-light);border:1px solid var(--gold-border);">
+        <div class="cs-q-label" style="color:var(--gold);">💬 Smart Questions to Ask Them</div>
+        ${iv.askThem && iv.askThem.length
+          ? iv.askThem.map(q => '<div class="cs-q-item">' + esc(q) + '</div>').join('')
+          : '<div style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Run <strong>Generate</strong> for this interviewer (Interview Setup → Interviewers) to get questions tailored to their background and your role.</div>'}
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px dashed var(--gold-border);">More questions &amp; best practices → open the <a href="#" onclick="showTab('practice');return false;" style="color:var(--gold);font-weight:700;">📘 Best-Practice Playbook</a> in the Practice tab.</div>
+      </div>
     </div>
   `;
 }
@@ -4123,6 +4176,7 @@ function initSimulator() {
 
   const hasKey = !!(s.apiKey);
   document.getElementById('sim-api-note').style.display = hasKey ? 'none' : 'block';
+  renderPracticeHistory();
 
   // Always wire up the transcript box for typed input
   const box = document.getElementById('transcript-box');
@@ -4452,6 +4506,36 @@ function saveFeedbackToHistory(type, iv, question, answer, aiResult) {
     } : null,
   });
   setState({ feedbackHistory: history.slice(0, 20) }); // keep last 20
+  renderPracticeHistory();
+}
+
+// Practice history list with per-entry delete.
+function renderPracticeHistory() {
+  const wrap = document.getElementById('practice-history-wrap');
+  if (!wrap) return;
+  const history = getState().feedbackHistory || [];
+  if (!history.length) { wrap.innerHTML = ''; return; }
+  const rows = history.map(e => {
+    const d = new Date(e.date);
+    const when = isNaN(d) ? '' : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const who = e.interviewer ? esc(e.interviewer.name) : 'Practice';
+    const score = (e.aiResult && e.aiResult.qualityScore != null) ? ' · ' + e.aiResult.qualityScore + '/10' : '';
+    return '<div class="ph-item">' +
+      '<div class="ph-main">' +
+        '<div class="ph-q">' + esc(e.question || 'Practice answer') + '</div>' +
+        '<div class="ph-meta">' + who + ' · ' + when + score + '</div>' +
+      '</div>' +
+      '<button class="support-item-remove" title="Delete this practice entry" onclick="deletePracticeEntry(\'' + esc(e.date) + '\')">✕</button>' +
+    '</div>';
+  }).join('');
+  wrap.innerHTML = '<div class="section-label blue">Your Practice History (' + history.length + ')</div>' +
+    '<div style="font-size:0.76rem;color:var(--muted);margin:-4px 0 10px;">Every answer you practice is saved here (up to 20). Delete any single one with ✕.</div>' + rows;
+}
+function deletePracticeEntry(dateISO) {
+  if (!confirm('Delete this practice entry? This can\'t be undone.')) return;
+  const history = (getState().feedbackHistory || []).filter(e => e.date !== dateISO);
+  setState({ feedbackHistory: history });
+  renderPracticeHistory();
 }
 
 function resetAndRetry() {
@@ -4643,6 +4727,11 @@ function exportCheatSheet(mode) {
         <div class="iv-section">
           <div class="iv-label">Questions They May Ask</div>
           ${iv.questions.map((q, i) => `<div class="iv-q">${i+1}. ${esc(q)}</div>`).join('')}
+        </div>` : ''}
+      ${iv.askThem && iv.askThem.length ? `
+        <div class="iv-section">
+          <div class="iv-label">Smart Questions to Ask Them</div>
+          ${iv.askThem.map((q, i) => `<div class="iv-q">${i+1}. ${esc(q)}</div>`).join('')}
         </div>` : ''}
     </div>
   `).join('');
