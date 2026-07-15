@@ -3933,7 +3933,7 @@ function renderCSCard(iv) {
         <div class="cs-q-label" style="color:var(--gold);">💬 Smart Questions to Ask Them</div>
         ${iv.askThem && iv.askThem.length
           ? iv.askThem.map(q => '<div class="cs-q-item">' + esc(q) + '</div>').join('')
-          : '<div style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Run <strong>Generate</strong> for this interviewer (Interview Setup → Interviewers) to get questions tailored to their background and your role.</div>'}
+          : '<div style="font-size:0.8rem;color:var(--muted);line-height:1.6;">No questions yet for this interviewer. To generate them tailored to their background and your role:<br>1. Go to <strong>Interview Setup</strong> → <strong>4) Interviewers</strong><br>2. Click <strong>Edit</strong> on this interviewer<br>3. Open <strong>Step 2 — Generate the analysis</strong><br>4. Click <strong>✨ Generate with AI</strong> (or <strong>⚡ Generate from Role</strong>)<br>5. Click <strong>Update Interviewer</strong> to save</div>'}
         <div style="font-size:0.74rem;color:var(--muted);margin-top:10px;padding-top:8px;border-top:1px dashed var(--gold-border);">More questions &amp; best practices → open the <a href="#" onclick="showTab('practice');return false;" style="color:var(--gold);font-weight:700;">📘 Best-Practice Playbook</a> in the Practice tab.</div>
       </div>
     </div>
