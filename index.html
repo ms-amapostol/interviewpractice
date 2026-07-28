@@ -1307,22 +1307,13 @@ Congrats on being intentional about your career search — I'm excited for you!
 
   <div class="hero-group-label"><span>👤 Across All Roles</span><small>Build once — reused for every job you prep for.</small></div>
   <div class="hero-grid">
-    <button class="hero-tile" onclick="showSettings('api')"><div class="hero-tile-icon">🔑</div><div class="hero-tile-title">API Key</div><div class="hero-tile-desc">Add Claude or ChatGPT to unlock the ✨ AI features.</div></button>
     <button class="hero-tile" onclick="showSettings('documents')"><div class="hero-tile-icon">📄</div><div class="hero-tile-title">Resume &amp; Inputs</div><div class="hero-tile-desc">Your base resume, testimonials, and highlight reels.</div></button>
     <button class="hero-tile" onclick="showSettings('profile')"><div class="hero-tile-icon">🧬</div><div class="hero-tile-title">Candidate Profile</div><div class="hero-tile-desc">Your strengths, ideal roles, and positioning.</div></button>
+    <button class="hero-tile" onclick="showSettings('api')"><div class="hero-tile-icon">🔑</div><div class="hero-tile-title">API Key</div><div class="hero-tile-desc">Optional — add Claude or ChatGPT to unlock the ✨ AI features.</div></button>
     <button class="hero-tile" onclick="showSettings('tracker')"><div class="hero-tile-icon">📊</div><div class="hero-tile-title">Job Tracker</div><div class="hero-tile-desc">Every application in one view.</div></button>
   </div>
 
-  <div class="alert alert-warn" style="margin-top:20px;margin-bottom:14px;">
-    <div class="alert-label">⚡ In a hurry?</div>
-    Answer three questions — the role, the job description, and who you're meeting — and we'll build your interviewers, calibrate the questions to your level, and drop you straight into practice. No API key needed.
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-gold btn-sm" onclick="startExpress()">Set up this interview fast →</button>
-      <button class="btn btn-ghost btn-sm" onclick="enterDemo()">👀 See a sample first</button>
-    </div>
-  </div>
-
-  <div class="hero-group-label"><span>🎯 For Each Interview</span><small>Set up fresh per job — switch with the session picker.</small></div>
+  <div class="hero-group-label" style="margin-top:20px;"><span>🎯 For Each Interview</span><small>Set up fresh per job — switch with the session picker.</small></div>
   <div class="hero-grid">
     <button class="hero-tile" onclick="showTab('interview')"><div class="hero-tile-icon">🗒</div><div class="hero-tile-title">Interview Setup</div><div class="hero-tile-desc">Details, job description, and a tailored resume.</div></button>
     <button class="hero-tile" onclick="showTab('cheatsheet')"><div class="hero-tile-icon">👥</div><div class="hero-tile-title">Interviewer Profiles</div><div class="hero-tile-desc">Who you'll meet and what they'll ask.</div></button>
@@ -1362,17 +1353,6 @@ Congrats on being intentional about your career search — I'm excited for you!
           <input class="form-input" id="s-role" type="text" placeholder="e.g. Senior Product Manager" oninput="autosave()">
         </div>
         <div class="form-group">
-          <label class="form-label">Level of this role</label>
-          <select class="form-select" id="s-level" onchange="autosave();renderCalibChip();">
-            <option value="">Let the app figure it out</option>
-            <option value="early">Early career</option>
-            <option value="ic">Individual contributor</option>
-            <option value="manager">Manager</option>
-            <option value="director">Director</option>
-            <option value="exec">Executive</option>
-          </select>
-        </div>
-        <div class="form-group">
           <label class="form-label">Interview Date</label>
           <input class="form-input" id="s-date" type="date" oninput="autosave()">
         </div>
@@ -1390,6 +1370,22 @@ Congrats on being intentional about your career search — I'm excited for you!
         <div class="form-group">
           <label class="form-label">Date applied</label>
           <input class="form-input" id="s-applied" type="date" oninput="autosave()">
+        </div>
+      </div>
+
+      <div id="level-picker-row" style="margin-top:6px;padding:15px 16px;border:1px solid var(--gold-border);background:var(--gold-light);border-radius:var(--radius-sm);transition:box-shadow .3s;">
+        <label class="form-label" style="margin-bottom:4px;">Level of this role</label>
+        <p style="font-size:0.76rem;color:var(--muted);line-height:1.6;margin-bottom:10px;">
+          This calibrates everything downstream &mdash; the questions your interviewers ask, the coaching you get back, and the resume level we suggest. Pick the one closest to the job you are going for.
+        </p>
+        <input type="hidden" id="s-level">
+        <div class="level-chips" id="s-level-chips">
+          <button type="button" class="chip" data-lvl="" onclick="setSessionLevel(this)">Let the app decide</button>
+          <button type="button" class="chip" data-lvl="early" onclick="setSessionLevel(this)">Early career</button>
+          <button type="button" class="chip" data-lvl="ic" onclick="setSessionLevel(this)">Individual contributor</button>
+          <button type="button" class="chip" data-lvl="manager" onclick="setSessionLevel(this)">Manager</button>
+          <button type="button" class="chip" data-lvl="director" onclick="setSessionLevel(this)">Director</button>
+          <button type="button" class="chip" data-lvl="exec" onclick="setSessionLevel(this)">Executive</button>
         </div>
       </div>
     </div>
@@ -1794,7 +1790,7 @@ Congrats on being intentional about your career search — I'm excited for you!
   <div class="settings-section" id="settings-api" style="display:none;">
     <div class="card">
       <div class="card-accent"></div>
-      <div class="section-label">Step 1 · AI API Key (Claude or ChatGPT)</div>
+      <div class="section-label">Step 3 · AI API Key (Claude or ChatGPT) — optional, and worth it</div>
       <p style="font-size:0.82rem;color:var(--muted);margin:8px 0 4px;">An API key unlocks personalized, AI-driven feedback written in the voice of your specific interviewers. Without one, you still get structured coaching — including the STARR framework, question-type tips, and best-practice guidance — it's just not customized to the people in your interview loop.</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px;">
         <div style="flex:1;min-width:160px;padding:12px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;">
@@ -2166,12 +2162,12 @@ function derivedSessionName(sess) {
 // ===================================================================
 // RELEASE SETTINGS — the only block you edit when you ship an update
 // ===================================================================
-const APP_VERSION = 'v2.7 · 27 Jul 2026';
+const APP_VERSION = 'v2.8 · 28 Jul 2026';
 
 // Bump TOUR_VERSION whenever the tour itself changes. Everyone who already
 // finished an older tour becomes eligible to see the new one again.
 // Leave it alone for a release that does not change the tour.
-const TOUR_VERSION = 3;
+const TOUR_VERSION = 4;
 
 // What a returning user gets when TOUR_VERSION has moved:
 //   'prompt' — a small dismissible card offering the updated tour  (recommended)
@@ -2181,13 +2177,14 @@ const TOUR_ON_UPDATE = 'prompt';
 
 // Shown in the "What's new" card. Keep it to three or four plain lines.
 const WHATS_NEW = {
-  version: 'v2.7',
+  version: 'v2.8',
   headline: "What's new",
   items: [
     '<strong>⚡ Quick Setup</strong> — three questions and you are practising, no API key needed. Second tab along, or the button on Home.',
     '<strong>👀 Sample interview</strong> — see the whole thing working on a made-up candidate, in four different industries.',
     '<strong>Your interviewers now ask follow-ups</strong> when an answer is vague, instead of only scoring it.',
-    '<strong>You pick your level</strong> rather than the app guessing, so the questions land at the right height.'
+    '<strong>You pick your level</strong> rather than the app guessing &mdash; find it on <em>Interview Setup &rarr; Interview Details</em>, or set it in Quick Setup.',
+    '<strong>The API key is now step 3</strong>, not step 1. Optional, still the biggest upgrade in the app.'
   ]
 };
 
@@ -2391,6 +2388,7 @@ function hydrateUI() {
   sv('s-company', s.company || '');
   sv('s-role', s.role || '');
   sv('s-level', s.candidateLevel || '');
+  syncLevelChips();
   sv('s-date', s.date || '');
   sv('s-format', s.format || 'single');
   sv('s-salary', s.salary || '');
@@ -2457,9 +2455,9 @@ const SUBNAV = {
   candidate: {
     label: 'Across Every Interview',
     items: [
-      { sec: 'api',       label: 'API Key', num: 1 },
-      { sec: 'documents', label: 'Resume & Inputs', num: 2 },
-      { sec: 'profile',   label: 'Candidate Profile', num: 3 },
+      { sec: 'documents', label: 'Resume & Inputs', num: 1 },
+      { sec: 'profile',   label: 'Candidate Profile', num: 2 },
+      { sec: 'api',       label: '✨ API Key', num: 3 },
       { sec: 'tracker',   label: '📊 Job Tracker' },
       { sec: 'privacy',   label: '🔒 Privacy', plain: true }
     ]
@@ -2509,7 +2507,7 @@ function restoreJourneyState() {
 
 function showTab(name) {
   if (name === 'express') { startExpress(); return; }
-  if (name === 'candidate') { showSettings('api'); return; }
+  if (name === 'candidate') { showSettings('documents'); return; }
   if (name === 'interview') { showSettings('setup'); return; }
   if (!DEMO_MODE) { EXPRESS_MODE = false; renderModeBar(); }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -3667,6 +3665,38 @@ function calibrationLabel(s) {
 }
 
 // Render the editable calibration chip above the simulator.
+// Level chips on Interview Details write through the hidden input so autosave
+// and hydrateUI keep working exactly as they did with the old <select>.
+function setSessionLevel(el) {
+  const wrap = document.getElementById('s-level-chips');
+  if (wrap) wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  const inp = document.getElementById('s-level');
+  if (inp) inp.value = el.dataset.lvl || '';
+  autosave();
+  renderCalibChip();
+}
+
+function syncLevelChips() {
+  const wrap = document.getElementById('s-level-chips');
+  if (!wrap) return;
+  const cur = (document.getElementById('s-level') || {}).value || '';
+  wrap.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', (c.dataset.lvl || '') === cur));
+}
+
+// "change" on the calibration chip should land you ON the control, not just
+// on the page that contains it.
+function goToLevelPicker() {
+  showSettings('setup');
+  setTimeout(function () {
+    const row = document.getElementById('level-picker-row');
+    if (!row) return;
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.style.boxShadow = '0 0 0 4px rgba(26,133,133,0.35)';
+    setTimeout(function () { row.style.boxShadow = ''; }, 1600);
+  }, 120);
+}
+
 function renderCalibChip() {
   const wrap = document.getElementById('calib-chip-wrap');
   if (!wrap) return;
@@ -3675,7 +3705,7 @@ function renderCalibChip() {
   const art = /^[aeiou]/i.test(info.text) ? 'an ' : 'a ';
   wrap.innerHTML = '<div class="calib">📐 ' + (info.guessed ? 'Reading this as ' : 'Calibrated for ') + art +
     '<strong>' + esc(info.text) + '</strong> role' +
-    '<button onclick="showSettings(\'setup\')">change</button></div>';
+    '<button onclick="goToLevelPicker()">change</button></div>';
 }
 
 // Question sets calibrated to the CANDIDATE'S level (used when the interviewer isn't HR/faculty).
@@ -5411,10 +5441,11 @@ const TOUR_STEPS = [
   { title: '🧭 A recommended journey', body: 'Not sure where to start? This card lays out the path from your API key to a coached practice run. Click any step to go there — collapse it once you know the ropes.', target: '#journey-details', before: () => { showTab('home'); const j = document.getElementById('journey-details'); if (j) j.open = true; } },
   { title: '🧭 Your Space — all about <em>you</em>', body: 'This carries across every interview you prep for: your API key, resume, profile, and tools all live here.', target: '[data-tab="candidate"]', before: () => showTab('candidate') },
   { title: 'One session per job', body: 'Each job you prep for is a <strong>session</strong>. Switch between them here. <strong>+ New</strong> starts a fresh job and opens Quick setup, so a new interview takes about two minutes to stand up — your resume and profile stay shared across all of them.', target: '#session-bar' },
-  { title: 'Step 1 · Add your API key', body: 'We really encourage adding a Claude or ChatGPT key — it makes the whole experience personalized to <em>you</em> (AI drafting, fit analysis, and interview coaching). <strong>The app still works without one</strong>, you\'ll just get solid general guidance instead of a tailored experience.', target: '[data-sec="api"]', before: () => showSettings('api') },
-  { title: 'Step 2 · Resume & Inputs', body: 'Add your resume and any supporting materials — testimonials, wins, highlight reels. These power your fit analysis and coaching.', target: '[data-sec="documents"]', before: () => showSettings('documents') },
-  { title: 'Step 3 · Candidate Profile', body: 'Capture your strengths and the roles you\'re a match for — or let AI draft it from your materials in one click.', target: '[data-sec="profile"]', before: () => showSettings('profile') },
+  { title: 'Step 1 · Resume & Inputs', body: 'Start here. Add your resume and any supporting materials — testimonials, wins, highlight reels. These power your fit analysis and your coaching.', target: '[data-sec="documents"]', before: () => showSettings('documents') },
+  { title: 'Step 2 · Candidate Profile', body: 'Capture your strengths and the roles you\'re a match for — or let AI draft it from your materials in one click.', target: '[data-sec="profile"]', before: () => showSettings('profile') },
+  { title: 'Step 3 · Add an API key ✨', body: 'This one is optional, and it is the single biggest upgrade in the app. A Claude or ChatGPT key turns generic best-practice coaching into feedback written in the voice of the actual people interviewing you, against the actual job — plus AI drafting and a real fit analysis. <strong>Everything works without it</strong>; it just works better with it. A few dollars of credit usually covers an entire job search.', target: '[data-sec="api"]', before: () => showSettings('api') },
   { title: '🗒 Interview Setup', body: 'For each specific job: the interview details, the job description, and a resume tailored to that role.', target: '[data-tab="interview"]', before: () => showTab('interview') },
+  { title: '📐 Tell it what level you are', body: 'This one control calibrates the whole app — the questions your interviewers ask, the coaching you get back, and the resume level suggested. Leave it on <strong>Let the app decide</strong> and it guesses from your job title, which is usually right and occasionally not.', target: '#level-picker-row', before: () => showSettings('setup') },
   { title: '👥 Interviewer Profiles', body: 'Analysis of the people you\'ll meet: who they are, the questions they\'re likely to ask, and what you\'ll want to make sure you address with each of them.', target: '[data-tab="cheatsheet"]', before: () => showTab('cheatsheet') },
   { title: '🎯 Fit Analysis', body: 'A clear read on how you fit this role — your strengths for it, the gaps, and the keywords to emphasize in your answers.', target: '[data-tab="fitanalysis"]', before: () => showTab('fitanalysis') },
   { title: '🎙 Practice — the main event', body: 'This is the heart of it: a personalized mock interview that pulls together everything above — your resume, the role, and each interviewer — so you can rehearse out loud and get real-time coaching on your answers.', target: '[data-tab="practice"]', before: () => showTab('practice') },
