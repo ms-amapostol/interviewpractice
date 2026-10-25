@@ -7,8 +7,8 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNNTAgMTVjLTE5IDAtMzMgMTItMzMgMjggMCA5IDUgMTcgMTMgMjJsLTQgMTUgMTYtOWMyLjYgMC41IDUuMyAwLjcgOCAwLjcgMTkgMCAzMy0xMiAzMy0yOFM2OSAxNSA1MCAxNVoiCiAgICAgICAgc3Ryb2tlPSIjMWE4NTg1IiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNMzEgNjAgNDMgNDcgNTEgNTQgNjUgMzciCiAgICAgICAgc3Ryb2tlPSIjNGFhNWE1IiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik01NCAzNyA2NSAzNyA2NSA0OCIgc3Ryb2tlPSIjNGFhNWE1IiBzdHJva2Utd2lkdGg9IjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" integrity="sha384-nFoSjZIoH3CCp8W639jJyQkuPHinJ2NHe7on1xvlUA7SuGfJAfvMldrsoAVm6ECz" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* ========== RESET & BASE ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -2286,7 +2286,7 @@ function renderSessionBar() {
   if (!sel) return;
   const root = loadRoot();
   sel.innerHTML = root.sessions.map(s =>
-    `<option value="${s.id}"${s.id === root.activeId ? ' selected' : ''}>${esc(sessionDisplayName(s))}</option>`
+    `<option value="${esc(s.id)}"${s.id === root.activeId ? ' selected' : ''}>${esc(sessionDisplayName(s))}</option>`
   ).join('');
 }
 
@@ -2664,7 +2664,7 @@ function renderSupportingDocs() {
           <div class="support-item-label">${esc(d.label)}</div>
           <div class="support-item-meta">${words.toLocaleString()} words · ${esc(d.text.trim().slice(0, 90))}${d.text.trim().length > 90 ? '…' : ''}</div>
         </div>
-        <button class="support-item-remove" title="Remove" onclick="removeSupportingDoc('${d.id}')">✕</button>
+        <button class="support-item-remove" title="Remove" onclick="removeSupportingDoc('${jsId(d.id)}')">✕</button>
       </div>`;
     }).join('');
 }
@@ -2765,7 +2765,7 @@ function sessionSignalsLinks(sess) {
   const iv = (sess.interviewers || []).length;
   const fb = (sess.feedbackHistory || []).length;
   const link = (tab, label, title) =>
-    '<a href="#" title="' + title + '" onclick="openSessionView(\'' + sess.id + '\',\'' + tab + '\');return false;" style="color:var(--gold);text-decoration:none;white-space:nowrap;">' + label + '</a>';
+    '<a href="#" title="' + title + '" onclick="openSessionView(\'' + jsId(sess.id) + '\',\'' + tab + '\');return false;" style="color:var(--gold);text-decoration:none;white-space:nowrap;">' + label + '</a>';
   return [
     link('cheatsheet', '👥 ' + iv, 'Open this session\'s Interviewer Profiles'),
     link('fitanalysis', '🎯 ' + (sess.fitResult ? 'fit ✓' : '—'), 'Open this session\'s Fit Analysis'),
@@ -2782,29 +2782,29 @@ function renderTracker() {
   root.sessions.forEach(sess => {
     const t = sess.tracker || {};
     rows += '<tr class="row-session">' +
-      '<td><a href="#" title="Open this interview session" onclick="openSessionView(\'' + sess.id + '\',\'interview\');return false;" class="tracker-src session" style="text-decoration:none;">Session ↗</a></td>' +
+      '<td><a href="#" title="Open this interview session" onclick="openSessionView(\'' + jsId(sess.id) + '\',\'interview\');return false;" class="tracker-src session" style="text-decoration:none;">Session ↗</a></td>' +
       '<td class="tracker-cell-strong">' + esc(sess.company || '—') + '</td>' +
       '<td>' + esc(sess.role || '—') + '</td>' +
       '<td>' + esc(sess.applied || '—') + '</td>' +
       '<td>' + esc(sess.salary || '—') + '</td>' +
-      '<td><select class="tracker-in" onchange="setSessionTracker(\'' + sess.id + '\',\'response\',this.value)">' + trackerStatusOptions(t.response) + '</select></td>' +
-      '<td><input class="tracker-in" value="' + esc(t.thoughts || '') + '" placeholder="Why / why not?" onchange="setSessionTracker(\'' + sess.id + '\',\'thoughts\',this.value)"></td>' +
-      '<td><input class="tracker-in" value="' + esc(t.notes || '') + '" placeholder="Notes" onchange="setSessionTracker(\'' + sess.id + '\',\'notes\',this.value)"></td>' +
+      '<td><select class="tracker-in" onchange="setSessionTracker(\'' + jsId(sess.id) + '\',\'response\',this.value)">' + trackerStatusOptions(t.response) + '</select></td>' +
+      '<td><input class="tracker-in" value="' + esc(t.thoughts || '') + '" placeholder="Why / why not?" onchange="setSessionTracker(\'' + jsId(sess.id) + '\',\'thoughts\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(t.notes || '') + '" placeholder="Notes" onchange="setSessionTracker(\'' + jsId(sess.id) + '\',\'notes\',this.value)"></td>' +
       '<td class="tracker-signals">' + sessionSignalsLinks(sess) + '</td>' +
       '<td></td></tr>';
   });
   manual.forEach(r => {
     rows += '<tr>' +
       '<td><span class="tracker-src manual">Manual</span></td>' +
-      '<td><input class="tracker-in" value="' + esc(r.company || '') + '" placeholder="Company" onchange="updateManualRow(\'' + r.id + '\',\'company\',this.value)"></td>' +
-      '<td><input class="tracker-in" value="' + esc(r.role || '') + '" placeholder="Role" onchange="updateManualRow(\'' + r.id + '\',\'role\',this.value)"></td>' +
-      '<td><input class="tracker-in" type="date" value="' + esc(r.applied || '') + '" onchange="updateManualRow(\'' + r.id + '\',\'applied\',this.value)"></td>' +
-      '<td><input class="tracker-in" value="' + esc(r.salary || '') + '" placeholder="$" onchange="updateManualRow(\'' + r.id + '\',\'salary\',this.value)"></td>' +
-      '<td><select class="tracker-in" onchange="updateManualRow(\'' + r.id + '\',\'response\',this.value)">' + trackerStatusOptions(r.response) + '</select></td>' +
-      '<td><input class="tracker-in" value="' + esc(r.thoughts || '') + '" placeholder="Why / why not?" onchange="updateManualRow(\'' + r.id + '\',\'thoughts\',this.value)"></td>' +
-      '<td><input class="tracker-in" value="' + esc(r.notes || '') + '" placeholder="Notes" onchange="updateManualRow(\'' + r.id + '\',\'notes\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.company || '') + '" placeholder="Company" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'company\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.role || '') + '" placeholder="Role" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'role\',this.value)"></td>' +
+      '<td><input class="tracker-in" type="date" value="' + esc(r.applied || '') + '" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'applied\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.salary || '') + '" placeholder="$" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'salary\',this.value)"></td>' +
+      '<td><select class="tracker-in" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'response\',this.value)">' + trackerStatusOptions(r.response) + '</select></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.thoughts || '') + '" placeholder="Why / why not?" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'thoughts\',this.value)"></td>' +
+      '<td><input class="tracker-in" value="' + esc(r.notes || '') + '" placeholder="Notes" onchange="updateManualRow(\'' + jsId(r.id) + '\',\'notes\',this.value)"></td>' +
       '<td class="tracker-signals">—</td>' +
-      '<td><button class="support-item-remove" title="Delete row" onclick="deleteManualRow(\'' + r.id + '\')">✕</button></td></tr>';
+      '<td><button class="support-item-remove" title="Delete row" onclick="deleteManualRow(\'' + jsId(r.id) + '\')">✕</button></td></tr>';
   });
   if (!rows) rows = '<tr><td colspan="10" style="text-align:center;color:var(--subtle);padding:24px 16px;">' + ART.clipboard + '<div>No applications yet. Create an interview session or add a manual row.</div></td></tr>';
   wrap.innerHTML = '<table class="tracker-table"><thead><tr>' +
@@ -3274,9 +3274,9 @@ function renderSchedule() {
   if (!el) return;
   el.innerHTML = scheduleRows.map((r, i) => `
     <div class="schedule-item">
-      <input class="form-input" style="width:90px;" value="${r.time}" placeholder="1:00 PM" oninput="scheduleRows[${i}].time=this.value;saveSchedule()">
-      <input class="form-input" style="flex:1;" value="${r.name}" placeholder="Interviewer name" oninput="scheduleRows[${i}].name=this.value;saveSchedule()">
-      <input class="form-input" style="flex:1;" value="${r.panel}" placeholder="Panel / context" oninput="scheduleRows[${i}].panel=this.value;saveSchedule()">
+      <input class="form-input" style="width:90px;" value="${esc(r.time)}" placeholder="1:00 PM" oninput="scheduleRows[${i}].time=this.value;saveSchedule()">
+      <input class="form-input" style="flex:1;" value="${esc(r.name)}" placeholder="Interviewer name" oninput="scheduleRows[${i}].name=this.value;saveSchedule()">
+      <input class="form-input" style="flex:1;" value="${esc(r.panel)}" placeholder="Panel / context" oninput="scheduleRows[${i}].panel=this.value;saveSchedule()">
       <button class="btn btn-danger btn-sm" onclick="scheduleRows.splice(${i},1);renderSchedule();saveSchedule()">✕</button>
     </div>
   `).join('');
@@ -3308,7 +3308,7 @@ async function extractTextFromFile(file) {
 async function extractPDF(file) {
   if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js not loaded.');
   const ab = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  const pdf = await pdfjsLib.getDocument({ data: ab, isEvalSupported: false }).promise;
   let text = '';
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
@@ -3587,15 +3587,15 @@ function renderInterviewerList() {
   }
   el.innerHTML = interviewers.map(iv => `
     <div class="profile-card">
-      <div class="profile-color-strip" style="background:${iv.color};"></div>
+      <div class="profile-color-strip" style="background:${safeColor(iv.color)};"></div>
       <div class="profile-info">
         <div class="profile-name">${esc(iv.name)}</div>
         <div class="profile-title">${esc(iv.title)}${iv.time ? ' · ' + esc(iv.time) : ''}</div>
         ${iv.questions && iv.questions.length ? '<div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">' + iv.questions.length + ' question(s) loaded</div>' : ''}
       </div>
       <div class="profile-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${iv.id})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteInterviewer(${iv.id})">✕</button>
+        <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${ivArg(iv.id)})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInterviewer(${ivArg(iv.id)})">✕</button>
       </div>
     </div>
   `).join('');
@@ -4241,8 +4241,8 @@ function renderCheatSheet() {
   tabsEl.innerHTML = interviewers.map((iv, i) => `
     <button onclick="csShowTab(${i})" id="cs-tab-${i}" style="
       padding:7px 16px;border-radius:6px;font-size:0.74rem;font-weight:600;cursor:pointer;
-      border:1.5px solid ${i===csActiveIdx ? iv.color : 'var(--border)'};
-      background:${i===csActiveIdx ? iv.color : 'var(--white)'};
+      border:1.5px solid ${i===csActiveIdx ? safeColor(iv.color) : 'var(--border)'};
+      background:${i===csActiveIdx ? safeColor(iv.color) : 'var(--white)'};
       color:${i===csActiveIdx ? '#fff' : 'var(--muted)'};
       transition:all 0.15s;
     ">${iv.time ? iv.time + ' — ' : ''}${esc(iv.name)}</button>
@@ -4261,16 +4261,16 @@ function renderCSCard(iv) {
   if (!iv) return;
   const content = document.getElementById('cheatsheet-content');
   content.innerHTML = `
-    <div class="cs-card" style="--accent-color:${iv.color};">
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${iv.color};"></div>
+    <div class="cs-card" style="--accent-color:${safeColor(iv.color)};">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${safeColor(iv.color)};"></div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
         <div>
           <div style="font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:3px;">${esc(iv.name)}</div>
-          <div style="font-size:0.7rem;color:${iv.color};font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;">${esc(iv.title)}</div>
+          <div style="font-size:0.7rem;color:${safeColor(iv.color)};font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;">${esc(iv.title)}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
-          <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${iv.id})" title="Edit this interviewer">✏️ Edit</button>
-          <button class="btn btn-ghost btn-sm" onclick="deleteInterviewer(${iv.id})" title="Delete this interviewer" style="color:var(--red);border-color:var(--red);">✕</button>
+          <button class="btn btn-ghost btn-sm" onclick="editInterviewer(${ivArg(iv.id)})" title="Edit this interviewer">✏️ Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteInterviewer(${ivArg(iv.id)})" title="Delete this interviewer" style="color:var(--red);border-color:var(--red);">✕</button>
         </div>
       </div>
 
@@ -4415,7 +4415,7 @@ Return ONLY valid JSON:
 
 function renderFitResult(r, aiPowered, meta) {
   const content = document.getElementById('fit-content');
-  const color = r.overallFit >= 75 ? 'var(--green)' : r.overallFit >= 50 ? 'var(--gold)' : 'var(--red)';
+  const color = n100(r.overallFit) >= 75 ? 'var(--green)' : r.overallFit >= 50 ? 'var(--gold)' : 'var(--red)';
   meta = meta || {};
   const dateStr = meta.date ? new Date(meta.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '';
   const banner = aiPowered
@@ -4431,9 +4431,9 @@ function renderFitResult(r, aiPowered, meta) {
     <div class="card" style="margin-bottom:16px;">
       <div class="card-accent"></div>
       <div class="section-label">Overall Fit</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:2.8rem;color:${color};margin:8px 0 4px;">${r.overallFit}%</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:2.8rem;color:${color};margin:8px 0 4px;">${n100(r.overallFit)}%</div>
       <div style="font-weight:600;color:${color};margin-bottom:10px;">${esc(r.fitLabel)}</div>
-      <div class="fit-meter"><div class="fit-meter-fill" style="width:${r.overallFit}%;background:${color};"></div></div>
+      <div class="fit-meter"><div class="fit-meter-fill" style="width:${n100(r.overallFit)}%;background:${color};"></div></div>
       <p style="font-size:0.84rem;line-height:1.65;color:#444458;margin-top:14px;">${esc(r.fitSummary)}</p>
     </div>
 
@@ -4771,9 +4771,9 @@ function renderAIFeedback(r, question) {
     <div class="section-label blue" style="margin-bottom:14px;">Feedback from ${esc(simIV.name)}</div>
 
     <div class="scores-row">
-      <div class="score-card"><div class="score-label">Answer Quality</div><div class="score-num ${scoreColor(aq.score)}">${aq.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(aq.label)}</div></div>
-      <div class="score-card"><div class="score-label">Succinctness</div><div class="score-num ${scoreColor(su.score)}">${su.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(su.label)}</div></div>
-      <div class="score-card"><div class="score-label">Hire Signal</div><div class="score-num ${scoreColor(hs.score)}">${hs.score}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">From their POV</div></div>
+      <div class="score-card"><div class="score-label">Answer Quality</div><div class="score-num ${scoreColor(aq.score)}">${n10(aq.score)}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(aq.label)}</div></div>
+      <div class="score-card"><div class="score-label">Succinctness</div><div class="score-num ${scoreColor(su.score)}">${n10(su.score)}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">${esc(su.label)}</div></div>
+      <div class="score-card"><div class="score-label">Hire Signal</div><div class="score-num ${scoreColor(hs.score)}">${n10(hs.score)}<span style="font-size:1rem;color:var(--subtle)">/10</span></div><div class="score-sub">From their POV</div></div>
     </div>
 
     <div class="verdict ${verdictClass(hs.verdict)}">${esc(simIV.name)}: "${esc(hs.verdict)}"</div>
@@ -4809,7 +4809,7 @@ function renderAIFeedback(r, question) {
       <span class="fu-tag">${esc(simIV.name.split(' ')[0])} follows up</span>
       <div class="fu-q">${esc(r.follow_up)}</div>
       <div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;">
-        <button class="btn btn-blue btn-sm" onclick="askFollowUp(${JSON.stringify(r.follow_up).replace(/"/g,'&quot;')})">Answer this →</button>
+        <button class="btn btn-blue btn-sm" data-q="${esc(r.follow_up)}" onclick="askFollowUp(this.dataset.q)">Answer this →</button>
         <button class="btn btn-ghost btn-sm" onclick="nextAndReset()">Skip to next question</button>
       </div>
     </div>` : ''}
@@ -4943,7 +4943,7 @@ function renderPracticeHistory() {
     const d = new Date(e.date);
     const when = isNaN(d) ? '' : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     const who = e.interviewer ? esc(e.interviewer.name) : 'Practice';
-    const score = (e.aiResult && e.aiResult.qualityScore != null) ? ' · ' + e.aiResult.qualityScore + '/10' : '';
+    const score = (e.aiResult && e.aiResult.qualityScore != null) ? ' · ' + n10(e.aiResult.qualityScore) + '/10' : '';
     return '<div class="ph-item">' +
       '<div class="ph-main">' +
         '<div class="ph-q">' + esc(e.question || 'Practice answer') + '</div>' +
@@ -5068,6 +5068,12 @@ function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+// Safety helpers: AI replies and imported backups are untrusted, so numbers, colors and ids are checked before they go into the page.
+function n10(v) { const x = Number(v); return isFinite(x) ? Math.max(0, Math.min(10, Math.round(x * 10) / 10)) : 0; }
+function n100(v) { const x = Number(v); return isFinite(x) ? Math.max(0, Math.min(100, Math.round(x))) : 0; }
+function safeColor(c) { return /^#[0-9a-fA-F]{3,8}$/.test(String(c || '')) ? c : '#2e6ea6'; }
+function jsId(x) { return String(x == null ? '' : x).replace(/[^A-Za-z0-9_-]/g, ''); }
+function ivArg(x) { return typeof x === 'number' && isFinite(x) ? String(x) : "'" + jsId(x) + "'"; }
 
 function clearAllData() {
   if (DEMO_MODE) {
@@ -5145,9 +5151,9 @@ function exportCheatSheet(mode) {
 
   const cards = interviewers.map((iv, idx) => `
     <div class="iv-card" style="page-break-after:${idx < interviewers.length - 1 ? 'always' : 'avoid'};">
-      <div class="iv-accent" style="background:${iv.color};"></div>
+      <div class="iv-accent" style="background:${safeColor(iv.color)};"></div>
       <div class="iv-name">${esc(iv.name)}</div>
-      <div class="iv-title" style="color:${iv.color};">${esc(iv.title)}${iv.time ? ' &nbsp;·&nbsp; ' + esc(iv.time) : ''}</div>
+      <div class="iv-title" style="color:${safeColor(iv.color)};">${esc(iv.title)}${iv.time ? ' &nbsp;·&nbsp; ' + esc(iv.time) : ''}</div>
       ${iv.background ? `<div class="iv-section"><div class="iv-label">Background</div><div class="iv-body">${esc(iv.background.substring(0, 600))}${iv.background.length > 600 ? '…' : ''}</div></div>` : ''}
       ${iv.wants ? `<div class="iv-section"><div class="iv-label">What They Want to See</div><div class="iv-body">${esc(iv.wants)}</div></div>` : ''}
       ${iv.angle ? `<div class="iv-angle"><div class="iv-angle-label">⚡ Your Angle &amp; Watch-Fors</div><div class="iv-body">${esc(iv.angle)}</div></div>` : ''}
@@ -5268,9 +5274,9 @@ function exportFullReport(mode) {
   // Build interviewer sections
   const ivHtml = interviewers.length ? interviewers.map(iv => `
     <div style="background:#fff;border:1px solid #ddd8d0;border-radius:10px;padding:24px;margin-bottom:20px;page-break-inside:avoid;">
-      <div style="height:3px;background:${iv.color};border-radius:2px;margin-bottom:16px;"></div>
+      <div style="height:3px;background:${safeColor(iv.color)};border-radius:2px;margin-bottom:16px;"></div>
       <div style="font-family:'Georgia',serif;font-size:1.2rem;font-weight:bold;margin-bottom:3px;">${esc(iv.name)}</div>
-      <div style="font-size:0.75rem;color:${iv.color};font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;">${esc(iv.title)}${iv.time ? ' · ' + esc(iv.time) : ''}</div>
+      <div style="font-size:0.75rem;color:${safeColor(iv.color)};font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;">${esc(iv.title)}${iv.time ? ' · ' + esc(iv.time) : ''}</div>
       ${iv.background ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:5px;">Background</div><div style="font-size:0.85rem;line-height:1.65;color:#444458;">${esc(iv.background)}</div></div>` : ''}
       ${iv.wants ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:5px;">What They Want to See</div><div style="font-size:0.85rem;line-height:1.65;color:#444458;">${esc(iv.wants)}</div></div>` : ''}
       ${iv.angle ? `<div style="margin-bottom:14px;background:#fff5f5;border-left:3px solid #c94c4c;padding:10px 14px;border-radius:0 6px 6px 0;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c94c4c;margin-bottom:4px;">Your Angle & Watch-Fors</div><div style="font-size:0.84rem;line-height:1.6;color:#8a2020;">${esc(iv.angle)}</div></div>` : ''}
@@ -5284,9 +5290,9 @@ function exportFullReport(mode) {
   // Build fit analysis section
   const fitHtml = fit ? `
     <div style="margin-bottom:20px;">
-      <div style="font-size:2.5rem;font-weight:bold;color:${scoreColor(fit.overallFit/10)};margin-bottom:4px;">${fit.overallFit}%</div>
-      <div style="font-weight:700;color:${scoreColor(fit.overallFit/10)};margin-bottom:10px;">${esc(fit.fitLabel)}</div>
-      <div style="background:#eee;border-radius:6px;height:10px;margin-bottom:16px;"><div style="background:${scoreColor(fit.overallFit/10)};height:10px;border-radius:6px;width:${fit.overallFit}%;"></div></div>
+      <div style="font-size:2.5rem;font-weight:bold;color:${scoreColor(n100(fit.overallFit)/10)};margin-bottom:4px;">${n100(fit.overallFit)}%</div>
+      <div style="font-weight:700;color:${scoreColor(n100(fit.overallFit)/10)};margin-bottom:10px;">${esc(fit.fitLabel)}</div>
+      <div style="background:#eee;border-radius:6px;height:10px;margin-bottom:16px;"><div style="background:${scoreColor(n100(fit.overallFit)/10)};height:10px;border-radius:6px;width:${n100(fit.overallFit)}%;"></div></div>
       <p style="font-size:0.86rem;line-height:1.7;color:#444458;margin-bottom:16px;">${esc(fit.fitSummary)}</p>
       ${fit.strengths && fit.strengths.length ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">Strengths</div><ul style="padding-left:18px;">${fit.strengths.map(s => `<li style="font-size:0.84rem;line-height:1.65;margin-bottom:5px;color:#444458;">${esc(s)}</li>`).join('')}</ul></div>` : ''}
       ${fit.gaps && fit.gaps.length ? `<div style="margin-bottom:14px;"><div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;color:#aaa8b8;margin-bottom:6px;">Gaps / Risks</div><ul style="padding-left:18px;">${fit.gaps.map(g => `<li style="font-size:0.84rem;line-height:1.65;margin-bottom:5px;color:#444458;">${esc(g)}</li>`).join('')}</ul></div>` : ''}
@@ -5310,7 +5316,7 @@ function exportFullReport(mode) {
             ${[['Answer Quality', r.qualityScore, r.qualityLabel], ['Succinctness', r.succinctScore, r.succinctLabel], ['Hire Signal', r.hireScore, r.hireVerdict]].map(([label, score, sub]) => `
               <div style="flex:1;min-width:120px;background:#f5f3ef;border:1px solid #ddd8d0;border-radius:8px;padding:12px;text-align:center;">
                 <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#aaa8b8;margin-bottom:6px;">${label}</div>
-                <div style="font-size:1.8rem;font-weight:bold;color:${scoreColor(score)};line-height:1;">${score}<span style="font-size:0.9rem;color:#aaa8b8;">/10</span></div>
+                <div style="font-size:1.8rem;font-weight:bold;color:${scoreColor(score)};line-height:1;">${n10(score)}<span style="font-size:0.9rem;color:#aaa8b8;">/10</span></div>
                 <div style="font-size:0.7rem;color:#888;margin-top:4px;">${esc(sub||'')}</div>
               </div>`).join('')}
           </div>
